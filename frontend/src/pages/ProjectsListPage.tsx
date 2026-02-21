@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card';
 import ScoreBadge from '@/components/metrics/ScoreBadge';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
 import { getMetricLevel, LEVEL_COLORS } from '@/hooks/useMetricColor';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
 import { reportsApi } from '@/api/endpoints/reports';
 import type { Subscription } from '@/types/subscription';
@@ -92,6 +93,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 }
 
 export default function ProjectsListPage() {
+  usePageTitle('Проекты');
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

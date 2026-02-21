@@ -8,6 +8,7 @@ import { SubscriptionEmployee } from '../../entities/subscription-employee.entit
 import { MetricReport } from '../../entities/metric-report.entity';
 import { NotFoundError } from '../../common/errors';
 import { formatYTDate } from '../../common/utils/week-utils';
+import { AchievementsService } from '../achievements/achievements.service';
 import {
   EmployeeReportDTO,
   EmployeeHistoryDTO,
@@ -263,6 +264,10 @@ export class ReportsService {
     const lastLlmSummary = withLlm?.llmSummary ?? null;
     const lastLlmConcerns = withLlm?.llmConcerns ?? null;
 
+    // Employee achievements
+    const achievementsService = new AchievementsService(this.em);
+    const achievements = await achievementsService.getByEmployee(params.youtrackLogin, params.userId);
+
     return {
       youtrackLogin: params.youtrackLogin,
       displayName: employee?.displayName ?? params.youtrackLogin,
@@ -276,6 +281,7 @@ export class ReportsService {
       scoreTrend,
       lastLlmSummary,
       lastLlmConcerns,
+      achievements,
     };
   }
 
@@ -569,13 +575,17 @@ export class ReportsService {
       };
     });
 
+    // Fetch recent achievements
+    const achievementsService = new AchievementsService(this.em);
+    const recentAchievements = await achievementsService.getRecent(userId, 5);
+
     return {
       totalEmployees: uniqueLogins.size,
       avgScore,
       avgUtilization,
       scoreTrend,
       concerns,
-      recentAchievements: [],
+      recentAchievements,
       weeklyTrend,
     };
   }

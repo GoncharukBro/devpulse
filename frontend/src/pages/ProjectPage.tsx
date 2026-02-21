@@ -11,7 +11,10 @@ import ConcernsList from '@/components/metrics/ConcernsList';
 import EmployeeTable from '@/components/employees/EmployeeTable';
 import CopyButton from '@/components/shared/CopyButton';
 import PeriodFilter from '@/components/shared/PeriodFilter';
+import EmailReportModal from '@/components/shared/EmailReportModal';
 import Button from '@/components/ui/Button';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { formatMetric } from '@/utils/format';
 import { reportsApi } from '@/api/endpoints/reports';
 import type { ProjectSummaryDTO, ProjectHistoryDTO } from '@/types/reports';
 
@@ -22,6 +25,9 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [weeks, setWeeks] = useState(12);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+
+  usePageTitle(summary?.projectName ?? 'Проект');
 
   const loadSummary = useCallback(async () => {
     if (!id) return;
@@ -54,7 +60,11 @@ export default function ProjectPage() {
   if (!loading && error) {
     return (
       <>
-        <PageHeader title="Проект" description="Динамика и метрики проекта" />
+        <PageHeader
+          title="Проект"
+          description="Динамика и метрики проекта"
+          backLink={{ to: '/projects', label: 'Проекты' }}
+        />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
@@ -73,11 +83,16 @@ export default function ProjectPage() {
   if (!loading && !summary) {
     return (
       <>
-        <PageHeader title="Проект" description="Динамика и метрики проекта" />
+        <PageHeader
+          title="Проект"
+          description="Динамика и метрики проекта"
+          backLink={{ to: '/projects', label: 'Проекты' }}
+        />
         <EmptyState
           icon={FolderKanban}
-          title="Данные по проекту не найдены"
+          title="Проект не найден"
           description="Информация по проекту ещё не загружена или проект не существует"
+          action={{ label: 'Вернуться к проектам', to: '/projects' }}
         />
       </>
     );
@@ -88,11 +103,11 @@ export default function ProjectPage() {
     const lines = [
       `Проект: ${summary.projectName}`,
       '',
-      `Score: ${summary.avgScore !== null ? summary.avgScore.toFixed(1) : 'Н/Д'}`,
-      `Загрузка: ${summary.avgUtilization !== null ? summary.avgUtilization.toFixed(1) + '%' : 'Н/Д'}`,
-      `Точность оценок: ${summary.avgEstimationAccuracy !== null ? summary.avgEstimationAccuracy.toFixed(1) + '%' : 'Н/Д'}`,
-      `Закрытие: ${summary.avgCompletionRate !== null ? summary.avgCompletionRate.toFixed(1) + '%' : 'Н/Д'}`,
-      `Cycle Time: ${summary.avgCycleTimeHours !== null ? summary.avgCycleTimeHours.toFixed(1) + 'ч' : 'Н/Д'}`,
+      `Score: ${formatMetric(summary.avgScore)}`,
+      `Загрузка: ${formatMetric(summary.avgUtilization, '%')}`,
+      `Точность оценок: ${formatMetric(summary.avgEstimationAccuracy, '%')}`,
+      `Закрытие: ${formatMetric(summary.avgCompletionRate, '%')}`,
+      `Cycle Time: ${formatMetric(summary.avgCycleTimeHours, 'ч')}`,
       `Сотрудников: ${summary.totalEmployees}`,
     ];
     if (summary.aggregatedRecommendations.length) {
@@ -112,6 +127,7 @@ export default function ProjectPage() {
       <PageHeader
         title={summary?.projectName ?? 'Загрузка...'}
         description="Динамика и метрики проекта"
+        backLink={{ to: '/projects', label: 'Проекты' }}
         actions={
           summary ? (
             <div className="flex gap-2">
@@ -120,7 +136,7 @@ export default function ProjectPage() {
                 variant="secondary"
                 size="sm"
                 leftIcon={<Mail size={14} />}
-                onClick={() => toast('Функция в разработке', { icon: '📧' })}
+                onClick={() => setEmailModalOpen(true)}
               >
                 На почту
               </Button>
@@ -169,7 +185,7 @@ export default function ProjectPage() {
         {loading ? (
           <KpiCard title="" value={null} metric="score" loading />
         ) : (
-          <Card>
+          <Card className="animate-slide-up">
             <div className="text-sm text-gray-400">Сотрудников</div>
             <div className="mt-2 text-2xl font-bold text-gray-100">{summary?.totalEmployees ?? 0}</div>
           </Card>
@@ -214,13 +230,15 @@ export default function ProjectPage() {
           <ul className="mt-3 space-y-1.5">
             {summary.aggregatedRecommendations.map((rec, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
-                <span className="mt-1 text-gray-500">•</span>
+                <span className="mt-1 text-gray-500">&bull;</span>
                 {rec}
               </li>
             ))}
           </ul>
         </Card>
       )}
+
+      <EmailReportModal open={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
     </>
   );
 }

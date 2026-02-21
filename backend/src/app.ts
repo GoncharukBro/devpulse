@@ -9,6 +9,7 @@ import { collectionRoutes } from './modules/collection';
 import { reportsRoutes } from './modules/reports/reports.routes';
 import { teamsRoutes } from './modules/teams/teams.routes';
 import { settingsRoutes } from './modules/settings/settings.routes';
+import { achievementsRoutes } from './modules/achievements/achievements.routes';
 import { AppError } from './common/errors';
 import { authenticate } from './common/middleware/auth.middleware';
 
@@ -60,6 +61,7 @@ export async function buildApp(): Promise<FastifyInstance> {
       await instance.register(reportsRoutes);
       await instance.register(teamsRoutes);
       await instance.register(settingsRoutes);
+      await instance.register(achievementsRoutes);
     },
     { prefix: '/api' },
   );

@@ -2,6 +2,8 @@
  * DTO-типы отчётов (зеркало backend/src/modules/reports/reports.types.ts).
  */
 
+import type { Achievement } from '@/types/achievement';
+
 export type ScoreTrend = 'up' | 'down' | 'stable' | null;
 
 export interface LlmTaskClassification {
@@ -95,6 +97,7 @@ export interface EmployeeSummaryDTO {
   scoreTrend: ScoreTrend;
   lastLlmSummary: string | null;
   lastLlmConcerns: string[] | null;
+  achievements?: Achievement[];
 }
 
 export interface ConcernItem {
@@ -169,7 +172,7 @@ export interface OverviewDTO {
   avgUtilization: number | null;
   scoreTrend: ScoreTrend;
   concerns: OverviewConcernItem[];
-  recentAchievements: unknown[];
+  recentAchievements: Achievement[];
   weeklyTrend: Array<{
     periodStart: string;
     avgScore: number | null;

@@ -10,6 +10,7 @@ import { KeycloakTokenService } from './keycloak-token.service';
 import { LlmClient } from './llm.client';
 import { LlmWorker } from './llm.worker';
 import { LlmConfig, LlmWorkerState } from './llm.types';
+import { AchievementsGenerator } from '../achievements/achievements.generator';
 
 interface Logger {
   info(msg: string): void;
@@ -83,6 +84,12 @@ export class LlmService {
     }
 
     this.log.info(`LLM: enqueued ${reports.length} reports for analysis`);
+  }
+
+  setAchievementsGenerator(generator: AchievementsGenerator): void {
+    if (this.worker) {
+      this.worker.setAchievementsGenerator(generator);
+    }
   }
 
   getState(): LlmWorkerState {

@@ -184,9 +184,14 @@ export class YouTrackClient {
     });
   }
 
-  async getWorkItems(query: string, fields: string): Promise<YouTrackWorkItem[]> {
+  async getWorkItems(
+    startDate: string,
+    endDate: string,
+    fields: string,
+  ): Promise<YouTrackWorkItem[]> {
     return this.requestAll<YouTrackWorkItem>('GET', '/api/workItems', {
-      query,
+      startDate,
+      endDate,
       fields,
     });
   }

@@ -3,6 +3,7 @@
  */
 
 import { LlmTaskClassification } from '../../entities/metric-report.entity';
+import { AchievementDTO } from '../achievements/achievements.types';
 
 export interface EmployeeReportDTO {
   youtrackLogin: string;
@@ -92,6 +93,7 @@ export interface EmployeeSummaryDTO {
   scoreTrend: ScoreTrend;
   lastLlmSummary: string | null;
   lastLlmConcerns: string[] | null;
+  achievements?: AchievementDTO[];
 }
 
 export interface ConcernItem {
@@ -167,8 +169,7 @@ export interface OverviewDTO {
   scoreTrend: ScoreTrend;
 
   concerns: OverviewConcernItem[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  recentAchievements: any[];
+  recentAchievements: AchievementDTO[];
 
   weeklyTrend: Array<{
     periodStart: string;

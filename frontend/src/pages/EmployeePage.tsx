@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Users, Mail, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { Users, Mail, Award, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
-import PageHeader from '@/components/ui/PageHeader';
-import EmptyState from '@/components/ui/EmptyState';
 import Card from '@/components/ui/Card';
 import KpiCard from '@/components/metrics/KpiCard';
 import ScoreBadge from '@/components/metrics/ScoreBadge';
@@ -12,12 +10,19 @@ import WeeklyChart from '@/components/metrics/WeeklyChart';
 import IssuesByTypeChart from '@/components/metrics/IssuesByTypeChart';
 import SpentByTypeChart from '@/components/metrics/SpentByTypeChart';
 import LlmSummaryBlock from '@/components/employees/LlmSummaryBlock';
+import AchievementCard from '@/components/achievements/AchievementCard';
+import AchievementDetail from '@/components/achievements/AchievementDetail';
 import CopyButton from '@/components/shared/CopyButton';
 import PeriodFilter from '@/components/shared/PeriodFilter';
 import StatusBadge from '@/components/shared/StatusBadge';
+import EmailReportModal from '@/components/shared/EmailReportModal';
+import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import { getMetricLevel, LEVEL_COLORS } from '@/hooks/useMetricColor';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { reportsApi } from '@/api/endpoints/reports';
+import { achievementsApi } from '@/api/endpoints/achievements';
+import { formatDateShort, formatMetric } from '@/utils/format';
 import type {
   EmployeeSummaryDTO,
   EmployeeHistoryDTO,
@@ -25,6 +30,7 @@ import type {
   PaginatedEmployeeReports,
   EmployeeReportListItem,
 } from '@/types/reports';
+import type { Achievement } from '@/types/achievement';
 
 export default function EmployeePage() {
   const { login } = useParams<{ login: string }>();
@@ -33,12 +39,18 @@ export default function EmployeePage() {
   const [history, setHistory] = useState<EmployeeHistoryDTO | null>(null);
   const [report, setReport] = useState<EmployeeReportDTO | null>(null);
   const [reportsList, setReportsList] = useState<PaginatedEmployeeReports | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+  const [achievementDetailOpen, setAchievementDetailOpen] = useState(false);
 
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [weeks, setWeeks] = useState(12);
   const [reportsPage, setReportsPage] = useState(1);
+
+  usePageTitle(summary?.displayName ?? login ?? 'Сотрудник');
 
   // Load summary
   const loadSummary = useCallback(async () => {
@@ -96,9 +108,21 @@ export default function EmployeePage() {
     }
   }, [login, selectedProject, reportsPage]);
 
+  // Load achievements
+  const loadAchievements = useCallback(async () => {
+    if (!login) return;
+    try {
+      const result = await achievementsApi.getByEmployee(login);
+      setAchievements(result);
+    } catch {
+      // Non-critical
+    }
+  }, [login]);
+
   useEffect(() => { loadSummary(); }, [loadSummary]);
   useEffect(() => { loadHistory(); }, [loadHistory]);
   useEffect(() => { loadReportsList(); }, [loadReportsList]);
+  useEffect(() => { loadAchievements(); }, [loadAchievements]);
 
   // Auto-load the latest report when summary and project are available
   useEffect(() => {
@@ -122,7 +146,13 @@ export default function EmployeePage() {
   if (!loading && error) {
     return (
       <>
-        <PageHeader title={login ?? 'Сотрудник'} description="Профиль и метрики сотрудника" />
+        <div className="mb-8">
+          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300">
+            <ArrowLeft size={14} />
+            Проекты
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-100">{login ?? 'Сотрудник'}</h1>
+        </div>
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
@@ -141,11 +171,18 @@ export default function EmployeePage() {
   if (!loading && !summary) {
     return (
       <>
-        <PageHeader title={login ?? 'Сотрудник'} description="Профиль и метрики сотрудника" />
+        <div className="mb-8">
+          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300">
+            <ArrowLeft size={14} />
+            Проекты
+          </Link>
+          <h1 className="text-2xl font-bold text-gray-100">{login ?? 'Сотрудник'}</h1>
+        </div>
         <EmptyState
           icon={Users}
-          title="Данные по сотруднику не найдены"
+          title="Сотрудник не найден"
           description="Информация о сотруднике ещё не загружена или профиль не существует"
+          action={{ label: 'Вернуться к проектам', to: '/projects' }}
         />
       </>
     );
@@ -166,19 +203,19 @@ export default function EmployeePage() {
       : 'Все проекты';
 
     const period = report
-      ? `${formatDate(report.periodStart)} — ${formatDate(report.periodEnd)}`
+      ? `${formatDateShort(report.periodStart)} — ${formatDateShort(report.periodEnd)}`
       : '';
 
     const lines = [
       `Отчёт: ${summary.displayName}${projectName ? ` (${projectName})` : ''}`,
       period ? `Период: ${period}` : '',
       '',
-      `Score: ${displayScore !== null ? displayScore.toFixed(1) : 'Н/Д'}${displayTrend === 'up' ? ' (↑)' : displayTrend === 'down' ? ' (↓)' : ''}`,
-      `Загрузка: ${displayUtilization !== null ? displayUtilization.toFixed(1) + '%' : 'Н/Д'} | Точность оценок: ${displayEstimation !== null ? displayEstimation.toFixed(1) + '%' : 'Н/Д'} | Фокус: ${displayFocus !== null ? displayFocus.toFixed(1) + '%' : 'Н/Д'}`,
+      `Score: ${formatMetric(displayScore)}${displayTrend === 'up' ? ' (\u2191)' : displayTrend === 'down' ? ' (\u2193)' : ''}`,
+      `Загрузка: ${formatMetric(displayUtilization, '%')} | Точность оценок: ${formatMetric(displayEstimation, '%')} | Фокус: ${formatMetric(displayFocus, '%')}`,
     ];
 
     if (report) {
-      lines.push(`Закрыто: ${report.completedIssues} из ${report.totalIssues} задач | Cycle Time: ${report.avgCycleTimeHours !== null ? report.avgCycleTimeHours.toFixed(1) + 'ч' : 'Н/Д'}`);
+      lines.push(`Закрыто: ${report.completedIssues} из ${report.totalIssues} задач | Cycle Time: ${formatMetric(report.avgCycleTimeHours, 'ч')}`);
     }
 
     if (report?.llmSummary) {
@@ -205,6 +242,12 @@ export default function EmployeePage() {
 
   return (
     <>
+      {/* Back link */}
+      <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300">
+        <ArrowLeft size={14} />
+        Проекты
+      </Link>
+
       {/* Header with avatar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4">
@@ -215,7 +258,7 @@ export default function EmployeePage() {
             <h1 className="text-2xl font-bold text-gray-100">{summary?.displayName ?? 'Загрузка...'}</h1>
             <div className="mt-0.5 text-sm text-gray-400">
               {login}
-              {summary?.email && <span> • {summary.email}</span>}
+              {summary?.email && <span> &bull; {summary.email}</span>}
             </div>
             {summary && summary.projects.length > 0 && (
               <div className="mt-1 text-xs text-gray-500">
@@ -236,7 +279,7 @@ export default function EmployeePage() {
             variant="secondary"
             size="sm"
             leftIcon={<Mail size={14} />}
-            onClick={() => toast('Функция в разработке', { icon: '📧' })}
+            onClick={() => setEmailModalOpen(true)}
           >
             На почту
           </Button>
@@ -361,14 +404,14 @@ export default function EmployeePage() {
                         }`}
                       >
                         <td className="px-3 py-3 text-sm text-gray-300">
-                          {formatDate(item.periodStart)} — {formatDate(item.periodEnd)}
+                          {formatDateShort(item.periodStart)} — {formatDateShort(item.periodEnd)}
                         </td>
                         <td className="px-3 py-3 text-sm text-gray-400">{item.projectName}</td>
                         <td className={`px-3 py-3 text-sm font-medium ${scoreColors.text}`}>
-                          {item.score !== null ? item.score.toFixed(1) : 'Н/Д'}
+                          {formatMetric(item.score)}
                         </td>
                         <td className={`px-3 py-3 text-sm ${utilColors.text}`}>
-                          {item.utilization !== null ? `${item.utilization.toFixed(1)}%` : 'Н/Д'}
+                          {formatMetric(item.utilization, '%')}
                         </td>
                         <td className="px-3 py-3 text-sm text-gray-300">
                           {item.completedIssues}/{item.totalIssues}
@@ -386,7 +429,7 @@ export default function EmployeePage() {
             {reportsList.total > reportsList.limit && (
               <div className="flex items-center justify-between border-t border-surface-border px-4 py-3">
                 <span className="text-xs text-gray-500">
-                  {(reportsList.page - 1) * reportsList.limit + 1}—{Math.min(reportsList.page * reportsList.limit, reportsList.total)} из {reportsList.total}
+                  {(reportsList.page - 1) * reportsList.limit + 1}&mdash;{Math.min(reportsList.page * reportsList.limit, reportsList.total)} из {reportsList.total}
                 </span>
                 <div className="flex gap-1">
                   <button
@@ -410,21 +453,37 @@ export default function EmployeePage() {
         </div>
       )}
 
-      {/* Achievements placeholder */}
+      {/* Achievements */}
       <Card>
-        <div className="flex items-center gap-2 text-gray-400">
+        <div className="mb-3 flex items-center gap-2 text-gray-400">
           <Award size={16} />
-          <span className="text-sm font-medium">NFT-ачивки</span>
+          <span className="text-sm font-medium">Ачивки</span>
         </div>
-        <p className="mt-3 text-sm text-gray-500">Скоро появятся</p>
+        {achievements.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {achievements.map((a) => (
+              <AchievementCard
+                key={a.id}
+                achievement={a}
+                onClick={(ach) => {
+                  setSelectedAchievement(ach);
+                  setAchievementDetailOpen(true);
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">Пока нет ачивок</p>
+        )}
       </Card>
+
+      {/* Modals */}
+      <EmailReportModal open={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
+      <AchievementDetail
+        achievement={selectedAchievement}
+        open={achievementDetailOpen}
+        onClose={() => setAchievementDetailOpen(false)}
+      />
     </>
   );
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const day = d.getDate().toString().padStart(2, '0');
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  return `${day}.${month}`;
 }

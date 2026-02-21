@@ -16,10 +16,12 @@ import CollectionLogs from '@/components/collection/CollectionLogs';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
 import { collectionApi } from '@/api/endpoints/collection';
 import { useCollectionStore } from '@/stores/collection.store';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import type { Subscription } from '@/types/subscription';
 import type { CronState } from '@/types/collection';
 
 export default function CollectionPage() {
+  usePageTitle('Сбор данных');
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [cronState, setCronState] = useState<CronState | null>(null);
   const [loadingPage, setLoadingPage] = useState(true);

@@ -230,9 +230,15 @@ export class MetricsCollector {
     startStr: string,
     endStr: string,
   ): Promise<YouTrackWorkItem[]> {
-    // Используем /api/workItems с query для автора и проекта
-    const query = `author: ${login} project: {${projectShortName}} date: ${startStr} .. ${endStr}`;
-    return this.ytClient.getWorkItems(query, WORK_ITEM_FIELDS);
+    // /api/workItems принимает startDate/endDate в формате YYYY-MM-DD, query не поддерживается
+    const items = await this.ytClient.getWorkItems(startStr, endStr, WORK_ITEM_FIELDS);
+
+    // Фильтрация по автору и проекту на стороне бэкенда
+    return items.filter(
+      (wi) =>
+        wi.author.login === login &&
+        wi.issue.idReadable.startsWith(`${projectShortName}-`),
+    );
   }
 
   private resolveIssueType(issue: YouTrackIssue): string {

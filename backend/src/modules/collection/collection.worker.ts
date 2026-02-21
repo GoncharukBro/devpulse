@@ -15,6 +15,7 @@ import { FormulaScorer } from './formula-scorer';
 import { getYouTrackService } from '../youtrack/youtrack.service';
 import { formatYTDate } from '../../common/utils/week-utils';
 import { LlmService } from '../llm/llm.service';
+import { AchievementsGenerator } from '../achievements/achievements.generator';
 
 interface Logger {
   info(msg: string): void;
@@ -94,6 +95,7 @@ export class CollectionWorker {
   private shouldStop = false;
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
   private llmService: LlmService | null = null;
+  private achievementsGenerator: AchievementsGenerator | null = null;
 
   constructor(
     private orm: MikroORM<PostgreSqlDriver>,
@@ -102,6 +104,10 @@ export class CollectionWorker {
 
   setLlmService(service: LlmService): void {
     this.llmService = service;
+  }
+
+  setAchievementsGenerator(generator: AchievementsGenerator): void {
+    this.achievementsGenerator = generator;
   }
 
   async start(): Promise<void> {
@@ -329,6 +335,17 @@ export class CollectionWorker {
             type: t.type,
           })),
         });
+
+        // Generate achievements based on collected metrics
+        if (this.achievementsGenerator) {
+          try {
+            await this.achievementsGenerator.generateForReport(report.id);
+          } catch (achErr) {
+            this.log.error(
+              `Achievement generation error for ${employee.youtrackLogin}: ${(achErr as Error).message}`,
+            );
+          }
+        }
 
         processedCount++;
 

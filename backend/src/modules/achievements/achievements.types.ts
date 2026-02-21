@@ -1,0 +1,324 @@
+/**
+ * Типы и определения ачивок с пороговыми значениями.
+ */
+
+import { MetricReport } from '../../entities/metric-report.entity';
+
+export type AchievementRarity = 'common' | 'rare' | 'epic' | 'legendary';
+
+export interface AchievementCheck {
+  rarity: AchievementRarity;
+  metricValue: number;
+  description: string;
+}
+
+export interface AchievementDefinition {
+  type: string;
+  title: string;
+  description: string;
+  icon: string;
+  check: (metrics: MetricReport, history?: MetricReport[]) => AchievementCheck | null;
+}
+
+export interface AchievementDTO {
+  id: string;
+  youtrackLogin: string;
+  displayName: string;
+  subscriptionId: string;
+  projectName: string;
+  type: string;
+  title: string;
+  description: string;
+  periodStart: string;
+  rarity: string;
+  icon: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface AchievementTypeInfo {
+  type: string;
+  title: string;
+  icon: string;
+}
+
+const RARITY_ORDER: Record<AchievementRarity, number> = {
+  common: 0,
+  rare: 1,
+  epic: 2,
+  legendary: 3,
+};
+
+export function isHigherRarity(a: AchievementRarity, b: AchievementRarity): boolean {
+  return RARITY_ORDER[a] > RARITY_ORDER[b];
+}
+
+function getEffectiveScore(report: MetricReport): number | null {
+  return report.llmScore ?? report.formulaScore ?? null;
+}
+
+function minutesToHours(minutes: number): number {
+  return Math.round((minutes / 60) * 100) / 100;
+}
+
+export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
+  // === PRODUCTIVITY ===
+  {
+    type: 'speed_demon',
+    title: 'Скоростной демон',
+    icon: 'Zap',
+    description: 'Закрыл {value} задач за неделю',
+    check: (report) => {
+      const v = report.completedIssues;
+      if (v >= 25) return { rarity: 'legendary', metricValue: v, description: `Закрыл ${v} задач за неделю` };
+      if (v >= 20) return { rarity: 'epic', metricValue: v, description: `Закрыл ${v} задач за неделю` };
+      if (v >= 15) return { rarity: 'rare', metricValue: v, description: `Закрыл ${v} задач за неделю` };
+      if (v >= 10) return { rarity: 'common', metricValue: v, description: `Закрыл ${v} задач за неделю` };
+      return null;
+    },
+  },
+  {
+    type: 'task_crusher',
+    title: 'Сокрушитель задач',
+    icon: 'Flame',
+    description: 'Скорость закрытия {value}%',
+    check: (report) => {
+      const v = report.completionRate;
+      if (v == null) return null;
+      const rounded = Math.round(v);
+      if (v >= 100) return { rarity: 'legendary', metricValue: rounded, description: `Скорость закрытия ${rounded}%` };
+      if (v >= 95) return { rarity: 'epic', metricValue: rounded, description: `Скорость закрытия ${rounded}%` };
+      if (v >= 90) return { rarity: 'rare', metricValue: rounded, description: `Скорость закрытия ${rounded}%` };
+      if (v >= 80) return { rarity: 'common', metricValue: rounded, description: `Скорость закрытия ${rounded}%` };
+      return null;
+    },
+  },
+  {
+    type: 'marathon_runner',
+    title: 'Марафонец',
+    icon: 'Timer',
+    description: 'Списал {value} часов за неделю',
+    check: (report) => {
+      const hours = minutesToHours(report.totalSpentMinutes);
+      if (hours >= 50) return { rarity: 'legendary', metricValue: hours, description: `Списал ${hours} часов за неделю` };
+      if (hours >= 45) return { rarity: 'epic', metricValue: hours, description: `Списал ${hours} часов за неделю` };
+      if (hours >= 40) return { rarity: 'rare', metricValue: hours, description: `Списал ${hours} часов за неделю` };
+      if (hours >= 35) return { rarity: 'common', metricValue: hours, description: `Списал ${hours} часов за неделю` };
+      return null;
+    },
+  },
+
+  // === QUALITY ===
+  {
+    type: 'estimation_guru',
+    title: 'Гуру оценок',
+    icon: 'Target',
+    description: 'Точность оценок {value}%',
+    check: (report) => {
+      const v = report.estimationAccuracy;
+      if (v == null) return null;
+      const rounded = Math.round(v);
+      if (v >= 95) return { rarity: 'legendary', metricValue: rounded, description: `Точность оценок ${rounded}%` };
+      if (v >= 90) return { rarity: 'epic', metricValue: rounded, description: `Точность оценок ${rounded}%` };
+      if (v >= 85) return { rarity: 'rare', metricValue: rounded, description: `Точность оценок ${rounded}%` };
+      if (v >= 80) return { rarity: 'common', metricValue: rounded, description: `Точность оценок ${rounded}%` };
+      return null;
+    },
+  },
+  {
+    type: 'zero_bugs',
+    title: 'Без багов',
+    icon: 'Shield',
+    description: 'Ноль багов после релиза и на тесте',
+    check: (report) => {
+      if (report.bugsAfterRelease !== 0 || report.bugsOnTest !== 0) return null;
+      const completed = report.completedIssues;
+      if (completed < 5) return null;
+      if (completed >= 15) return { rarity: 'legendary', metricValue: completed, description: `Закрыл ${completed} задач без единого бага` };
+      if (completed >= 10) return { rarity: 'epic', metricValue: completed, description: `Закрыл ${completed} задач без единого бага` };
+      return { rarity: 'rare', metricValue: completed, description: `Закрыл ${completed} задач без единого бага` };
+    },
+  },
+  {
+    type: 'quick_closer',
+    title: 'Быстрый закрытчик',
+    icon: 'Rocket',
+    description: 'Средний Cycle Time {value} часов',
+    check: (report) => {
+      const v = report.avgCycleTimeHours;
+      if (v == null) return null;
+      const rounded = Math.round(v * 10) / 10;
+      if (v <= 24) return { rarity: 'legendary', metricValue: rounded, description: `Средний Cycle Time ${rounded} часов` };
+      if (v <= 36) return { rarity: 'epic', metricValue: rounded, description: `Средний Cycle Time ${rounded} часов` };
+      if (v <= 48) return { rarity: 'rare', metricValue: rounded, description: `Средний Cycle Time ${rounded} часов` };
+      if (v <= 72) return { rarity: 'common', metricValue: rounded, description: `Средний Cycle Time ${rounded} часов` };
+      return null;
+    },
+  },
+
+  // === FOCUS & BALANCE ===
+  {
+    type: 'focus_master',
+    title: 'Мастер фокуса',
+    icon: 'Search',
+    description: 'Фокус на продуктовой работе {value}%',
+    check: (report) => {
+      const v = report.focus;
+      if (v == null) return null;
+      const rounded = Math.round(v);
+      if (v >= 95) return { rarity: 'legendary', metricValue: rounded, description: `Фокус на продуктовой работе ${rounded}%` };
+      if (v >= 90) return { rarity: 'epic', metricValue: rounded, description: `Фокус на продуктовой работе ${rounded}%` };
+      if (v >= 85) return { rarity: 'rare', metricValue: rounded, description: `Фокус на продуктовой работе ${rounded}%` };
+      if (v >= 80) return { rarity: 'common', metricValue: rounded, description: `Фокус на продуктовой работе ${rounded}%` };
+      return null;
+    },
+  },
+  {
+    type: 'balanced_warrior',
+    title: 'Сбалансированный воин',
+    icon: 'Scale',
+    description: 'Идеальный баланс: загрузка {value}%',
+    check: (report) => {
+      const v = report.utilization;
+      if (v == null) return null;
+      const rounded = Math.round(v);
+      if (v >= 84 && v <= 86) return { rarity: 'legendary', metricValue: rounded, description: `Идеальный баланс: загрузка ${rounded}%` };
+      if (v >= 82 && v <= 88) return { rarity: 'epic', metricValue: rounded, description: `Идеальный баланс: загрузка ${rounded}%` };
+      if (v >= 80 && v <= 90) return { rarity: 'rare', metricValue: rounded, description: `Идеальный баланс: загрузка ${rounded}%` };
+      if (v >= 75 && v <= 95) return { rarity: 'common', metricValue: rounded, description: `Идеальный баланс: загрузка ${rounded}%` };
+      return null;
+    },
+  },
+
+  // === AI ===
+  {
+    type: 'ai_pioneer',
+    title: 'AI-пионер',
+    icon: 'Bot',
+    description: 'Сэкономил {value} часов с помощью ИИ',
+    check: (report) => {
+      const hours = minutesToHours(report.aiSavingMinutes);
+      if (hours >= 20) return { rarity: 'legendary', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
+      if (hours >= 10) return { rarity: 'epic', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
+      if (hours >= 5) return { rarity: 'rare', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
+      if (hours >= 2) return { rarity: 'common', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
+      return null;
+    },
+  },
+
+  // === GROWTH & STABILITY ===
+  {
+    type: 'rising_star',
+    title: 'Восходящая звезда',
+    icon: 'Star',
+    description: 'Score вырос на {value} пунктов',
+    check: (report, history) => {
+      if (!history || history.length === 0) return null;
+      const currentScore = getEffectiveScore(report);
+      const prevScore = getEffectiveScore(history[0]);
+      if (currentScore == null || prevScore == null) return null;
+      const diff = currentScore - prevScore;
+      if (diff >= 20) return { rarity: 'legendary', metricValue: diff, description: `Score вырос на ${diff} пунктов` };
+      if (diff >= 15) return { rarity: 'epic', metricValue: diff, description: `Score вырос на ${diff} пунктов` };
+      if (diff >= 10) return { rarity: 'rare', metricValue: diff, description: `Score вырос на ${diff} пунктов` };
+      if (diff >= 5) return { rarity: 'common', metricValue: diff, description: `Score вырос на ${diff} пунктов` };
+      return null;
+    },
+  },
+  {
+    type: 'consistency_king',
+    title: 'Король стабильности',
+    icon: 'Crown',
+    description: 'Score >{value} на протяжении {weeks} недель подряд',
+    check: (report, history) => {
+      if (!history || history.length === 0) return null;
+
+      const currentScore = getEffectiveScore(report);
+      if (currentScore == null) return null;
+
+      // Build array of consecutive scores (most recent first: current + history)
+      const scores: number[] = [currentScore];
+      for (const h of history) {
+        const s = getEffectiveScore(h);
+        if (s == null) break;
+        scores.push(s);
+      }
+
+      // Count consecutive weeks from start with score >= threshold
+      let consecutive80 = 0;
+      for (const s of scores) { if (s >= 80) consecutive80++; else break; }
+      let consecutive75 = 0;
+      for (const s of scores) { if (s >= 75) consecutive75++; else break; }
+      let consecutive70 = 0;
+      for (const s of scores) { if (s >= 70) consecutive70++; else break; }
+
+      if (consecutive80 >= 5) return { rarity: 'legendary', metricValue: 80, description: `Score >80 на протяжении ${consecutive80} недель подряд` };
+      if (consecutive75 >= 5) return { rarity: 'epic', metricValue: 75, description: `Score >75 на протяжении ${consecutive75} недель подряд` };
+      if (consecutive70 >= 5) return { rarity: 'rare', metricValue: 70, description: `Score >70 на протяжении ${consecutive70} недель подряд` };
+      if (consecutive70 >= 3) return { rarity: 'common', metricValue: 70, description: `Score >70 на протяжении ${consecutive70} недель подряд` };
+      return null;
+    },
+  },
+  {
+    type: 'top_performer',
+    title: 'Топ-перформер',
+    icon: 'Trophy',
+    description: 'Score {value} — отличный результат',
+    check: (report) => {
+      const score = getEffectiveScore(report);
+      if (score == null) return null;
+      if (score >= 90) return { rarity: 'legendary', metricValue: score, description: `Score ${score} — отличный результат` };
+      if (score >= 85) return { rarity: 'epic', metricValue: score, description: `Score ${score} — отличный результат` };
+      if (score >= 80) return { rarity: 'rare', metricValue: score, description: `Score ${score} — отличный результат` };
+      if (score >= 75) return { rarity: 'common', metricValue: score, description: `Score ${score} — отличный результат` };
+      return null;
+    },
+  },
+
+  // === SPECIAL ===
+  {
+    type: 'overachiever',
+    title: 'Перевыполнил план',
+    icon: 'TrendingUp',
+    description: 'Закрыл на {value}% больше задач чем обычно',
+    check: (report, history) => {
+      if (!history || history.length < 2) return null;
+      const avg = history.reduce((s, h) => s + h.completedIssues, 0) / history.length;
+      if (avg === 0) return null;
+      const ratio = report.completedIssues / avg;
+      const percent = Math.round((ratio - 1) * 100);
+      if (ratio >= 2.5) return { rarity: 'legendary', metricValue: percent, description: `Закрыл на ${percent}% больше задач чем обычно` };
+      if (ratio >= 2) return { rarity: 'epic', metricValue: percent, description: `Закрыл на ${percent}% больше задач чем обычно` };
+      if (ratio >= 1.75) return { rarity: 'rare', metricValue: percent, description: `Закрыл на ${percent}% больше задач чем обычно` };
+      if (ratio >= 1.5) return { rarity: 'common', metricValue: percent, description: `Закрыл на ${percent}% больше задач чем обычно` };
+      return null;
+    },
+  },
+  {
+    type: 'debt_slayer',
+    title: 'Истребитель техдолга',
+    icon: 'Sword',
+    description: 'Посвятил {value}% времени техдолгу',
+    check: (report) => {
+      const spentByType = report.spentByType;
+      const totalMinutes = report.totalSpentMinutes;
+      if (totalMinutes === 0) return null;
+
+      // Sum tech-debt related categories
+      const techDebtKeys = Object.keys(spentByType).filter((k) =>
+        k.toLowerCase().includes('tech') ||
+        k.toLowerCase().includes('debt') ||
+        k.toLowerCase().includes('refactor') ||
+        k.toLowerCase().includes('техдолг'),
+      );
+      const techDebtMinutes = techDebtKeys.reduce((s, k) => s + (spentByType[k] || 0), 0);
+      const percent = Math.round((techDebtMinutes / totalMinutes) * 100);
+
+      if (percent >= 50) return { rarity: 'legendary', metricValue: percent, description: `Посвятил ${percent}% времени техдолгу` };
+      if (percent >= 40) return { rarity: 'epic', metricValue: percent, description: `Посвятил ${percent}% времени техдолгу` };
+      if (percent >= 30) return { rarity: 'rare', metricValue: percent, description: `Посвятил ${percent}% времени техдолгу` };
+      if (percent >= 20) return { rarity: 'common', metricValue: percent, description: `Посвятил ${percent}% времени техдолгу` };
+      return null;
+    },
+  },
+];

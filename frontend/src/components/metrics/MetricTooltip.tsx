@@ -61,6 +61,7 @@ interface MetricTooltipProps {
 
 export default function MetricTooltip({ metric, children }: MetricTooltipProps) {
   const [visible, setVisible] = useState(false);
+  const [position, setPosition] = useState<'top' | 'bottom'>('bottom');
   const tooltipRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const data = METRIC_TOOLTIPS[metric];
@@ -68,14 +69,28 @@ export default function MetricTooltip({ metric, children }: MetricTooltipProps) 
   useEffect(() => {
     if (!visible || !tooltipRef.current || !triggerRef.current) return;
     const tooltip = tooltipRef.current;
-    const rect = tooltip.getBoundingClientRect();
-    if (rect.right > window.innerWidth) {
+    const triggerRect = triggerRef.current.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+
+    // Vertical: prefer bottom, fall back to top if not enough space below
+    if (triggerRect.bottom + tooltipRect.height + 8 > window.innerHeight) {
+      setPosition('top');
+    } else {
+      setPosition('bottom');
+    }
+
+    // Horizontal: keep within viewport
+    if (tooltipRect.right > window.innerWidth) {
       tooltip.style.left = 'auto';
       tooltip.style.right = '0';
     }
   }, [visible]);
 
   if (!data) return <>{children}</>;
+
+  const posClass = position === 'top'
+    ? 'bottom-full left-0 mb-2'
+    : 'top-full left-0 mt-2';
 
   return (
     <div
@@ -90,7 +105,7 @@ export default function MetricTooltip({ metric, children }: MetricTooltipProps) 
       {visible && (
         <div
           ref={tooltipRef}
-          className="absolute bottom-full left-0 z-50 mb-2 w-72 rounded-lg border border-surface-border bg-gray-800 p-3 shadow-xl"
+          className={`absolute z-50 w-72 rounded-lg border border-surface-border bg-gray-800 p-3 shadow-xl ${posClass}`}
         >
           <div className="mb-1.5 text-sm font-semibold text-gray-100">{data.title}</div>
           <div className="mb-2 text-xs text-gray-400">Источник: {data.source}</div>

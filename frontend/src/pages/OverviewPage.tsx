@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BarChart3, Users, TrendingUp, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BarChart3, Users, TrendingUp, Activity, Trophy } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -9,9 +10,65 @@ import WeeklyChart from '@/components/metrics/WeeklyChart';
 import ConcernsList from '@/components/metrics/ConcernsList';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
 import { reportsApi } from '@/api/endpoints/reports';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import type { OverviewDTO } from '@/types/reports';
+import type { Achievement, AchievementRarity } from '@/types/achievement';
+
+const RARITY_STYLES: Record<AchievementRarity, string> = {
+  common: 'from-gray-700 via-slate-600 to-blue-900',
+  rare: 'from-blue-800 via-indigo-700 to-purple-800',
+  epic: 'from-purple-800 via-fuchsia-700 to-pink-700',
+  legendary: 'from-amber-600 via-yellow-500 to-orange-600',
+};
+
+const RARITY_LABELS: Record<AchievementRarity, string> = {
+  common: 'Common',
+  rare: 'Rare',
+  epic: 'Epic',
+  legendary: 'Legendary',
+};
+
+const TYPE_ICONS: Record<string, string> = {
+  speed_demon: '\u26A1',
+  quality_master: '\uD83C\uDFAF',
+  focus_king: '\uD83D\uDD2D',
+  streak_star: '\uD83D\uDD25',
+  team_player: '\uD83E\uDD1D',
+  early_bird: '\uD83C\uDF05',
+  bug_hunter: '\uD83D\uDC1B',
+  overachiever: '\uD83C\uDFC6',
+};
+
+function CompactAchievementCard({ achievement, onClick }: { achievement: Achievement; onClick: () => void }) {
+  const gradient = RARITY_STYLES[achievement.rarity] ?? RARITY_STYLES.common;
+  const icon = TYPE_ICONS[achievement.type] ?? '\uD83C\uDFC5';
+  const label = RARITY_LABELS[achievement.rarity] ?? 'Common';
+
+  return (
+    <button
+      onClick={onClick}
+      className={`relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br ${gradient} p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110`}
+    >
+      <div className="flex items-start gap-2">
+        <span className="text-xl">{icon}</span>
+        <div className="min-w-0 flex-1">
+          <h4 className="truncate text-xs font-bold text-white">{achievement.title}</h4>
+          <p className="truncate text-[11px] text-white/70">
+            {achievement.displayName ?? achievement.youtrackLogin}
+            {achievement.projectName && <span className="text-white/50"> &bull; {achievement.projectName}</span>}
+          </p>
+          <span className="mt-1 inline-block rounded-full border border-white/20 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider text-white/80">
+            {label}
+          </span>
+        </div>
+      </div>
+    </button>
+  );
+}
 
 export default function OverviewPage() {
+  usePageTitle('Обзор');
+  const navigate = useNavigate();
   const [data, setData] = useState<OverviewDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -70,6 +127,8 @@ export default function OverviewPage() {
     { key: 'avgUtilization', label: 'Загрузка', color: '#10b981' },
   ];
 
+  const achievements = (data?.recentAchievements ?? []) as Achievement[];
+
   return (
     <>
       <PageHeader title="Обзор" description="Общая динамика по всем сотрудникам" />
@@ -85,7 +144,7 @@ export default function OverviewPage() {
           </>
         ) : data ? (
           <>
-            <Card>
+            <Card className="animate-slide-up">
               <div className="flex items-start justify-between">
                 <span className="text-sm text-gray-400">Всего сотрудников</span>
                 <Users size={16} className="text-gray-500" />
@@ -104,7 +163,7 @@ export default function OverviewPage() {
               suffix="%"
               metric="utilization"
             />
-            <Card>
+            <Card className="animate-slide-up">
               <div className="flex items-start justify-between">
                 <span className="text-sm text-gray-400">Тренд Score</span>
                 <Activity size={16} className="text-gray-500" />
@@ -148,13 +207,31 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* Achievements placeholder */}
-      <Card>
-        <div className="flex items-center gap-2 text-gray-400">
-          <BarChart3 size={16} />
+      {/* Recent Achievements */}
+      <Card className="min-w-0">
+        <div className="mb-3 flex items-center gap-2 text-gray-400">
+          <Trophy size={16} />
           <span className="text-sm font-medium">Последние ачивки</span>
         </div>
-        <p className="mt-3 text-sm text-gray-500">Скоро появятся</p>
+        {loading ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-700/30" />
+            ))}
+          </div>
+        ) : achievements.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {achievements.slice(0, 5).map((a) => (
+              <CompactAchievementCard
+                key={a.id}
+                achievement={a}
+                onClick={() => navigate('/achievements')}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">Ачивки появятся после сбора метрик</p>
+        )}
       </Card>
     </>
   );

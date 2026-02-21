@@ -6,6 +6,7 @@ import mikroOrmConfig from './config/mikro-orm.config';
 import { initCollectionModule } from './modules/collection';
 import { LlmService } from './modules/llm/llm.service';
 import { setLlmServiceRef } from './modules/settings/settings.routes';
+import { AchievementsGenerator } from './modules/achievements/achievements.generator';
 
 async function main(): Promise<void> {
   const orm = await MikroORM.init<PostgreSqlDriver>(mikroOrmConfig);
@@ -30,11 +31,16 @@ async function main(): Promise<void> {
   await worker.start();
   cron.start();
 
+  // Инициализация генератора ачивок
+  const achievementsGenerator = new AchievementsGenerator(orm, app.log);
+  worker.setAchievementsGenerator(achievementsGenerator);
+
   // Инициализация LLM-модуля
   const llmService = new LlmService(orm, app.log);
   try {
     await llmService.initialize();
     worker.setLlmService(llmService);
+    llmService.setAchievementsGenerator(achievementsGenerator);
     setLlmServiceRef(llmService);
   } catch (err) {
     app.log.warn(`LLM module initialization failed: ${(err as Error).message}. LLM analysis disabled.`);

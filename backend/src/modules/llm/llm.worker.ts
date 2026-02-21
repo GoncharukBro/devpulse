@@ -14,6 +14,7 @@ import { buildAnalysisPrompt } from './llm.prompt';
 import { parseLlmResponse } from './llm.parser';
 import { LlmTask, LlmWorkerState, PromptData } from './llm.types';
 import { formatYTDate } from '../../common/utils/week-utils';
+import { AchievementsGenerator } from '../achievements/achievements.generator';
 
 interface Logger {
   info(msg: string): void;
@@ -29,12 +30,17 @@ export class LlmWorker {
   private shouldStop = false;
   private processing: string | null = null;
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
+  private achievementsGenerator: AchievementsGenerator | null = null;
 
   constructor(
     private orm: MikroORM<PostgreSqlDriver>,
     private llmClient: LlmClient,
     private log: Logger,
   ) {}
+
+  setAchievementsGenerator(generator: AchievementsGenerator): void {
+    this.achievementsGenerator = generator;
+  }
 
   enqueue(task: LlmTask): void {
     this.queue.push(task);
@@ -180,6 +186,17 @@ export class LlmWorker {
     this.log.info(
       `LLM score for ${task.youtrackLogin}: ${analysis.score} (formula was ${report.formulaScore ?? 'n/a'})`,
     );
+
+    // Regenerate achievements with updated LLM score
+    if (this.achievementsGenerator) {
+      try {
+        await this.achievementsGenerator.generateForReport(task.reportId);
+      } catch (achErr) {
+        this.log.error(
+          `Achievement regeneration error for ${task.youtrackLogin}: ${(achErr as Error).message}`,
+        );
+      }
+    }
 
     this.processing = null;
     collectionState.updateLlmQueueItem(task.reportId, 'completed');
