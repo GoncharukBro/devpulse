@@ -1,0 +1,97 @@
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip as RechartsTooltip,
+  Legend,
+} from 'recharts';
+
+const TYPE_LABELS: Record<string, string> = {
+  feature: 'Фичи',
+  bugfix: 'Баги',
+  techDebt: 'Техдолг',
+  support: 'Поддержка',
+  documentation: 'Документация',
+  codeReview: 'Code Review',
+  other: 'Прочее',
+};
+
+const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#6b7280'];
+
+interface IssuesByTypeChartProps {
+  data: Record<string, number>;
+  height?: number;
+}
+
+interface TooltipPayloadItem {
+  name: string;
+  value: number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: { payload: TooltipPayloadItem }[];
+}
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
+  if (!active || !payload?.length) return null;
+  const item = payload[0].payload;
+  return (
+    <div className="rounded-lg border border-surface-border bg-gray-800 px-3 py-2 shadow-xl">
+      <span className="text-sm text-gray-100">
+        {item.name}: <span className="font-medium">{item.value}</span>
+      </span>
+    </div>
+  );
+}
+
+export default function IssuesByTypeChart({ data, height = 240 }: IssuesByTypeChartProps) {
+  const chartData = Object.entries(data)
+    .filter(([, v]) => v > 0)
+    .map(([key, value]) => ({
+      name: TYPE_LABELS[key] || key,
+      value,
+    }));
+
+  if (!chartData.length) {
+    return (
+      <div
+        className="flex items-center justify-center rounded-lg border border-dashed border-surface-border text-sm text-gray-500"
+        style={{ height }}
+      >
+        Нет данных
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <PieChart>
+        <Pie
+          data={chartData}
+          cx="50%"
+          cy="50%"
+          innerRadius={50}
+          outerRadius={80}
+          paddingAngle={3}
+          dataKey="value"
+          stroke="none"
+        >
+          {chartData.map((_, index) => (
+            <Cell key={index} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <RechartsTooltip content={<CustomTooltip />} />
+        <Legend
+          verticalAlign="bottom"
+          iconType="circle"
+          iconSize={8}
+          formatter={(value: string) => (
+            <span className="text-xs text-gray-400">{value}</span>
+          )}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  );
+}
