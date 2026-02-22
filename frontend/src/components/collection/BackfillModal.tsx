@@ -60,11 +60,11 @@ export default function BackfillModal({
         from: dateFrom,
         to: dateTo,
       });
-      toast.success(`Backfill запущен: ${result.weeksToProcess} недель`);
+      toast.success(`Восполнение запущено: ${result.weeksToProcess} недель`);
       onStarted();
       onClose();
     } catch {
-      toast.error('Не удалось запустить backfill');
+      toast.error('Не удалось запустить восполнение');
     } finally {
       setLoading(false);
     }

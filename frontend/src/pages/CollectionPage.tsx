@@ -245,7 +245,7 @@ export default function CollectionPage() {
               leftIcon={<Clock size={14} />}
               onClick={() => openBackfill()}
             >
-              Backfill
+              Восполнить пропуски
             </Button>
           </div>
 

@@ -34,7 +34,7 @@ function getTypeLabel(type: string): string {
     case 'scheduled':
       return 'cron';
     case 'backfill':
-      return 'backfill';
+      return 'восполнение';
     default:
       return type;
   }

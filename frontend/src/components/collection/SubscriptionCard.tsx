@@ -201,7 +201,7 @@ export default function SubscriptionCard({
             onClick={() => onBackfill(subscription.id)}
             disabled={!subscription.isActive || isCollecting}
           >
-            Backfill
+            Восполнить пропуски
           </Button>
         </div>
       </div>
