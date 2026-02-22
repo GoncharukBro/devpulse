@@ -4,10 +4,13 @@
 
 @layer base {
   html {
-    @apply bg-gray-950 text-gray-100 antialiased;
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  html.dark {
+    @apply bg-gray-950 text-gray-100;
   }
   body {
-    @apply min-h-screen;
+    @apply min-h-screen transition-colors duration-200;
   }
 }
 
@@ -16,12 +19,12 @@
     @apply w-2;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    @apply bg-gray-100 dark:bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-700 rounded-full;
+    @apply bg-gray-300 rounded-full dark:bg-gray-700;
   }
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-600;
+    @apply bg-gray-400 dark:bg-gray-600;
   }
 }

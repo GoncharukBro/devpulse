@@ -109,7 +109,7 @@ export default function OverviewPage() {
         <PageHeader title="Обзор" description="Общая динамика по всем сотрудникам" />
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={load}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -146,10 +146,10 @@ export default function OverviewPage() {
           <>
             <Card className="animate-slide-up">
               <div className="flex items-start justify-between">
-                <span className="text-sm text-gray-400">Всего сотрудников</span>
-                <Users size={16} className="text-gray-500" />
+                <span className="text-sm text-gray-500 dark:text-gray-400">Всего сотрудников</span>
+                <Users size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
-              <div className="mt-2 text-2xl font-bold text-gray-100">{data.totalEmployees}</div>
+              <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{data.totalEmployees}</div>
             </Card>
             <KpiCard
               title="Средний Score"
@@ -165,12 +165,12 @@ export default function OverviewPage() {
             />
             <Card className="animate-slide-up">
               <div className="flex items-start justify-between">
-                <span className="text-sm text-gray-400">Тренд Score</span>
-                <Activity size={16} className="text-gray-500" />
+                <span className="text-sm text-gray-500 dark:text-gray-400">Тренд Score</span>
+                <Activity size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
               <div className="mt-2 flex items-center gap-2">
                 <TrendIndicator trend={data.scoreTrend} className="text-2xl" />
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
                   {data.scoreTrend === 'up' ? 'Рост' : data.scoreTrend === 'down' ? 'Снижение' : 'Стабильно'}
                 </span>
               </div>
@@ -185,15 +185,15 @@ export default function OverviewPage() {
           {loading ? (
             <Card>
               <div className="animate-pulse">
-                <div className="mb-3 h-5 w-40 rounded bg-gray-700/50" />
-                <div className="h-[280px] rounded bg-gray-700/30" />
+                <div className="mb-3 h-5 w-40 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="h-[280px] rounded bg-gray-200/70 dark:bg-gray-700/30" />
               </div>
             </Card>
           ) : data ? (
             <Card>
               <div className="mb-4 flex items-center gap-2">
-                <TrendingUp size={16} className="text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-300">Динамика по неделям</h3>
+                <TrendingUp size={16} className="text-gray-500 dark:text-gray-400" />
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
               </div>
               <WeeklyChart data={data.weeklyTrend} metrics={chartMetrics} />
             </Card>
@@ -209,14 +209,14 @@ export default function OverviewPage() {
 
       {/* Recent Achievements */}
       <Card className="min-w-0">
-        <div className="mb-3 flex items-center gap-2 text-gray-400">
+        <div className="mb-3 flex items-center gap-2 text-gray-500 dark:text-gray-400">
           <Trophy size={16} />
           <span className="text-sm font-medium">Последние ачивки</span>
         </div>
         {loading ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-700/30" />
+              <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-200/70 dark:bg-gray-700/30" />
             ))}
           </div>
         ) : achievements.length > 0 ? (
@@ -230,7 +230,7 @@ export default function OverviewPage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Ачивки появятся после сбора метрик</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Ачивки появятся после сбора метрик</p>
         )}
       </Card>
     </>

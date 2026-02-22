@@ -80,45 +80,45 @@ export default function SubscriptionCard({
     : 0;
 
   return (
-    <div className="rounded-xl border border-surface-border bg-surface transition-colors hover:border-gray-600">
+    <div className="rounded-xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface transition-colors hover:border-gray-400 dark:hover:border-gray-600">
       <div className="p-5">
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <span className={`h-2.5 w-2.5 rounded-full ${statusInfo.color}`} />
-            <h3 className="text-base font-semibold text-gray-100">{subscription.projectName}</h3>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{subscription.projectName}</h3>
           </div>
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-surface-lighter hover:text-gray-200"
+              className="rounded-lg p-1.5 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-gray-700 dark:hover:text-gray-200"
             >
               <MoreVertical size={16} />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 top-full z-20 mt-1 w-52 rounded-lg border border-surface-border bg-surface-light py-1 shadow-xl">
+              <div className="absolute right-0 top-full z-20 mt-1 w-52 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light py-1 shadow-xl">
                 <button
                   onClick={() => { onEdit(subscription.id); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-surface-lighter"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
                   Редактировать сотрудников
                 </button>
                 <button
                   onClick={() => { onFieldMapping(subscription.id); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-surface-lighter"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
                   Настройка маппинга полей
                 </button>
                 <button
                   onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-surface-lighter"
+                  className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
                   {subscription.isActive ? 'Приостановить' : 'Активировать'}
                 </button>
-                <div className="my-1 border-t border-surface-border" />
+                <div className="my-1 border-t border-gray-200 dark:border-surface-border" />
                 <button
                   onClick={() => { onDelete(subscription.id); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-surface-lighter"
+                  className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
                   Удалить
                 </button>
@@ -128,27 +128,27 @@ export default function SubscriptionCard({
         </div>
 
         {/* Subtitle */}
-        <p className="mb-4 text-sm text-gray-500">
+        <p className="mb-4 text-sm text-gray-400 dark:text-gray-500">
           {subscription.youtrackInstanceName} &bull; {subscription.projectShortName}
         </p>
 
         {/* Info */}
-        <div className="mb-4 space-y-1.5 text-sm text-gray-400">
+        <div className="mb-4 space-y-1.5 text-sm text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-2">
-            <Users size={14} className="text-gray-500" />
+            <Users size={14} className="text-gray-400 dark:text-gray-500" />
             <span>{subscription.employeeCount} сотрудников</span>
           </div>
           {subscription.lastCollection && (
             <>
               <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-gray-500" />
+                <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
                 <span>Последний сбор: {formatDate(subscription.lastCollection.completedAt)}</span>
               </div>
               <div className="flex items-center gap-2">
                 {subscription.lastCollection.status === 'completed' && <CheckCircle size={14} className="text-emerald-500" />}
                 {subscription.lastCollection.status === 'partial' && <AlertTriangle size={14} className="text-amber-500" />}
                 {subscription.lastCollection.status === 'error' && <XCircle size={14} className="text-red-500" />}
-                {!['completed', 'partial', 'error'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-500" />}
+                {!['completed', 'partial', 'error'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-400 dark:text-gray-500" />}
                 <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                 <span>
                   {subscription.lastCollection.processedEmployees}/{subscription.lastCollection.totalEmployees} обработано
@@ -158,8 +158,8 @@ export default function SubscriptionCard({
           )}
           {!subscription.lastCollection && (
             <div className="flex items-center gap-2">
-              <Clock size={14} className="text-gray-500" />
-              <span className="text-gray-500">Сбор ещё не выполнялся</span>
+              <Clock size={14} className="text-gray-400 dark:text-gray-500" />
+              <span className="text-gray-400 dark:text-gray-500">Сбор ещё не выполнялся</span>
             </div>
           )}
         </div>
@@ -167,13 +167,13 @@ export default function SubscriptionCard({
         {/* Collection progress */}
         {isCollecting && activeCollection && (
           <div className="mb-4">
-            <div className="mb-1 flex items-center justify-between text-xs text-gray-400">
+            <div className="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>
                 {activeCollection.currentEmployee ?? 'Запуск...'} ({activeCollection.processedEmployees}/{activeCollection.totalEmployees})
               </span>
               <span>{progress}%</span>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-lighter">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
               <div
                 className="h-full rounded-full bg-brand-500 transition-all duration-500"
                 style={{ width: `${progress}%` }}

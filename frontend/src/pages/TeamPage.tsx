@@ -70,7 +70,7 @@ export default function TeamPage() {
         />
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={load}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -156,8 +156,8 @@ export default function TeamPage() {
           <KpiCard title="" value={null} metric="score" loading />
         ) : (
           <Card className="animate-slide-up">
-            <div className="text-sm text-gray-400">Участников</div>
-            <div className="mt-2 text-2xl font-bold text-gray-100">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Участников</div>
+            <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
               {team?.members.length ?? 0}
             </div>
           </Card>
@@ -169,19 +169,19 @@ export default function TeamPage() {
         {loading ? (
           <Card>
             <div className="animate-pulse">
-              <div className="mb-3 h-5 w-40 rounded bg-gray-700/50" />
-              <div className="h-[280px] rounded bg-gray-700/30" />
+              <div className="mb-3 h-5 w-40 rounded bg-gray-200 dark:bg-gray-700/50" />
+              <div className="h-[280px] rounded bg-gray-200/70 dark:bg-gray-700/30" />
             </div>
           </Card>
         ) : team && team.weeklyTrend.length > 0 ? (
           <Card>
-            <h3 className="mb-4 text-sm font-medium text-gray-300">Динамика Score</h3>
+            <h3 className="mb-4 text-sm font-medium text-gray-600 dark:text-gray-300">Динамика Score</h3>
             <WeeklyChart data={team.weeklyTrend} metrics={chartMetrics} />
           </Card>
         ) : (
           <Card>
-            <h3 className="mb-4 text-sm font-medium text-gray-300">Динамика Score</h3>
-            <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-surface-border text-sm text-gray-500">
+            <h3 className="mb-4 text-sm font-medium text-gray-600 dark:text-gray-300">Динамика Score</h3>
+            <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500">
               Нет данных для графика
             </div>
           </Card>
@@ -190,7 +190,7 @@ export default function TeamPage() {
 
       {/* Members Table */}
       <div className="mb-6">
-        <h3 className="mb-3 text-sm font-medium text-gray-300">Участники</h3>
+        <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Участники</h3>
         <TeamMembersList members={team?.members ?? []} loading={loading} />
       </div>
 

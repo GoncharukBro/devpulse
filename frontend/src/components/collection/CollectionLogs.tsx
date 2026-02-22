@@ -77,14 +77,14 @@ export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-gray-200">Логи сборов</h3>
+        <h3 className="text-base font-semibold text-gray-700 dark:text-gray-200">Логи сборов</h3>
         <select
           value={filterSubId}
           onChange={(e) => {
             setFilterSubId(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-surface-border bg-surface-lighter px-3 py-1.5 text-sm text-gray-300 outline-none focus:border-brand-500"
+          className="rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 outline-none focus:border-brand-500"
         >
           <option value="">Все проекты</option>
           {subscriptions.map((s) => (
@@ -100,19 +100,19 @@ export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
           <Spinner />
         </div>
       ) : !data || data.data.length === 0 ? (
-        <p className="py-8 text-center text-sm text-gray-500">Нет записей</p>
+        <p className="py-8 text-center text-sm text-gray-400 dark:text-gray-500">Нет записей</p>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-surface-border">
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-surface-border">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-surface-border bg-surface-light">
-                  <th className="px-4 py-3 font-medium text-gray-400">Проект</th>
-                  <th className="px-4 py-3 font-medium text-gray-400">Период</th>
-                  <th className="px-4 py-3 font-medium text-gray-400">Тип</th>
-                  <th className="px-4 py-3 font-medium text-gray-400">Статус</th>
-                  <th className="px-4 py-3 font-medium text-gray-400">Обраб.</th>
-                  <th className="px-4 py-3 font-medium text-gray-400">Время</th>
+                <tr className="border-b border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light">
+                  <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Проект</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Период</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Тип</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Статус</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Обраб.</th>
+                  <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Время</th>
                   <th className="w-8 px-2 py-3" />
                 </tr>
               </thead>
@@ -135,7 +135,7 @@ export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-surface-lighter disabled:opacity-30"
+                className="rounded-lg p-2 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-30"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -146,7 +146,7 @@ export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
                   className={`rounded-lg px-3 py-1 text-sm transition-colors ${
                     p === page
                       ? 'bg-brand-500 text-white'
-                      : 'text-gray-400 hover:bg-surface-lighter'
+                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter'
                   }`}
                 >
                   {p}
@@ -155,7 +155,7 @@ export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-surface-lighter disabled:opacity-30"
+                className="rounded-lg p-2 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-30"
               >
                 <ChevronRight size={16} />
               </button>
@@ -179,34 +179,34 @@ function LogRow({
   return (
     <>
       <tr
-        className="cursor-pointer border-b border-surface-border transition-colors hover:bg-surface-light/50"
+        className="cursor-pointer border-b border-gray-200 dark:border-surface-border transition-colors hover:bg-gray-50/50 dark:hover:bg-surface-light/50"
         onClick={onToggle}
       >
-        <td className="px-4 py-3 text-gray-300">{log.projectName ?? '—'}</td>
-        <td className="px-4 py-3 text-gray-400">
+        <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{log.projectName ?? '—'}</td>
+        <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
           {log.periodStart && log.periodEnd
             ? `${log.periodStart} — ${log.periodEnd}`
             : '—'}
         </td>
-        <td className="px-4 py-3 text-gray-400">{getTypeLabel(log.type)}</td>
+        <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{getTypeLabel(log.type)}</td>
         <td className="px-4 py-3">{getStatusBadge(log.status)}</td>
-        <td className="px-4 py-3 text-gray-400">
+        <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
           {log.processedEmployees}/{log.totalEmployees}
         </td>
-        <td className="px-4 py-3 text-gray-400">{log.duration ?? '—'}</td>
-        <td className="px-2 py-3 text-gray-500">
+        <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{log.duration ?? '—'}</td>
+        <td className="px-2 py-3 text-gray-400 dark:text-gray-500">
           {log.errors.length > 0 &&
             (expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
         </td>
       </tr>
       {expanded && log.errors.length > 0 && (
         <tr>
-          <td colSpan={7} className="bg-surface-light/30 px-4 py-3">
+          <td colSpan={7} className="bg-gray-50/30 dark:bg-surface-light/30 px-4 py-3">
             <div className="space-y-1">
               <span className="text-xs font-medium text-red-400">Ошибки:</span>
               {log.errors.map((err, i) => (
-                <div key={i} className="text-xs text-gray-400">
-                  <span className="text-gray-300">{err.login}</span>: {err.error}
+                <div key={i} className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-gray-600 dark:text-gray-300">{err.login}</span>: {err.error}
                 </div>
               ))}
             </div>

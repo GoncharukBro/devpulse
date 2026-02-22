@@ -51,15 +51,15 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
     <div className="space-y-6">
       {/* Task type mapping */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-300">Типы задач</label>
+        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Типы задач</label>
         <div className="space-y-2">
           {Object.entries(value.taskTypeMapping).map(([ytType, category]) => (
             <div key={ytType} className="flex items-center gap-2">
-              <span className="w-40 truncate text-sm text-gray-400">{ytType}</span>
+              <span className="w-40 truncate text-sm text-gray-500 dark:text-gray-400">{ytType}</span>
               <select
                 value={category}
                 onChange={(e) => changeCategory(ytType, e.target.value)}
-                className="rounded-lg border border-surface-border bg-surface-lighter px-3 py-1.5 text-sm text-gray-200 outline-none focus:border-brand-500"
+                className="rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
               >
                 {TASK_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -69,7 +69,7 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
               </select>
               <button
                 onClick={() => removeTaskType(ytType)}
-                className="rounded p-1 text-gray-500 hover:bg-surface-lighter hover:text-red-400"
+                className="rounded p-1 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-red-400"
               >
                 <X size={14} />
               </button>
@@ -82,7 +82,7 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
               onChange={(e) => setNewTaskType(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addTaskType()}
               placeholder="Значение YouTrack..."
-              className="w-40 rounded-lg border border-surface-border bg-surface-lighter px-3 py-1.5 text-sm text-gray-200 placeholder:text-gray-600 outline-none focus:border-brand-500"
+              className="w-40 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
             />
             <Button variant="ghost" size="sm" onClick={addTaskType} leftIcon={<Plus size={14} />}>
               Добавить
@@ -93,20 +93,20 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
 
       {/* AI saving */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-300">ИИ-Экономия</label>
+        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">ИИ-Экономия</label>
         <input
           type="text"
           value={value.aiSavingWorkType ?? ''}
           onChange={(e) => updateMapping({ aiSavingWorkType: e.target.value || null })}
           placeholder="Тип списания (например, AI Saving)"
-          className="w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 placeholder:text-gray-600 outline-none focus:border-brand-500"
+          className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
         />
-        <p className="mt-1 text-xs text-gray-600">Оставьте пустым, если метрика не используется</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-600">Оставьте пустым, если метрика не используется</p>
       </div>
 
       {/* Cycle Time statuses */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-300">Cycle Time</label>
+        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Cycle Time</label>
         <StatusTagList
           label="Начальные статусы"
           values={value.cycleTimeStartStatuses}
@@ -123,14 +123,14 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
 
       {/* Release statuses */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-300">Релизный статус</label>
+        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Релизный статус</label>
         <StatusTagList
           label="Статусы"
           values={value.releaseStatuses}
           onAdd={(s) => addStatus('releaseStatuses', s)}
           onRemove={(i) => removeStatus('releaseStatuses', i)}
         />
-        <p className="mt-1 text-xs text-gray-600">Если пусто — метрика не считается</p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-600">Если пусто — метрика не считается</p>
       </div>
     </div>
   );
@@ -158,15 +158,15 @@ function StatusTagList({
 
   return (
     <div className="mb-3">
-      <span className="mb-1 block text-xs text-gray-500">{label}</span>
+      <span className="mb-1 block text-xs text-gray-400 dark:text-gray-500">{label}</span>
       <div className="flex flex-wrap items-center gap-1.5">
         {values.map((v, i) => (
           <span
             key={v}
-            className="inline-flex items-center gap-1 rounded-md bg-surface-lighter px-2 py-1 text-xs text-gray-300"
+            className="inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-surface-lighter px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
           >
             {v}
-            <button onClick={() => onRemove(i)} className="text-gray-500 hover:text-red-400">
+            <button onClick={() => onRemove(i)} className="text-gray-400 dark:text-gray-500 hover:text-red-400">
               <X size={12} />
             </button>
           </span>
@@ -178,11 +178,11 @@ function StatusTagList({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             placeholder="Добавить..."
-            className="w-28 rounded-md border border-surface-border bg-surface-lighter px-2 py-1 text-xs text-gray-200 placeholder:text-gray-600 outline-none focus:border-brand-500"
+            className="w-28 rounded-md border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-2 py-1 text-xs text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
           />
           <button
             onClick={handleAdd}
-            className="rounded p-0.5 text-gray-500 hover:text-brand-400"
+            className="rounded p-0.5 text-gray-400 dark:text-gray-500 hover:text-brand-400"
           >
             <Plus size={14} />
           </button>

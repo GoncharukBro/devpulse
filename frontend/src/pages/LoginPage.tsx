@@ -76,13 +76,13 @@ export default function LoginPage() {
         <div className="absolute -left-40 -top-40 h-80 w-80 rounded-full bg-brand-600/20 blur-[120px]" />
         <div className="absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-brand-400/10 blur-[120px]" />
         <div className="relative z-10 w-full max-w-sm px-4">
-          <div className="rounded-2xl border border-surface-border bg-surface p-8 shadow-2xl">
+          <div className="rounded-2xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface p-8 shadow-2xl">
             <div className="mb-6 flex flex-col items-center">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/15">
                 <AlertCircle size={28} className="text-red-400" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-100">Ошибка авторизации</h2>
-              <p className="mt-2 text-center text-sm text-gray-500">{error}</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Ошибка авторизации</h2>
+              <p className="mt-2 text-center text-sm text-gray-400 dark:text-gray-500">{error}</p>
             </div>
             <Button variant="primary" size="lg" className="w-full" onClick={handleRetry}>
               Попробовать снова
@@ -100,13 +100,13 @@ export default function LoginPage() {
       <div className="absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-brand-400/10 blur-[120px]" />
 
       <div className="relative z-10 w-full max-w-sm px-4">
-        <div className="rounded-2xl border border-surface-border bg-surface p-8 shadow-2xl">
+        <div className="rounded-2xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface p-8 shadow-2xl">
           <div className="mb-8 flex flex-col items-center">
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/15 shadow-lg shadow-brand-500/10">
               <Activity size={28} className="text-brand-400" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-100">DevPulse</h1>
-            <p className="mt-1 text-sm text-gray-500">Аналитика разработки</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">DevPulse</h1>
+            <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">Аналитика разработки</p>
           </div>
 
           <Button
@@ -119,7 +119,7 @@ export default function LoginPage() {
             Войти через Keycloak
           </Button>
 
-          <p className="mt-6 text-center text-xs text-gray-600">
+          <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-600">
             Авторизация через корпоративный SSO
           </p>
         </div>

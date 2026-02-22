@@ -80,7 +80,7 @@ export default function AchievementsPage() {
         <PageHeader title="Ачивки" description="Галерея достижений сотрудников" />
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={load}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -115,10 +115,10 @@ export default function AchievementsPage() {
           {[1, 2, 3, 4].map((i) => (
             <Card key={i}>
               <div className="animate-pulse">
-                <div className="mb-3 h-8 w-8 rounded bg-gray-700/50" />
-                <div className="mb-2 h-4 w-24 rounded bg-gray-700/50" />
-                <div className="mb-2 h-3 w-16 rounded bg-gray-700/50" />
-                <div className="h-3 w-12 rounded bg-gray-700/50" />
+                <div className="mb-3 h-8 w-8 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="mb-2 h-4 w-24 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="mb-2 h-3 w-16 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="h-3 w-12 rounded bg-gray-200 dark:bg-gray-700/50" />
               </div>
             </Card>
           ))}
@@ -140,9 +140,9 @@ export default function AchievementsPage() {
           )}
 
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-surface-border bg-surface/50 px-6 py-16 text-center">
-              <Trophy size={32} className="mb-4 text-gray-500" />
-              <p className="text-sm text-gray-500">Нет ачивок по выбранным фильтрам</p>
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 dark:border-surface-border bg-white/50 dark:bg-surface/50 px-6 py-16 text-center">
+              <Trophy size={32} className="mb-4 text-gray-400 dark:text-gray-500" />
+              <p className="text-sm text-gray-400 dark:text-gray-500">Нет ачивок по выбранным фильтрам</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

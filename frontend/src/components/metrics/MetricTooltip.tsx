@@ -100,21 +100,21 @@ export default function MetricTooltip({ metric, children }: MetricTooltipProps) 
       onMouseLeave={() => setVisible(false)}
     >
       {children ?? (
-        <Info size={14} className="cursor-help text-gray-500 hover:text-gray-300 transition-colors" />
+        <Info size={14} className="cursor-help text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" />
       )}
       {visible && (
         <div
           ref={tooltipRef}
-          className={`absolute z-50 w-72 rounded-lg border border-surface-border bg-gray-800 p-3 shadow-xl ${posClass}`}
+          className={`absolute z-50 w-72 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 p-3 shadow-xl ${posClass}`}
         >
-          <div className="mb-1.5 text-sm font-semibold text-gray-100">{data.title}</div>
-          <div className="mb-2 text-xs text-gray-400">Источник: {data.source}</div>
-          <p className="mb-2 text-xs text-gray-300">{data.description}</p>
-          <div className="mb-2 rounded bg-gray-900/50 px-2 py-1.5 text-xs text-gray-300">
-            <span className="text-gray-500">Формула: </span>
+          <div className="mb-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100">{data.title}</div>
+          <div className="mb-2 text-xs text-gray-500 dark:text-gray-400">Источник: {data.source}</div>
+          <p className="mb-2 text-xs text-gray-600 dark:text-gray-300">{data.description}</p>
+          <div className="mb-2 rounded bg-gray-100 dark:bg-gray-900/50 px-2 py-1.5 text-xs text-gray-600 dark:text-gray-300">
+            <span className="text-gray-400 dark:text-gray-500">Формула: </span>
             {data.calculation}
           </div>
-          <div className="text-xs text-gray-400">{data.interpretation}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">{data.interpretation}</div>
         </div>
       )}
     </div>

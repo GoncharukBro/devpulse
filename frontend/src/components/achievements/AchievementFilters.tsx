@@ -22,7 +22,7 @@ export default function AchievementFilters({
   onProjectChange,
 }: AchievementFiltersProps) {
   const selectClass =
-    'rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500';
+    'rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500';
 
   return (
     <div className="mb-6 flex flex-wrap gap-3">

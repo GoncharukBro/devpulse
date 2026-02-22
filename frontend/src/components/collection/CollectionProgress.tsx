@@ -13,7 +13,7 @@ export default function CollectionProgressPanel({ activeCollections, queue }: Co
     <div className="mb-6 rounded-xl border border-brand-500/30 bg-brand-500/5 p-5">
       <div className="mb-4 flex items-center gap-2">
         <Loader2 size={18} className="animate-spin text-brand-400" />
-        <h3 className="text-sm font-semibold text-gray-200">Сбор метрик</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Сбор метрик</h3>
       </div>
 
       <div className="space-y-3">
@@ -25,12 +25,12 @@ export default function CollectionProgressPanel({ activeCollections, queue }: Co
           return (
             <div key={ac.id}>
               <div className="mb-1 flex items-center justify-between text-sm">
-                <span className="text-gray-300">
+                <span className="text-gray-600 dark:text-gray-300">
                   {ac.projectName}: {ac.currentEmployee ?? 'запуск...'} ({ac.processedEmployees}/{ac.totalEmployees})
                 </span>
-                <span className="text-gray-400">{progress}%</span>
+                <span className="text-gray-500 dark:text-gray-400">{progress}%</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-surface-lighter">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
                 <div
                   className="h-full rounded-full bg-brand-500 transition-all duration-500"
                   style={{ width: `${progress}%` }}
@@ -41,7 +41,7 @@ export default function CollectionProgressPanel({ activeCollections, queue }: Co
         })}
 
         {queue.length > 0 && (
-          <div className="mt-2 text-sm text-gray-500">
+          <div className="mt-2 text-sm text-gray-400 dark:text-gray-500">
             Очередь:{' '}
             {queue.map((q, i) => (
               <span key={q.subscriptionId + q.periodStart}>

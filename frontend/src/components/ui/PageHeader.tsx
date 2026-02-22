@@ -15,7 +15,7 @@ export default function PageHeader({ title, description, actions, backLink }: Pa
       {backLink && (
         <Link
           to={backLink.to}
-          className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300"
+          className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
         >
           <ArrowLeft size={14} />
           {backLink.label}
@@ -23,8 +23,8 @@ export default function PageHeader({ title, description, actions, backLink }: Pa
       )}
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-100">{title}</h1>
-          {description && <p className="mt-1 text-sm text-gray-400">{description}</p>}
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+          {description && <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{description}</p>}
         </div>
         {actions && <div className="mt-3 flex gap-3 sm:mt-0">{actions}</div>}
       </div>

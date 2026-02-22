@@ -67,7 +67,7 @@ export default function ProjectPage() {
         />
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={loadSummary}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -186,8 +186,8 @@ export default function ProjectPage() {
           <KpiCard title="" value={null} metric="score" loading />
         ) : (
           <Card className="animate-slide-up">
-            <div className="text-sm text-gray-400">Сотрудников</div>
-            <div className="mt-2 text-2xl font-bold text-gray-100">{summary?.totalEmployees ?? 0}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Сотрудников</div>
+            <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{summary?.totalEmployees ?? 0}</div>
           </Card>
         )}
       </div>
@@ -197,14 +197,14 @@ export default function ProjectPage() {
         <div className="lg:col-span-2">
           <Card>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-300">Динамика по неделям</h3>
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
               <PeriodFilter value={weeks} onChange={setWeeks} />
             </div>
             {history ? (
               <WeeklyChart data={history.weeks} metrics={chartMetrics} />
             ) : (
               <div className="flex h-[280px] items-center justify-center">
-                <div className="h-full w-full animate-pulse rounded bg-gray-700/30" />
+                <div className="h-full w-full animate-pulse rounded bg-gray-200/70 dark:bg-gray-700/30" />
               </div>
             )}
           </Card>
@@ -216,21 +216,21 @@ export default function ProjectPage() {
 
       {/* Employee Table */}
       <div className="mb-6">
-        <h3 className="mb-3 text-sm font-medium text-gray-300">Сотрудники</h3>
+        <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</h3>
         <EmployeeTable employees={summary?.employees ?? []} loading={loading} />
       </div>
 
       {/* LLM Recommendations */}
       {summary && summary.aggregatedRecommendations.length > 0 && (
         <Card>
-          <div className="flex items-center gap-2 text-gray-300">
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
             <Lightbulb size={16} className="text-blue-400" />
             <h3 className="text-sm font-medium">LLM-рекомендации по проекту</h3>
           </div>
           <ul className="mt-3 space-y-1.5">
             {summary.aggregatedRecommendations.map((rec, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
-                <span className="mt-1 text-gray-500">&bull;</span>
+              <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <span className="mt-1 text-gray-400 dark:text-gray-500">&bull;</span>
                 {rec}
               </li>
             ))}

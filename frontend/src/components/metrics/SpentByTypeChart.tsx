@@ -37,9 +37,9 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-surface-border bg-gray-800 px-3 py-2 shadow-xl">
-      <div className="text-xs text-gray-400">{label}</div>
-      <div className="text-sm font-medium text-gray-100">
+    <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 px-3 py-2 shadow-xl">
+      <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
+      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
         {payload[0].payload.value.toFixed(1)} ч
       </div>
     </div>
@@ -58,7 +58,7 @@ export default function SpentByTypeChart({ data, height = 240 }: SpentByTypeChar
   if (!chartData.length) {
     return (
       <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-surface-border text-sm text-gray-500"
+        className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500"
         style={{ height }}
       >
         Нет данных

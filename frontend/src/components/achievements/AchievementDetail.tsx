@@ -83,43 +83,43 @@ export default function AchievementDetail({ achievement, open, onClose }: Achiev
       {/* Info */}
       <div className="space-y-3">
         <div>
-          <span className="text-xs text-gray-500">Сотрудник</span>
-          <p className="text-sm text-gray-200">
+          <span className="text-xs text-gray-400 dark:text-gray-500">Сотрудник</span>
+          <p className="text-sm text-gray-700 dark:text-gray-200">
             {achievement.displayName ?? achievement.youtrackLogin}
           </p>
         </div>
 
         {achievement.projectName && (
           <div>
-            <span className="text-xs text-gray-500">Проект</span>
-            <p className="text-sm text-gray-200">{achievement.projectName}</p>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Проект</span>
+            <p className="text-sm text-gray-700 dark:text-gray-200">{achievement.projectName}</p>
           </div>
         )}
 
         <div>
-          <span className="text-xs text-gray-500">Описание</span>
-          <p className="text-sm text-gray-300">{achievement.description}</p>
+          <span className="text-xs text-gray-400 dark:text-gray-500">Описание</span>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{achievement.description}</p>
         </div>
 
         <div className="flex gap-6">
           <div>
-            <span className="text-xs text-gray-500">Период</span>
-            <p className="text-sm text-gray-200">{formatDate(achievement.periodStart)}</p>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Период</span>
+            <p className="text-sm text-gray-700 dark:text-gray-200">{formatDate(achievement.periodStart)}</p>
           </div>
           <div>
-            <span className="text-xs text-gray-500">Получена</span>
-            <p className="text-sm text-gray-200">{formatDate(achievement.createdAt)}</p>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Получена</span>
+            <p className="text-sm text-gray-700 dark:text-gray-200">{formatDate(achievement.createdAt)}</p>
           </div>
         </div>
 
         {Object.keys(achievement.metadata).length > 0 && (
           <div>
-            <span className="text-xs text-gray-500">Метрики</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Метрики</span>
             <div className="mt-1 space-y-1">
               {Object.entries(achievement.metadata).map(([key, value]) => (
                 <div key={key} className="flex justify-between text-sm">
-                  <span className="text-gray-400">{key}</span>
-                  <span className="text-gray-200">{String(value)}</span>
+                  <span className="text-gray-500 dark:text-gray-400">{key}</span>
+                  <span className="text-gray-700 dark:text-gray-200">{String(value)}</span>
                 </div>
               ))}
             </div>

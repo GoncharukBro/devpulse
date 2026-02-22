@@ -12,7 +12,7 @@ const OPTIONS = [
 
 export default function PeriodFilter({ value, onChange }: PeriodFilterProps) {
   return (
-    <div className="inline-flex rounded-lg border border-surface-border bg-surface">
+    <div className="inline-flex rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface">
       {OPTIONS.map((opt) => (
         <button
           key={opt.value}
@@ -20,7 +20,7 @@ export default function PeriodFilter({ value, onChange }: PeriodFilterProps) {
           className={`px-3 py-1.5 text-xs font-medium transition-colors ${
             value === opt.value
               ? 'bg-brand-500/20 text-brand-400'
-              : 'text-gray-400 hover:text-gray-200'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
           } ${opt.value === OPTIONS[0].value ? 'rounded-l-lg' : ''} ${
             opt.value === OPTIONS[OPTIONS.length - 1].value ? 'rounded-r-lg' : ''
           }`}

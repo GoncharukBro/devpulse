@@ -46,13 +46,13 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border border-surface-border bg-gray-800 px-3 py-2 shadow-xl">
-      <div className="mb-1 text-xs text-gray-400">{label}</div>
+    <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 px-3 py-2 shadow-xl">
+      <div className="mb-1 text-xs text-gray-500 dark:text-gray-400">{label}</div>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center gap-2 text-sm">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="text-gray-300">{entry.name}:</span>
-          <span className="font-medium text-gray-100">
+          <span className="text-gray-600 dark:text-gray-300">{entry.name}:</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">
             {entry.value !== null && entry.value !== undefined ? entry.value.toFixed(1) : 'Н/Д'}
           </span>
         </div>
@@ -70,7 +70,7 @@ export default function WeeklyChart({ data, metrics, height = 280 }: WeeklyChart
   if (!chartData.length) {
     return (
       <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-surface-border text-sm text-gray-500"
+        className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500"
         style={{ height }}
       >
         Нет данных для графика

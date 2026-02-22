@@ -5,6 +5,10 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import './index.css';
 
+// Initialize theme from localStorage before first render
+const savedTheme = localStorage.getItem('devpulse-theme') || 'dark';
+document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
@@ -13,11 +17,8 @@ createRoot(document.getElementById('root')!).render(
         position="top-right"
         toastOptions={{
           duration: 4000,
-          style: {
-            background: '#1a1a24',
-            color: '#e5e7eb',
-            border: '1px solid #2a2a3a',
-          },
+          className: '!bg-white !text-gray-900 !border !border-gray-200 dark:!bg-[#1a1a24] dark:!text-gray-200 dark:!border-[#2a2a3a]',
+          style: {},
         }}
       />
     </BrowserRouter>

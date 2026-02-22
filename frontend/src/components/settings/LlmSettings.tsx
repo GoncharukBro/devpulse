@@ -64,15 +64,15 @@ export default function LlmSettings() {
   };
 
   const inputClass =
-    'w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500';
+    'w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500';
   const inputErrorClass =
-    'w-full rounded-lg border border-red-500/50 bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-red-500';
+    'w-full rounded-lg border border-red-500/50 bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-red-500';
 
   return (
     <Card>
       <div className="mb-4 flex items-center gap-2">
         <span className="text-lg">🤖</span>
-        <h3 className="text-sm font-semibold text-gray-200">LLM (Ollama)</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">LLM (Ollama)</h3>
       </div>
 
       {loading ? (
@@ -81,13 +81,13 @@ export default function LlmSettings() {
         </div>
       ) : error ? (
         <div className="py-4 text-center">
-          <p className="mb-2 text-sm text-gray-500">Не удалось загрузить настройки LLM</p>
-          <p className="text-xs text-gray-600">Возможно, сервис LLM не настроен</p>
+          <p className="mb-2 text-sm text-gray-400 dark:text-gray-500">Не удалось загрузить настройки LLM</p>
+          <p className="text-xs text-gray-500 dark:text-gray-600">Возможно, сервис LLM не настроен</p>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-300">Модель</label>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Модель</label>
             <input
               type="text"
               value={model}
@@ -98,8 +98,8 @@ export default function LlmSettings() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-300">
-              Температура <span className="text-xs text-gray-500">(0.0 — 1.0)</span>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Температура <span className="text-xs text-gray-400 dark:text-gray-500">(0.0 — 1.0)</span>
             </label>
             <input
               type="number"
@@ -116,8 +116,8 @@ export default function LlmSettings() {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-300">
-              Rate Limit <span className="text-xs text-gray-500">(запросов/мин, 1—60)</span>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Rate Limit <span className="text-xs text-gray-400 dark:text-gray-500">(запросов/мин, 1—60)</span>
             </label>
             <input
               type="number"
@@ -138,9 +138,9 @@ export default function LlmSettings() {
               {settings && (
                 <>
                   <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
-                  <span className="text-gray-400">Подключено</span>
+                  <span className="text-gray-500 dark:text-gray-400">Подключено</span>
                   {settings.baseUrl && (
-                    <span className="text-gray-600">({settings.baseUrl})</span>
+                    <span className="text-gray-500 dark:text-gray-600">({settings.baseUrl})</span>
                   )}
                 </>
               )}

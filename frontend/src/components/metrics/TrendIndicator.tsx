@@ -8,7 +8,7 @@ interface TrendIndicatorProps {
 
 export default function TrendIndicator({ trend, value, className = '' }: TrendIndicatorProps) {
   if (!trend) {
-    return <span className={`text-gray-500 ${className}`}>—</span>;
+    return <span className={`text-gray-400 dark:text-gray-500 ${className}`}>—</span>;
   }
 
   const config = {

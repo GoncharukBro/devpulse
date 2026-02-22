@@ -104,54 +104,54 @@ export default function CreateTeamModal({ open, onClose, onCreated }: CreateTeam
     >
       <div className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-300">Название</label>
+          <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Название</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Введите название команды"
-            className="w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500"
+            className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-300">Сотрудники</label>
+          <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</label>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Поиск по имени или логину..."
-            className="mb-2 w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500"
+            className="mb-2 w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
           />
 
-          <div className="max-h-60 overflow-y-auto rounded-lg border border-surface-border">
+          <div className="max-h-60 overflow-y-auto rounded-lg border border-gray-200 dark:border-surface-border">
             {loadingEmployees ? (
               <div className="animate-pulse space-y-2 p-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-6 w-full rounded bg-gray-700/50" />
+                  <div key={i} className="h-6 w-full rounded bg-gray-200 dark:bg-gray-700/50" />
                 ))}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="px-3 py-4 text-center text-sm text-gray-500">
+              <div className="px-3 py-4 text-center text-sm text-gray-400 dark:text-gray-500">
                 {search ? 'Ничего не найдено' : 'Нет сотрудников'}
               </div>
             ) : (
               filtered.map((emp) => (
                 <label
                   key={emp.youtrackLogin}
-                  className="flex cursor-pointer items-center gap-3 px-3 py-2 transition-colors hover:bg-surface-lighter"
+                  className="flex cursor-pointer items-center gap-3 px-3 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
                   <input
                     type="checkbox"
                     checked={selected.has(emp.youtrackLogin)}
                     onChange={() => toggleEmployee(emp.youtrackLogin)}
-                    className="h-4 w-4 rounded border-gray-600 bg-surface-lighter text-brand-500 focus:ring-brand-500"
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-surface-lighter text-brand-500 focus:ring-brand-500"
                   />
                   <div className="min-w-0 flex-1">
-                    <span className="text-sm text-gray-200">{emp.displayName}</span>
-                    <span className="ml-1 text-xs text-gray-500">({emp.youtrackLogin})</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-200">{emp.displayName}</span>
+                    <span className="ml-1 text-xs text-gray-400 dark:text-gray-500">({emp.youtrackLogin})</span>
                     {emp.projects.length > 0 && (
-                      <span className="ml-2 text-xs text-gray-500">
+                      <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
                         — {emp.projects.join(', ')}
                       </span>
                     )}
@@ -162,7 +162,7 @@ export default function CreateTeamModal({ open, onClose, onCreated }: CreateTeam
           </div>
 
           {selected.size > 0 && (
-            <div className="mt-2 text-xs text-gray-400">
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               Выбрано: {selected.size}
             </div>
           )}

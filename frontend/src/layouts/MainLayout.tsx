@@ -9,15 +9,15 @@ export default function MainLayout() {
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
 
   return (
-    <div className="flex min-h-screen bg-gray-950">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
       <Sidebar />
 
       <div className={`flex-1 flex flex-col ${isMobile ? '' : 'ml-[260px]'}`}>
         {isMobile && (
-          <header className="sticky top-0 z-30 flex h-14 items-center border-b border-surface-border bg-surface px-4">
+          <header className="sticky top-0 z-30 flex h-14 items-center border-b border-gray-200 bg-white px-4 dark:border-surface-border dark:bg-surface">
             <button
               onClick={toggleSidebar}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-surface-lighter hover:text-gray-200"
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-surface-lighter dark:hover:text-gray-200"
             >
               <Menu size={20} />
             </button>

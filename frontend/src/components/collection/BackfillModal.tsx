@@ -90,11 +90,11 @@ export default function BackfillModal({
     >
       <div className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-300">Проект</label>
+          <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Проект</label>
           <select
             value={selectedId}
             onChange={(e) => setSelectedId(e.target.value)}
-            className="w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500"
+            className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
           >
             <option value="">Выберите проект</option>
             {activeSubscriptions.map((s) => (
@@ -107,30 +107,30 @@ export default function BackfillModal({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-300">Начало</label>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Начало</label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
               max={dateTo || undefined}
-              className="w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-300">Конец</label>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Конец</label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
               min={dateFrom || undefined}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full rounded-lg border border-surface-border bg-surface-lighter px-3 py-2 text-sm text-gray-200 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
             />
           </div>
         </div>
 
         {weeksEstimate > 0 && (
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Будет обработано ~{weeksEstimate} {weeksEstimate === 1 ? 'неделя' : weeksEstimate < 5 ? 'недели' : 'недель'}
           </p>
         )}

@@ -220,7 +220,7 @@ export default function EditSubscriptionModal({
             <AlertTriangle size={16} />
             Подтверждение удаления
           </div>
-          <p className="mb-3 text-sm text-gray-400">
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
             Будут удалены все данные подписки, включая собранные метрики и отчёты. Это действие необратимо.
           </p>
           <div className="flex gap-2">
@@ -237,7 +237,7 @@ export default function EditSubscriptionModal({
       {/* Current employees */}
       <div className="mb-4">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-300">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
             Текущие сотрудники ({subscription?.employees.filter((e) => e.isActive).length ?? 0})
           </span>
           <Button variant="ghost" size="sm" onClick={loadAvailableMembers} leftIcon={<Plus size={14} />}>
@@ -249,19 +249,19 @@ export default function EditSubscriptionModal({
             <div
               key={emp.id}
               className={`flex items-center justify-between rounded-lg px-3 py-2 ${
-                emp.isActive ? 'bg-surface-light' : 'bg-surface-light/50 opacity-60'
+                emp.isActive ? 'bg-gray-50 dark:bg-surface-light' : 'bg-gray-50/50 dark:bg-surface-light/50 opacity-60'
               }`}
             >
               <div>
-                <span className="text-sm text-gray-200">{emp.displayName}</span>
-                <span className="ml-2 text-xs text-gray-500">{emp.youtrackLogin}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-200">{emp.displayName}</span>
+                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">{emp.youtrackLogin}</span>
                 {!emp.isActive && (
-                  <span className="ml-2 text-xs text-gray-600">(деактивирован)</span>
+                  <span className="ml-2 text-xs text-gray-500 dark:text-gray-600">(деактивирован)</span>
                 )}
               </div>
               <button
                 onClick={() => handleRemoveEmployee(emp)}
-                className="rounded p-1 text-gray-500 hover:bg-surface-lighter hover:text-red-400"
+                className="rounded p-1 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-red-400"
                 title="Удалить"
               >
                 <UserMinus size={14} />
@@ -273,33 +273,33 @@ export default function EditSubscriptionModal({
 
       {/* Add members panel */}
       {showAddMembers && (
-        <div className="rounded-lg border border-surface-border bg-surface p-4">
+        <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface p-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-300">
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
               Добавить участников ({selectedNew.size} выбрано)
             </span>
             <button
               onClick={() => setShowAddMembers(false)}
-              className="text-gray-500 hover:text-gray-300"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
             >
               <X size={16} />
             </button>
           </div>
           {availableMembers.length === 0 ? (
-            <p className="py-4 text-center text-sm text-gray-500">Все участники уже добавлены</p>
+            <p className="py-4 text-center text-sm text-gray-400 dark:text-gray-500">Все участники уже добавлены</p>
           ) : (
             <>
               <div className="max-h-40 space-y-1 overflow-y-auto">
                 {availableMembers.map((member) => (
                   <label
                     key={member.login}
-                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-surface-lighter"
+                    className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                   >
                     <div
                       className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
                         selectedNew.has(member.login)
                           ? 'border-brand-500 bg-brand-500'
-                          : 'border-gray-600 bg-surface-lighter'
+                          : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-surface-lighter'
                       }`}
                     >
                       {selectedNew.has(member.login) && <Check size={10} className="text-white" />}
@@ -310,8 +310,8 @@ export default function EditSubscriptionModal({
                       onChange={() => toggleNew(member.login)}
                       className="hidden"
                     />
-                    <span className="text-sm text-gray-300">{member.name}</span>
-                    <span className="text-xs text-gray-500">{member.login}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">{member.name}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{member.login}</span>
                   </label>
                 ))}
               </div>

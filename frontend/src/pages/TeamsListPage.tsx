@@ -50,12 +50,12 @@ export default function TeamsListPage() {
             </Button>
           }
         />
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-surface-border bg-surface/50 px-6 py-16 text-center">
-          <div className="mb-4 rounded-full bg-surface-lighter p-4">
-            <Users size={32} className="text-gray-500" />
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 dark:border-surface-border bg-gray-50 dark:bg-surface/50 px-6 py-16 text-center">
+          <div className="mb-4 rounded-full bg-gray-100 dark:bg-surface-lighter p-4">
+            <Users size={32} className="text-gray-400 dark:text-gray-500" />
           </div>
-          <h3 className="mb-2 text-lg font-medium text-gray-300">У вас пока нет команд</h3>
-          <p className="mb-6 max-w-sm text-sm text-gray-500">
+          <h3 className="mb-2 text-lg font-medium text-gray-600 dark:text-gray-300">У вас пока нет команд</h3>
+          <p className="mb-6 max-w-sm text-sm text-gray-400 dark:text-gray-500">
             Создайте первую команду, чтобы объединить сотрудников и отслеживать показатели
           </p>
           <Button variant="primary" size="sm" onClick={() => setCreateOpen(true)}>
@@ -77,7 +77,7 @@ export default function TeamsListPage() {
         <PageHeader title="Команды" description="Ваши команды и их показатели" />
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={load}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -112,9 +112,9 @@ export default function TeamsListPage() {
           {[1, 2, 3].map((i) => (
             <Card key={i}>
               <div className="animate-pulse">
-                <div className="mb-3 h-5 w-32 rounded bg-gray-700/50" />
-                <div className="mb-2 h-8 w-16 rounded bg-gray-700/50" />
-                <div className="h-4 w-full rounded bg-gray-700/50" />
+                <div className="mb-3 h-5 w-32 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="mb-2 h-8 w-16 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-700/50" />
               </div>
             </Card>
           ))}

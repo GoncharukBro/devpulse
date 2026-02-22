@@ -72,9 +72,9 @@ export default function EmployeeTable({ employees, loading }: EmployeeTableProps
     return (
       <Card noPadding>
         <div className="animate-pulse p-4">
-          <div className="mb-3 h-4 w-40 rounded bg-gray-700/50" />
+          <div className="mb-3 h-4 w-40 rounded bg-gray-200 dark:bg-gray-700/50" />
           {[1, 2, 3].map((i) => (
-            <div key={i} className="mb-2 h-10 w-full rounded bg-gray-700/50" />
+            <div key={i} className="mb-2 h-10 w-full rounded bg-gray-200 dark:bg-gray-700/50" />
           ))}
         </div>
       </Card>
@@ -84,7 +84,7 @@ export default function EmployeeTable({ employees, loading }: EmployeeTableProps
   if (!employees.length) {
     return (
       <Card>
-        <p className="text-center text-sm text-gray-500">Нет данных по сотрудникам</p>
+        <p className="text-center text-sm text-gray-400 dark:text-gray-500">Нет данных по сотрудникам</p>
       </Card>
     );
   }
@@ -94,12 +94,12 @@ export default function EmployeeTable({ employees, loading }: EmployeeTableProps
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-surface-border">
+            <tr className="border-b border-gray-200 dark:border-surface-border">
               {COLUMNS.map((col, i) => (
                 <th
                   key={i}
                   onClick={() => handleSort(col.key)}
-                  className={`px-3 py-3 text-left text-xs font-medium uppercase text-gray-500 ${col.key ? 'cursor-pointer select-none hover:text-gray-300' : ''}`}
+                  className={`px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500 ${col.key ? 'cursor-pointer select-none hover:text-gray-600 dark:hover:text-gray-300' : ''}`}
                 >
                   <div className="flex items-center gap-1">
                     {col.label}

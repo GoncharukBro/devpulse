@@ -28,9 +28,9 @@ export default function EmployeeRow({ employee }: EmployeeRowProps) {
   return (
     <tr
       onClick={() => navigate(`/employees/${employee.youtrackLogin}`)}
-      className="cursor-pointer border-b border-surface-border transition-colors hover:bg-surface-lighter/50 last:border-b-0"
+      className="cursor-pointer border-b border-gray-200 dark:border-surface-border transition-colors hover:bg-gray-100/50 dark:hover:bg-surface-lighter/50 last:border-b-0"
     >
-      <td className="px-3 py-3 text-sm font-medium text-gray-200">
+      <td className="px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-200">
         {employee.displayName}
       </td>
       <td className="px-3 py-3">
@@ -38,7 +38,7 @@ export default function EmployeeRow({ employee }: EmployeeRowProps) {
       </td>
       <MetricCell metric="utilization" value={employee.utilization} />
       <MetricCell metric="estimationAccuracy" value={employee.estimationAccuracy} />
-      <td className="px-3 py-3 text-sm text-gray-300">
+      <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-300">
         {employee.completedIssues}/{employee.totalIssues}
       </td>
       <td className="px-3 py-3">

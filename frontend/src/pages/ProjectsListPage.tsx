@@ -25,7 +25,7 @@ function MetricRow({ label, value, metric, suffix = '%' }: { label: string; valu
   const colors = LEVEL_COLORS[level];
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-gray-500">{label}</span>
+      <span className="text-gray-400 dark:text-gray-500">{label}</span>
       <span className={colors.text}>
         {value !== null ? `${value.toFixed(1)}${suffix}` : 'Н/Д'}
       </span>
@@ -39,13 +39,13 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 
   if (loading) {
     return (
-      <Card className="cursor-pointer transition-all hover:border-gray-600">
+      <Card className="cursor-pointer transition-all hover:border-gray-400 dark:hover:border-gray-600">
         <div className="animate-pulse">
-          <div className="mb-3 h-5 w-32 rounded bg-gray-700/50" />
-          <div className="mb-2 h-12 w-16 rounded bg-gray-700/50" />
+          <div className="mb-3 h-5 w-32 rounded bg-gray-200 dark:bg-gray-700/50" />
+          <div className="mb-2 h-12 w-16 rounded bg-gray-200 dark:bg-gray-700/50" />
           <div className="space-y-2">
-            <div className="h-4 w-full rounded bg-gray-700/50" />
-            <div className="h-4 w-3/4 rounded bg-gray-700/50" />
+            <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-700/50" />
+            <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700/50" />
           </div>
         </div>
       </Card>
@@ -53,12 +53,12 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
   }
 
   return (
-    <Card className="cursor-pointer transition-all hover:border-gray-600">
+    <Card className="cursor-pointer transition-all hover:border-gray-400 dark:hover:border-gray-600">
       <div onClick={() => navigate(`/projects/${subscription.id}`)}>
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h3 className="font-semibold text-gray-100">{subscription.projectName}</h3>
-            <span className="text-xs text-gray-500">{subscription.projectShortName}</span>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{subscription.projectName}</h3>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{subscription.projectShortName}</span>
           </div>
           {summary && (
             <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 
         {summary ? (
           <>
-            <div className="mb-4 flex items-center gap-1 text-sm text-gray-400">
+            <div className="mb-4 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
               <Users size={14} />
               <span>{summary.totalEmployees} сотрудник(ов)</span>
             </div>
@@ -81,7 +81,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
             </div>
           </>
         ) : (
-          <p className="text-sm text-gray-500">Данные ещё не собраны</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Данные ещё не собраны</p>
         )}
 
         <div className="mt-4 flex items-center gap-1 text-xs font-medium text-brand-400 hover:text-brand-300">
@@ -152,7 +152,7 @@ export default function ProjectsListPage() {
         <PageHeader title="Проекты" description="Зарегистрированные проекты и их метрики" />
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={load}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -174,11 +174,11 @@ export default function ProjectsListPage() {
           {[1, 2, 3].map((i) => (
             <Card key={i}>
               <div className="animate-pulse">
-                <div className="mb-3 h-5 w-32 rounded bg-gray-700/50" />
-                <div className="mb-2 h-12 w-16 rounded bg-gray-700/50" />
+                <div className="mb-3 h-5 w-32 rounded bg-gray-200 dark:bg-gray-700/50" />
+                <div className="mb-2 h-12 w-16 rounded bg-gray-200 dark:bg-gray-700/50" />
                 <div className="space-y-2">
-                  <div className="h-4 w-full rounded bg-gray-700/50" />
-                  <div className="h-4 w-3/4 rounded bg-gray-700/50" />
+                  <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-700/50" />
+                  <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700/50" />
                 </div>
               </div>
             </Card>

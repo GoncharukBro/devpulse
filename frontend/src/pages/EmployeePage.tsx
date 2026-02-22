@@ -147,15 +147,15 @@ export default function EmployeePage() {
     return (
       <>
         <div className="mb-8">
-          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300">
+          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
             <ArrowLeft size={14} />
             Проекты
           </Link>
-          <h1 className="text-2xl font-bold text-gray-100">{login ?? 'Сотрудник'}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{login ?? 'Сотрудник'}</h1>
         </div>
         <Card>
           <div className="py-8 text-center">
-            <p className="mb-4 text-sm text-gray-400">Не удалось загрузить данные</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={loadSummary}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
@@ -172,11 +172,11 @@ export default function EmployeePage() {
     return (
       <>
         <div className="mb-8">
-          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300">
+          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
             <ArrowLeft size={14} />
             Проекты
           </Link>
-          <h1 className="text-2xl font-bold text-gray-100">{login ?? 'Сотрудник'}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{login ?? 'Сотрудник'}</h1>
         </div>
         <EmptyState
           icon={Users}
@@ -243,7 +243,7 @@ export default function EmployeePage() {
   return (
     <>
       {/* Back link */}
-      <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-gray-300">
+      <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
         <ArrowLeft size={14} />
         Проекты
       </Link>
@@ -255,13 +255,13 @@ export default function EmployeePage() {
             {initial}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-100">{summary?.displayName ?? 'Загрузка...'}</h1>
-            <div className="mt-0.5 text-sm text-gray-400">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{summary?.displayName ?? 'Загрузка...'}</h1>
+            <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
               {login}
               {summary?.email && <span> &bull; {summary.email}</span>}
             </div>
             {summary && summary.projects.length > 0 && (
-              <div className="mt-1 text-xs text-gray-500">
+              <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 Проекты: {summary.projects.map((p) => p.projectName).join(', ')}
               </div>
             )}
@@ -294,7 +294,7 @@ export default function EmployeePage() {
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
               !selectedProject
                 ? 'bg-brand-500/20 text-brand-400'
-                : 'text-gray-400 hover:bg-surface-lighter hover:text-gray-200'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-gray-700 dark:hover:text-gray-200'
             }`}
           >
             Все проекты
@@ -306,7 +306,7 @@ export default function EmployeePage() {
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 selectedProject === p.subscriptionId
                   ? 'bg-brand-500/20 text-brand-400'
-                  : 'text-gray-400 hover:bg-surface-lighter hover:text-gray-200'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               {p.projectShortName}
@@ -330,14 +330,14 @@ export default function EmployeePage() {
         <div className="lg:col-span-2">
           <Card>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-300">Динамика по неделям</h3>
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
               <PeriodFilter value={weeks} onChange={setWeeks} />
             </div>
             {history ? (
               <WeeklyChart data={history.weeks} metrics={chartMetrics} />
             ) : (
               <div className="flex h-[280px] items-center justify-center">
-                <div className="h-full w-full animate-pulse rounded bg-gray-700/30" />
+                <div className="h-full w-full animate-pulse rounded bg-gray-200/70 dark:bg-gray-700/30" />
               </div>
             )}
           </Card>
@@ -358,11 +358,11 @@ export default function EmployeePage() {
       {report && (
         <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Card>
-            <h3 className="mb-3 text-sm font-medium text-gray-300">Разбивка по типам задач</h3>
+            <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Разбивка по типам задач</h3>
             <IssuesByTypeChart data={report.issuesByType} />
           </Card>
           <Card>
-            <h3 className="mb-3 text-sm font-medium text-gray-300">Списание по типам</h3>
+            <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Списание по типам</h3>
             <SpentByTypeChart data={report.spentByType} />
           </Card>
         </div>
@@ -371,18 +371,18 @@ export default function EmployeePage() {
       {/* Reports history table */}
       {reportsList && reportsList.data.length > 0 && (
         <div className="mb-6">
-          <h3 className="mb-3 text-sm font-medium text-gray-300">История отчётов</h3>
+          <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">История отчётов</h3>
           <Card noPadding>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-surface-border">
-                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">Период</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">Проект</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">Score</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">Загрузка</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">Закрыто</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-500">Статус</th>
+                  <tr className="border-b border-gray-200 dark:border-surface-border">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Период</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Проект</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Score</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Загрузка</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Закрыто</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase text-gray-400 dark:text-gray-500">Статус</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -399,21 +399,21 @@ export default function EmployeePage() {
                       <tr
                         key={i}
                         onClick={() => handleReportRowClick(item)}
-                        className={`cursor-pointer border-b border-surface-border transition-colors last:border-b-0 ${
-                          isActive ? 'bg-brand-500/5' : 'hover:bg-surface-lighter/50'
+                        className={`cursor-pointer border-b border-gray-200 dark:border-surface-border transition-colors last:border-b-0 ${
+                          isActive ? 'bg-brand-500/5' : 'hover:bg-gray-100/50 dark:hover:bg-surface-lighter/50'
                         }`}
                       >
-                        <td className="px-3 py-3 text-sm text-gray-300">
+                        <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-300">
                           {formatDateShort(item.periodStart)} — {formatDateShort(item.periodEnd)}
                         </td>
-                        <td className="px-3 py-3 text-sm text-gray-400">{item.projectName}</td>
+                        <td className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400">{item.projectName}</td>
                         <td className={`px-3 py-3 text-sm font-medium ${scoreColors.text}`}>
                           {formatMetric(item.score)}
                         </td>
                         <td className={`px-3 py-3 text-sm ${utilColors.text}`}>
                           {formatMetric(item.utilization, '%')}
                         </td>
-                        <td className="px-3 py-3 text-sm text-gray-300">
+                        <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-300">
                           {item.completedIssues}/{item.totalIssues}
                         </td>
                         <td className="px-3 py-3">
@@ -427,22 +427,22 @@ export default function EmployeePage() {
             </div>
             {/* Pagination */}
             {reportsList.total > reportsList.limit && (
-              <div className="flex items-center justify-between border-t border-surface-border px-4 py-3">
-                <span className="text-xs text-gray-500">
+              <div className="flex items-center justify-between border-t border-gray-200 dark:border-surface-border px-4 py-3">
+                <span className="text-xs text-gray-400 dark:text-gray-500">
                   {(reportsList.page - 1) * reportsList.limit + 1}&mdash;{Math.min(reportsList.page * reportsList.limit, reportsList.total)} из {reportsList.total}
                 </span>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setReportsPage((p) => Math.max(1, p - 1))}
                     disabled={reportsList.page <= 1}
-                    className="rounded p-1 text-gray-400 hover:bg-surface-lighter disabled:opacity-30"
+                    className="rounded p-1 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-30"
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button
                     onClick={() => setReportsPage((p) => p + 1)}
                     disabled={reportsList.page * reportsList.limit >= reportsList.total}
-                    className="rounded p-1 text-gray-400 hover:bg-surface-lighter disabled:opacity-30"
+                    className="rounded p-1 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-30"
                   >
                     <ChevronRight size={16} />
                   </button>
@@ -455,7 +455,7 @@ export default function EmployeePage() {
 
       {/* Achievements */}
       <Card>
-        <div className="mb-3 flex items-center gap-2 text-gray-400">
+        <div className="mb-3 flex items-center gap-2 text-gray-500 dark:text-gray-400">
           <Award size={16} />
           <span className="text-sm font-medium">Ачивки</span>
         </div>
@@ -473,7 +473,7 @@ export default function EmployeePage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Пока нет ачивок</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Пока нет ачивок</p>
         )}
       </Card>
 

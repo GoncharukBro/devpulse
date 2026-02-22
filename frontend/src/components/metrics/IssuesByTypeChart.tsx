@@ -38,8 +38,8 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   const item = payload[0].payload;
   return (
-    <div className="rounded-lg border border-surface-border bg-gray-800 px-3 py-2 shadow-xl">
-      <span className="text-sm text-gray-100">
+    <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 px-3 py-2 shadow-xl">
+      <span className="text-sm text-gray-900 dark:text-gray-100">
         {item.name}: <span className="font-medium">{item.value}</span>
       </span>
     </div>
@@ -57,7 +57,7 @@ export default function IssuesByTypeChart({ data, height = 240 }: IssuesByTypeCh
   if (!chartData.length) {
     return (
       <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-surface-border text-sm text-gray-500"
+        className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500"
         style={{ height }}
       >
         Нет данных
@@ -88,7 +88,7 @@ export default function IssuesByTypeChart({ data, height = 240 }: IssuesByTypeCh
           iconType="circle"
           iconSize={8}
           formatter={(value: string) => (
-            <span className="text-xs text-gray-400">{value}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{value}</span>
           )}
         />
       </PieChart>

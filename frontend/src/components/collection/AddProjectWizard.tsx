@@ -225,7 +225,7 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
       case 0:
         return (
           <div className="space-y-3">
-            <p className="mb-4 text-sm text-gray-400">Выберите инстанс YouTrack</p>
+            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Выберите инстанс YouTrack</p>
             {instances.map((inst) => (
               <button
                 key={inst.id}
@@ -233,11 +233,11 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
                 className={`w-full rounded-lg border p-4 text-left transition-colors ${
                   selectedInstance?.id === inst.id
                     ? 'border-brand-500 bg-brand-500/10'
-                    : 'border-surface-border bg-surface-light hover:border-gray-600'
+                    : 'border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light hover:border-gray-400 dark:hover:border-gray-600'
                 }`}
               >
-                <div className="font-medium text-gray-200">{inst.name}</div>
-                <div className="mt-1 text-xs text-gray-500">{inst.url}</div>
+                <div className="font-medium text-gray-700 dark:text-gray-200">{inst.name}</div>
+                <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">{inst.url}</div>
               </button>
             ))}
           </div>
@@ -246,14 +246,14 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
       case 1:
         return (
           <div>
-            <div className="mb-4 flex items-center gap-2 rounded-lg border border-surface-border bg-surface-lighter px-3 py-2">
-              <Search size={16} className="text-gray-500" />
+            <div className="mb-4 flex items-center gap-2 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2">
+              <Search size={16} className="text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 value={projectSearch}
                 onChange={(e) => setProjectSearch(e.target.value)}
                 placeholder="Поиск проекта..."
-                className="flex-1 bg-transparent text-sm text-gray-200 placeholder:text-gray-600 outline-none"
+                className="flex-1 bg-transparent text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none"
               />
             </div>
             <div className="max-h-72 space-y-2 overflow-y-auto">
@@ -264,24 +264,24 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
                   className={`w-full rounded-lg border p-3 text-left transition-colors ${
                     selectedProject?.id === proj.id
                       ? 'border-brand-500 bg-brand-500/10'
-                      : 'border-surface-border bg-surface-light hover:border-gray-600'
+                      : 'border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light hover:border-gray-400 dark:hover:border-gray-600'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <FolderOpen size={14} className="text-gray-500" />
-                    <span className="font-medium text-gray-200">{proj.name}</span>
-                    <span className="text-xs text-gray-500">{proj.shortName}</span>
+                    <FolderOpen size={14} className="text-gray-400 dark:text-gray-500" />
+                    <span className="font-medium text-gray-700 dark:text-gray-200">{proj.name}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{proj.shortName}</span>
                   </div>
                   {proj.description && (
-                    <div className="mt-1 line-clamp-1 text-xs text-gray-500">{proj.description}</div>
+                    <div className="mt-1 line-clamp-1 text-xs text-gray-400 dark:text-gray-500">{proj.description}</div>
                   )}
                   {proj.leader && (
-                    <div className="mt-1 text-xs text-gray-600">Руководитель: {proj.leader.name}</div>
+                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-600">Руководитель: {proj.leader.name}</div>
                   )}
                 </button>
               ))}
               {filteredProjects.length === 0 && (
-                <p className="py-8 text-center text-sm text-gray-500">Проекты не найдены</p>
+                <p className="py-8 text-center text-sm text-gray-400 dark:text-gray-500">Проекты не найдены</p>
               )}
             </div>
           </div>
@@ -291,7 +291,7 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
         return (
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Выбрано: {selectedMembers.size} из {members.length}
               </p>
               <div className="flex gap-2">
@@ -307,13 +307,13 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
               {members.map((member) => (
                 <label
                   key={member.login}
-                  className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-lighter"
+                  className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
                   <div
                     className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
                       selectedMembers.has(member.login)
                         ? 'border-brand-500 bg-brand-500'
-                        : 'border-gray-600 bg-surface-lighter'
+                        : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-surface-lighter'
                     }`}
                   >
                     {selectedMembers.has(member.login) && <Check size={12} className="text-white" />}
@@ -325,8 +325,8 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
                     className="hidden"
                   />
                   <div className="flex-1">
-                    <div className="text-sm text-gray-200">{member.name}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-sm text-gray-700 dark:text-gray-200">{member.name}</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500">
                       {member.login}
                       {member.email && ` • ${member.email}`}
                     </div>
@@ -346,15 +346,15 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
                   className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
                     useCustomMapping
                       ? 'border-brand-500 bg-brand-500'
-                      : 'border-gray-600 bg-surface-lighter'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-surface-lighter'
                   }`}
                   onClick={() => setUseCustomMapping(!useCustomMapping)}
                 >
                   {useCustomMapping && <Check size={12} className="text-white" />}
                 </div>
-                <span className="text-sm text-gray-300">Настроить маппинг полей</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">Настроить маппинг полей</span>
               </label>
-              <p className="ml-8 mt-1 text-xs text-gray-500">
+              <p className="ml-8 mt-1 text-xs text-gray-400 dark:text-gray-500">
                 По умолчанию используется стандартный маппинг
               </p>
             </div>
@@ -367,37 +367,37 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
       case 4:
         return (
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-300">Подтверждение</h3>
-            <div className="space-y-3 rounded-lg border border-surface-border bg-surface-light p-4">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Подтверждение</h3>
+            <div className="space-y-3 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light p-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Инстанс</span>
-                <span className="text-gray-200">{selectedInstance?.name}</span>
+                <span className="text-gray-400 dark:text-gray-500">Инстанс</span>
+                <span className="text-gray-700 dark:text-gray-200">{selectedInstance?.name}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Проект</span>
-                <span className="text-gray-200">
+                <span className="text-gray-400 dark:text-gray-500">Проект</span>
+                <span className="text-gray-700 dark:text-gray-200">
                   {selectedProject?.name} ({selectedProject?.shortName})
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Сотрудники</span>
-                <span className="text-gray-200">{selectedMembers.size}</span>
+                <span className="text-gray-400 dark:text-gray-500">Сотрудники</span>
+                <span className="text-gray-700 dark:text-gray-200">{selectedMembers.size}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Маппинг полей</span>
-                <span className="text-gray-200">{useCustomMapping ? 'Кастомный' : 'По умолчанию'}</span>
+                <span className="text-gray-400 dark:text-gray-500">Маппинг полей</span>
+                <span className="text-gray-700 dark:text-gray-200">{useCustomMapping ? 'Кастомный' : 'По умолчанию'}</span>
               </div>
             </div>
             {selectedMembers.size > 0 && (
               <div>
-                <p className="mb-2 text-xs text-gray-500">Выбранные сотрудники:</p>
+                <p className="mb-2 text-xs text-gray-400 dark:text-gray-500">Выбранные сотрудники:</p>
                 <div className="flex flex-wrap gap-1.5">
                   {members
                     .filter((m) => selectedMembers.has(m.login))
                     .map((m) => (
                       <span
                         key={m.login}
-                        className="rounded-md bg-surface-lighter px-2 py-1 text-xs text-gray-300"
+                        className="rounded-md bg-gray-100 dark:bg-surface-lighter px-2 py-1 text-xs text-gray-600 dark:text-gray-300"
                       >
                         {m.name}
                       </span>
@@ -430,11 +430,11 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
               <div
                 key={i}
                 className={`h-1.5 w-8 rounded-full transition-colors ${
-                  i < displayStep ? 'bg-brand-500' : 'bg-surface-lighter'
+                  i < displayStep ? 'bg-brand-500' : 'bg-gray-100 dark:bg-surface-lighter'
                 }`}
               />
             ))}
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">
               {displayStep} / {totalSteps}
             </span>
           </div>
@@ -464,7 +464,7 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
       }
     >
       <div className="mb-4">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
           <Users size={14} />
           <span>{STEPS[step]}</span>
         </div>
