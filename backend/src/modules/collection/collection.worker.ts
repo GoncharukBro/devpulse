@@ -173,20 +173,22 @@ export class CollectionWorker {
 
     if (!subscription) {
       this.log.warn(`Subscription ${task.subscriptionId} not found, skipping task`);
+      collectionState.removeProgress(task.logId);
       return;
     }
 
-    const log = createCollectionLog(
-      em,
-      subscription,
-      task.type,
-      'running',
-      task.periodStart,
-      task.periodEnd,
-    );
+    // Reuse the existing CollectionLog created by triggerCollection/triggerScheduledCollection
+    const log = await em.findOne(CollectionLog, { id: task.logId });
+    if (!log) {
+      this.log.warn(`CollectionLog ${task.logId} not found, skipping task`);
+      collectionState.removeProgress(task.logId);
+      return;
+    }
+
+    log.status = 'running';
     await em.flush();
 
-    const logId = log.id;
+    const logId = task.logId;
 
     this.log.info(
       `Collection started: ${subscription.projectName}, period ${startStr}..${endStr}`,
@@ -393,15 +395,7 @@ export class CollectionWorker {
 
     const finalStatus = collectionLog.status;
 
-    collectionState.updateProgress(logId, {
-      status: finalStatus === 'error' ? 'error' : 'completed',
-      currentEmployee: undefined,
-    });
-
-    // Remove from activeCollections after delay so frontend sees completed status
-    setTimeout(() => {
-      collectionState.removeProgress(logId);
-    }, 30_000);
+    collectionState.removeProgress(logId);
 
     this.log.info(
       `Collection ${finalStatus}: ${subscription.projectName}, ${processedCount}/${activeEmployees.length} employees, ${durationStr}`,
@@ -431,13 +425,7 @@ export class CollectionWorker {
         `Recovering interrupted collection: ${log.subscription.projectName}, period ${formatYTDate(log.periodStart)}..${formatYTDate(log.periodEnd)}`,
       );
 
-      collectionState.addToQueue({
-        subscriptionId: log.subscription.id,
-        periodStart: log.periodStart,
-        periodEnd: log.periodEnd,
-        type: log.type as 'scheduled' | 'manual' | 'backfill',
-      });
-
+      // Mark old log as error
       log.status = 'error';
       log.errors = [...log.errors, {
         login: '',
@@ -445,6 +433,36 @@ export class CollectionWorker {
         timestamp: new Date().toISOString(),
       }];
       log.completedAt = new Date();
+
+      // Create a new log for the re-queued task
+      const newLog = createCollectionLog(
+        em,
+        log.subscription,
+        log.type,
+        'queued',
+        log.periodStart,
+        log.periodEnd,
+      );
+      await em.flush();
+
+      collectionState.addToQueue({
+        subscriptionId: log.subscription.id,
+        logId: newLog.id,
+        periodStart: log.periodStart,
+        periodEnd: log.periodEnd,
+        type: log.type as 'scheduled' | 'manual' | 'backfill',
+      });
+
+      collectionState.updateProgress(newLog.id, {
+        subscriptionId: log.subscription.id,
+        projectName: log.subscription.projectName,
+        status: 'queued',
+        processedEmployees: 0,
+        totalEmployees: 0,
+        periodStart: formatYTDate(log.periodStart),
+        periodEnd: formatYTDate(log.periodEnd),
+        startedAt: new Date().toISOString(),
+      });
     }
 
     await em.flush();

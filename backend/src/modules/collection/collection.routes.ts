@@ -34,7 +34,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
   app.post<{ Body: TriggerBody }>('/collection/trigger', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { subscriptionId, periodStart, periodEnd } = request.body;
+    const { subscriptionId, periodStart, periodEnd } = request.body ?? {};
 
     if (!subscriptionId) {
       reply.status(400).send({ message: 'subscriptionId is required' });
@@ -62,7 +62,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
   app.post<{ Body: TriggerAllBody }>('/collection/trigger-all', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { periodStart, periodEnd } = request.body;
+    const { periodStart, periodEnd } = request.body ?? {};
 
     const start = periodStart ? new Date(periodStart) : undefined;
     const end = periodEnd ? new Date(periodEnd) : undefined;
@@ -83,7 +83,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
   app.post<{ Body: BackfillBody }>('/collection/backfill', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { subscriptionId, from, to } = request.body;
+    const { subscriptionId, from, to } = request.body ?? {};
 
     if (!subscriptionId || !from || !to) {
       reply.status(400).send({ message: 'subscriptionId, from, and to are required' });

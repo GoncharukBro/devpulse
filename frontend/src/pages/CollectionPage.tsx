@@ -6,7 +6,6 @@ import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import SubscriptionCard from '@/components/collection/SubscriptionCard';
-import CollectionProgressPanel from '@/components/collection/CollectionProgress';
 import LlmQueueIndicator from '@/components/collection/LlmQueueIndicator';
 import CronControl from '@/components/collection/CronControl';
 import AddProjectWizard from '@/components/collection/AddProjectWizard';
@@ -188,14 +187,6 @@ export default function CollectionPage() {
           <LlmQueueIndicator items={collectionState.llmQueue} />
         )}
       </div>
-
-      {/* Collection progress */}
-      {collectionState && (
-        <CollectionProgressPanel
-          activeCollections={collectionState.activeCollections}
-          queue={collectionState.queue}
-        />
-      )}
 
       {!hasSubscriptions ? (
         <EmptyState

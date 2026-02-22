@@ -18,6 +18,7 @@ export interface CollectionProgress {
 
 export interface QueueTask {
   subscriptionId: string;
+  logId: string;
   periodStart: Date;
   periodEnd: Date;
   type: 'scheduled' | 'manual' | 'backfill';

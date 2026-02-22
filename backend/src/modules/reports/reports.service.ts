@@ -776,14 +776,14 @@ export class ReportsService {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
-            reason: `Score drop: ${prevScore} → ${currentScore}`,
+            reason: `Падение score: ${prevScore} → ${currentScore}`,
             severity: 'danger',
           });
         } else if (drop > 5) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
-            reason: `Score drop: ${prevScore} → ${currentScore}`,
+            reason: `Падение score: ${prevScore} → ${currentScore}`,
             severity: 'warning',
           });
         }
@@ -795,21 +795,21 @@ export class ReportsService {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
-            reason: `High utilization (${Math.round(r.utilization)}%)`,
+            reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'danger',
           });
         } else if (r.utilization > 110) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
-            reason: `High utilization (${Math.round(r.utilization)}%)`,
+            reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'warning',
           });
         } else if (r.utilization < 40) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
-            reason: `Low utilization (${Math.round(r.utilization)}%)`,
+            reason: `Низкая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'warning',
           });
         }
@@ -820,7 +820,7 @@ export class ReportsService {
         concerns.push({
           youtrackLogin: r.youtrackLogin,
           displayName,
-          reason: 'LLM concerns detected',
+          reason: 'Замечания от LLM',
           severity: 'warning',
         });
       }
@@ -830,7 +830,7 @@ export class ReportsService {
         concerns.push({
           youtrackLogin: r.youtrackLogin,
           displayName,
-          reason: `Low estimation accuracy (${Math.round(r.estimationAccuracy)}%)`,
+          reason: `Низкая точность оценок (${Math.round(r.estimationAccuracy)}%)`,
           severity: 'warning',
         });
       }
@@ -867,7 +867,7 @@ export class ReportsService {
             youtrackLogin: r.youtrackLogin,
             displayName,
             projectName,
-            reason: `Score drop: ${prevScore} → ${currentScore}`,
+            reason: `Падение score: ${prevScore} → ${currentScore}`,
             severity: 'danger',
           });
         } else if (drop > 5) {
@@ -875,7 +875,7 @@ export class ReportsService {
             youtrackLogin: r.youtrackLogin,
             displayName,
             projectName,
-            reason: `Score drop: ${prevScore} → ${currentScore}`,
+            reason: `Падение score: ${prevScore} → ${currentScore}`,
             severity: 'warning',
           });
         }
@@ -887,7 +887,7 @@ export class ReportsService {
             youtrackLogin: r.youtrackLogin,
             displayName,
             projectName,
-            reason: `High utilization (${Math.round(r.utilization)}%)`,
+            reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'danger',
           });
         } else if (r.utilization > 110) {
@@ -895,7 +895,7 @@ export class ReportsService {
             youtrackLogin: r.youtrackLogin,
             displayName,
             projectName,
-            reason: `High utilization (${Math.round(r.utilization)}%)`,
+            reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'warning',
           });
         } else if (r.utilization < 40) {
@@ -903,7 +903,7 @@ export class ReportsService {
             youtrackLogin: r.youtrackLogin,
             displayName,
             projectName,
-            reason: `Low utilization (${Math.round(r.utilization)}%)`,
+            reason: `Низкая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'warning',
           });
         }
@@ -914,7 +914,7 @@ export class ReportsService {
           youtrackLogin: r.youtrackLogin,
           displayName,
           projectName,
-          reason: 'LLM concerns detected',
+          reason: 'Замечания от LLM',
           severity: 'warning',
         });
       }
@@ -924,7 +924,7 @@ export class ReportsService {
           youtrackLogin: r.youtrackLogin,
           displayName,
           projectName,
-          reason: `Low estimation accuracy (${Math.round(r.estimationAccuracy)}%)`,
+          reason: `Низкая точность оценок (${Math.round(r.estimationAccuracy)}%)`,
           severity: 'warning',
         });
       }

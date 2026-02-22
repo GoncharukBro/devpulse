@@ -91,6 +91,17 @@ export class CollectionService {
 
     const period = this.resolvePeriod(periodStart, periodEnd);
 
+    // Check if a collection is already running or queued for this subscription+period
+    const existingLog = await this.em.findOne(CollectionLog, {
+      subscription,
+      periodStart: period.start,
+      periodEnd: period.end,
+      status: { $in: ['queued', 'running', 'collecting'] },
+    });
+    if (existingLog) {
+      return existingLog.id;
+    }
+
     const log = createCollectionLog(
       this.em,
       subscription,
@@ -103,6 +114,7 @@ export class CollectionService {
 
     collectionState.addToQueue({
       subscriptionId: subscription.id,
+      logId: log.id,
       periodStart: period.start,
       periodEnd: period.end,
       type,
@@ -224,6 +236,7 @@ export class CollectionService {
 
       collectionState.addToQueue({
         subscriptionId: sub.id,
+        logId: log.id,
         periodStart,
         periodEnd,
         type: 'scheduled',
