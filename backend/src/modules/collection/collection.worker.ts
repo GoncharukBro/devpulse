@@ -308,14 +308,14 @@ export class CollectionWorker {
         report.aiSavingMinutes = rawMetrics.aiSavingMinutes;
 
         // KPI
-        report.utilization = kpi.utilization ?? undefined;
+        report.utilization = kpi.utilization;
         report.estimationAccuracy = kpi.estimationAccuracy ?? undefined;
         report.focus = kpi.focus ?? undefined;
         report.avgComplexityHours = kpi.avgComplexityHours ?? undefined;
         report.completionRate = kpi.completionRate ?? undefined;
 
         // Formula score
-        report.formulaScore = formulaScore;
+        report.formulaScore = formulaScore ?? undefined;
 
         // Status
         report.status = 'collected';

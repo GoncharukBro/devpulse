@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card';
 import KpiCard from '@/components/metrics/KpiCard';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
 import ConcernsList from '@/components/metrics/ConcernsList';
+import InfoTooltip from '@/components/metrics/InfoTooltip';
 import EmployeeTable from '@/components/employees/EmployeeTable';
 import CopyButton from '@/components/shared/CopyButton';
 import PeriodFilter from '@/components/shared/PeriodFilter';
@@ -197,7 +198,17 @@ export default function ProjectPage() {
         <div className="lg:col-span-2">
           <Card>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+                <InfoTooltip
+                  title="Динамика по неделям"
+                  lines={[
+                    'График изменения среднего Score и загрузки по проекту за каждую неделю.',
+                    'Фиолетовая линия — средний Score за неделю.\nЗелёная линия — средняя загрузка.',
+                    'Позволяет отследить тренд продуктивности команды проекта.',
+                  ]}
+                />
+              </div>
               <PeriodFilter value={weeks} onChange={setWeeks} />
             </div>
             {history ? (
@@ -216,7 +227,17 @@ export default function ProjectPage() {
 
       {/* Employee Table */}
       <div className="mb-6">
-        <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</h3>
+        <div className="mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</h3>
+          <InfoTooltip
+            title="Сотрудники проекта"
+            lines={[
+              'Таблица с текущими метриками каждого сотрудника проекта.',
+              'Score — оценка продуктивности, Загрузка — процент от 40-часовой недели.',
+              'Нажмите на строку для перехода к детальному профилю.',
+            ]}
+          />
+        </div>
         <EmployeeTable employees={summary?.employees ?? []} loading={loading} />
       </div>
 
@@ -226,6 +247,14 @@ export default function ProjectPage() {
           <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
             <Lightbulb size={16} className="text-blue-400" />
             <h3 className="text-sm font-medium">LLM-рекомендации по проекту</h3>
+            <InfoTooltip
+              title="LLM-рекомендации"
+              lines={[
+                'Агрегированные рекомендации от LLM-анализа по всем сотрудникам проекта.',
+                'Формируются автоматически на основе метрик и выявленных паттернов.',
+                'Помогают руководителю обратить внимание на ключевые зоны роста команды.',
+              ]}
+            />
           </div>
           <ul className="mt-3 space-y-1.5">
             {summary.aggregatedRecommendations.map((rec, i) => (

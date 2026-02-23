@@ -13,7 +13,7 @@ interface WeightedMetric {
 }
 
 export class FormulaScorer {
-  static calculate(kpi: CalculatedKpi, raw: RawMetrics): number {
+  static calculate(kpi: CalculatedKpi, raw: RawMetrics): number | null {
     const metrics: WeightedMetric[] = [
       {
         value: kpi.utilization,
@@ -49,7 +49,7 @@ export class FormulaScorer {
 
     // Фильтруем метрики с null значениями и перераспределяем вес
     const activeMetrics = metrics.filter((m) => m.value !== null);
-    if (activeMetrics.length === 0) return 50; // neutral score
+    if (activeMetrics.length === 0) return null;
 
     const totalWeight = activeMetrics.reduce((s, m) => s + m.weight, 0);
 

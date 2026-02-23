@@ -2,7 +2,7 @@ export type MetricLevel = 'good' | 'warning' | 'danger' | 'neutral';
 
 const THRESHOLDS: Record<string, { good: number | [number, number]; warning: number | [number, number]; inverted?: boolean }> = {
   score:              { good: 70, warning: 50 },
-  utilization:        { good: [60, 100], warning: [40, 110] },
+  utilization:        { good: [60, 100], warning: [40, 120] },
   estimationAccuracy: { good: 75, warning: 55 },
   focus:              { good: 65, warning: 45 },
   completionRate:     { good: 70, warning: 50 },

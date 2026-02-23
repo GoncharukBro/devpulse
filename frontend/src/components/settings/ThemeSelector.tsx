@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Monitor } from 'lucide-react';
 import { useThemeStore } from '@/stores/theme.store';
 
 export default function ThemeSelector() {
@@ -13,12 +13,9 @@ export default function ThemeSelector() {
 
   return (
     <div>
-      <h3 className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-200">
+      <h3 className="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-200">
         Тема оформления
       </h3>
-      <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-        Текущая тема: {theme === 'dark' ? 'Тёмная' : 'Светлая'}
-      </p>
       <div className="flex gap-3">
         <button
           onClick={() => setTheme('dark')}
@@ -33,6 +30,13 @@ export default function ThemeSelector() {
         >
           <Sun size={16} />
           Светлая
+        </button>
+        <button
+          onClick={() => setTheme('system')}
+          className={`${baseClass} ${theme === 'system' ? activeClass : inactiveClass}`}
+        >
+          <Monitor size={16} />
+          Системная
         </button>
       </div>
     </div>

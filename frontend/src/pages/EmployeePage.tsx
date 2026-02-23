@@ -9,6 +9,7 @@ import TrendIndicator from '@/components/metrics/TrendIndicator';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
 import IssuesByTypeChart from '@/components/metrics/IssuesByTypeChart';
 import SpentByTypeChart from '@/components/metrics/SpentByTypeChart';
+import InfoTooltip from '@/components/metrics/InfoTooltip';
 import LlmSummaryBlock from '@/components/employees/LlmSummaryBlock';
 import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
 import AchievementDetail from '@/components/achievements/AchievementDetail';
@@ -330,7 +331,17 @@ export default function EmployeePage() {
         <div className="lg:col-span-2">
           <Card>
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+                <InfoTooltip
+                  title="Динамика по неделям"
+                  lines={[
+                    'График изменения Score и загрузки сотрудника за каждую неделю.',
+                    'Фиолетовая линия — Score (LLM-оценка или формульный расчёт).\nЗелёная линия — загрузка (% от 40-часовой недели).',
+                    'Позволяет отследить индивидуальный тренд продуктивности.',
+                  ]}
+                />
+              </div>
               <PeriodFilter value={weeks} onChange={setWeeks} />
             </div>
             {history ? (
@@ -358,11 +369,31 @@ export default function EmployeePage() {
       {report && (
         <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Card>
-            <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Разбивка по типам задач</h3>
+            <div className="mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Разбивка по типам задач</h3>
+              <InfoTooltip
+                title="Разбивка по типам задач"
+                lines={[
+                  'Распределение задач сотрудника по категориям за выбранный период.',
+                  'Фичи, баги, техдолг, поддержка, документация, code review и прочее.',
+                  'Помогает оценить, на что уходит основное рабочее время.',
+                ]}
+              />
+            </div>
             <IssuesByTypeChart data={report.issuesByType} />
           </Card>
           <Card>
-            <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Списание по типам</h3>
+            <div className="mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Списание по типам</h3>
+              <InfoTooltip
+                title="Списание по типам"
+                lines={[
+                  'Сколько часов списано на каждый тип задач за выбранный период.',
+                  'Данные из YouTrack (work items), сгруппированные по категориям.',
+                  'Позволяет увидеть реальное распределение времени сотрудника.',
+                ]}
+              />
+            </div>
             <SpentByTypeChart data={report.spentByType} />
           </Card>
         </div>
@@ -371,7 +402,17 @@ export default function EmployeePage() {
       {/* Reports history table */}
       {reportsList && reportsList.data.length > 0 && (
         <div className="mb-6">
-          <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">История отчётов</h3>
+          <div className="mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">История отчётов</h3>
+            <InfoTooltip
+              title="История отчётов"
+              lines={[
+                'Таблица всех еженедельных отчётов сотрудника.',
+                'Score, загрузка, количество закрытых задач и статус обработки.',
+                'Нажмите на строку, чтобы загрузить детали конкретного отчёта.',
+              ]}
+            />
+          </div>
           <Card noPadding>
             <div className="overflow-x-auto">
               <table className="w-full">

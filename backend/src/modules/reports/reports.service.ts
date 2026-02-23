@@ -791,21 +791,14 @@ export class ReportsService {
 
       // Utilization
       if (r.utilization != null) {
-        if (r.utilization > 130) {
+        if (r.utilization > 110) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
             reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'danger',
           });
-        } else if (r.utilization > 110) {
-          concerns.push({
-            youtrackLogin: r.youtrackLogin,
-            displayName,
-            reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
-            severity: 'warning',
-          });
-        } else if (r.utilization < 40) {
+        } else if (r.utilization < 50) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
@@ -882,7 +875,7 @@ export class ReportsService {
       }
 
       if (r.utilization != null) {
-        if (r.utilization > 130) {
+        if (r.utilization > 110) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,
@@ -890,15 +883,7 @@ export class ReportsService {
             reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
             severity: 'danger',
           });
-        } else if (r.utilization > 110) {
-          concerns.push({
-            youtrackLogin: r.youtrackLogin,
-            displayName,
-            projectName,
-            reason: `Высокая загрузка (${Math.round(r.utilization)}%)`,
-            severity: 'warning',
-          });
-        } else if (r.utilization < 40) {
+        } else if (r.utilization < 50) {
           concerns.push({
             youtrackLogin: r.youtrackLogin,
             displayName,

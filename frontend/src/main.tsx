@@ -7,7 +7,12 @@ import './index.css';
 
 // Initialize theme from localStorage before first render
 const savedTheme = localStorage.getItem('devpulse-theme') || 'dark';
-document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+if (savedTheme === 'system') {
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.classList.toggle('dark', isDark);
+} else {
+  document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

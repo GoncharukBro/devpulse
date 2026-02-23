@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, TrendingUp, Activity, Trophy } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, Trophy } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -9,6 +9,7 @@ import KpiCard from '@/components/metrics/KpiCard';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
 import ConcernsList from '@/components/metrics/ConcernsList';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
+import InfoTooltip from '@/components/metrics/InfoTooltip';
 import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
 import { reportsApi } from '@/api/endpoints/reports';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -115,7 +116,14 @@ export default function OverviewPage() {
             <Card className="animate-slide-up">
               <div className="flex items-start justify-between">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Тренд Score</span>
-                <Activity size={16} className="text-gray-400 dark:text-gray-500" />
+                <InfoTooltip
+                  title="Тренд Score"
+                  lines={[
+                    'Направление изменения средней оценки продуктивности.',
+                    'Сравнивается средний Score текущей недели с предыдущей.',
+                    '↑ Рост — средний Score вырос\n→ Стабильно — изменение менее 5 пунктов\n↓ Падение — средний Score снизился',
+                  ]}
+                />
               </div>
               <div className="mt-2 flex items-center gap-2">
                 <TrendIndicator trend={data.scoreTrend} className="text-2xl" />
@@ -143,6 +151,14 @@ export default function OverviewPage() {
               <div className="mb-4 flex items-center gap-2">
                 <TrendingUp size={16} className="text-gray-500 dark:text-gray-400" />
                 <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+                <InfoTooltip
+                  title="Динамика по неделям"
+                  lines={[
+                    'График изменения среднего Score по всем сотрудникам за каждую неделю.',
+                    'Фиолетовая линия — средний Score за неделю (LLM-оценка или формульный расчёт).\nЗелёная линия — средняя загрузка.',
+                    'Позволяет отследить общий тренд продуктивности команды.',
+                  ]}
+                />
               </div>
               <WeeklyChart data={data.weeklyTrend} metrics={chartMetrics} />
             </Card>

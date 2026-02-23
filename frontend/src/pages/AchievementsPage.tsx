@@ -13,7 +13,7 @@ type TabId = 'feed' | 'catalog';
 
 export default function AchievementsPage() {
   usePageTitle('Достижения');
-  const [activeTab, setActiveTab] = useState<TabId>('feed');
+  const [activeTab, setActiveTab] = useState<TabId>('catalog');
   const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -37,8 +37,8 @@ export default function AchievementsPage() {
   }, [loadCatalog]);
 
   const tabs: { id: TabId; icon: string; label: string }[] = [
-    { id: 'feed', icon: '\uD83D\uDD14', label: 'Лента' },
     { id: 'catalog', icon: '\uD83D\uDCDA', label: 'Каталог' },
+    { id: 'feed', icon: '\uD83D\uDD14', label: 'Лента' },
   ];
 
   if (error && !catalog) {

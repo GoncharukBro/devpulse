@@ -7,6 +7,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import Card from '@/components/ui/Card';
 import KpiCard from '@/components/metrics/KpiCard';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
+import InfoTooltip from '@/components/metrics/InfoTooltip';
 import Button from '@/components/ui/Button';
 import TeamMembersList from '@/components/teams/TeamMembersList';
 import EditTeamModal from '@/components/teams/EditTeamModal';
@@ -175,12 +176,32 @@ export default function TeamPage() {
           </Card>
         ) : team && team.weeklyTrend.length > 0 ? (
           <Card>
-            <h3 className="mb-4 text-sm font-medium text-gray-600 dark:text-gray-300">Динамика Score</h3>
+            <div className="mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика Score</h3>
+              <InfoTooltip
+                title="Динамика Score команды"
+                lines={[
+                  'График изменения среднего Score по участникам команды за каждую неделю.',
+                  'Фиолетовая линия — средний Score команды.',
+                  'Позволяет отследить общий тренд продуктивности команды.',
+                ]}
+              />
+            </div>
             <WeeklyChart data={team.weeklyTrend} metrics={chartMetrics} />
           </Card>
         ) : (
           <Card>
-            <h3 className="mb-4 text-sm font-medium text-gray-600 dark:text-gray-300">Динамика Score</h3>
+            <div className="mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика Score</h3>
+              <InfoTooltip
+                title="Динамика Score команды"
+                lines={[
+                  'График изменения среднего Score по участникам команды за каждую неделю.',
+                  'Фиолетовая линия — средний Score команды.',
+                  'Позволяет отследить общий тренд продуктивности команды.',
+                ]}
+              />
+            </div>
             <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500">
               Нет данных для графика
             </div>
@@ -190,7 +211,16 @@ export default function TeamPage() {
 
       {/* Members Table */}
       <div className="mb-6">
-        <h3 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Участники</h3>
+        <div className="mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Участники</h3>
+          <InfoTooltip
+            title="Участники команды"
+            lines={[
+              'Список сотрудников, входящих в команду, с текущими метриками.',
+              'Нажмите на сотрудника для перехода к его детальному профилю.',
+            ]}
+          />
+        </div>
         <TeamMembersList members={team?.members ?? []} loading={loading} />
       </div>
 
