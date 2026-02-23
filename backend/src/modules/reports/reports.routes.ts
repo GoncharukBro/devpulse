@@ -21,6 +21,14 @@ interface EmployeeReportsQuery {
   limit?: string;
 }
 
+interface EmailPreviewBody {
+  type: 'employee' | 'project' | 'team';
+  youtrackLogin?: string;
+  subscriptionId?: string;
+  teamId?: string;
+  periodStart?: string;
+}
+
 interface ProjectHistoryQuery {
   weeks?: string;
 }
@@ -135,6 +143,42 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
         subscriptionId: request.query.subscriptionId,
         page: request.query.page ? parseInt(request.query.page, 10) : undefined,
         limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
+      });
+    },
+  );
+
+  // POST /api/reports/email-preview
+  app.post<{ Body: EmailPreviewBody }>(
+    '/reports/email-preview',
+    async (request, reply) => {
+      const { type, youtrackLogin, subscriptionId, teamId, periodStart } = request.body;
+
+      if (!type) {
+        reply.status(400).send({ message: 'type is required' });
+        return;
+      }
+      if (type === 'employee' && (!youtrackLogin || !subscriptionId)) {
+        reply.status(400).send({ message: 'youtrackLogin and subscriptionId are required for employee type' });
+        return;
+      }
+      if (type === 'project' && !subscriptionId) {
+        reply.status(400).send({ message: 'subscriptionId is required for project type' });
+        return;
+      }
+      if (type === 'team' && !teamId) {
+        reply.status(400).send({ message: 'teamId is required for team type' });
+        return;
+      }
+
+      const em = request.orm.em.fork();
+      const service = new ReportsService(em);
+      return service.getEmailPreview({
+        type,
+        userId: request.user.id,
+        youtrackLogin,
+        subscriptionId,
+        teamId,
+        periodStart,
       });
     },
   );

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Users, Pencil, Trash2 } from 'lucide-react';
+import { Users, Pencil, Trash2, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -11,6 +11,7 @@ import InfoTooltip from '@/components/metrics/InfoTooltip';
 import Button from '@/components/ui/Button';
 import TeamMembersList from '@/components/teams/TeamMembersList';
 import EditTeamModal from '@/components/teams/EditTeamModal';
+import EmailReportModal from '@/components/shared/EmailReportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { teamsApi } from '@/api/endpoints/teams';
 import type { TeamDetail } from '@/types/team';
@@ -23,6 +24,7 @@ export default function TeamPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   usePageTitle(team?.name ?? 'Команда');
@@ -115,6 +117,14 @@ export default function TeamPage() {
         actions={
           team ? (
             <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Mail size={14} />}
+                onClick={() => setEmailModalOpen(true)}
+              >
+                На почту
+              </Button>
               <Button
                 variant="secondary"
                 size="sm"
@@ -229,6 +239,12 @@ export default function TeamPage() {
         team={team}
         onClose={() => setEditOpen(false)}
         onUpdated={load}
+      />
+      <EmailReportModal
+        open={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        type="team"
+        teamId={id}
       />
     </>
   );

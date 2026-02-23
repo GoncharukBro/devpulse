@@ -267,7 +267,12 @@ export default function ProjectPage() {
         </Card>
       )}
 
-      <EmailReportModal open={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
+      <EmailReportModal
+        open={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        type="project"
+        subscriptionId={id}
+      />
     </>
   );
 }

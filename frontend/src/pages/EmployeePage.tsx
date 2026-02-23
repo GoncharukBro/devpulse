@@ -519,7 +519,13 @@ export default function EmployeePage() {
       </Card>
 
       {/* Modals */}
-      <EmailReportModal open={emailModalOpen} onClose={() => setEmailModalOpen(false)} />
+      <EmailReportModal
+        open={emailModalOpen}
+        onClose={() => setEmailModalOpen(false)}
+        type="employee"
+        youtrackLogin={login}
+        subscriptionId={selectedProject ?? summary?.projects[0]?.subscriptionId}
+      />
       <AchievementDetail
         achievement={selectedAchievement}
         open={achievementDetailOpen}

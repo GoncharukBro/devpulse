@@ -78,4 +78,18 @@ export const reportsApi = {
     );
     return response.data;
   },
+
+  async emailPreview(params: {
+    type: 'employee' | 'project' | 'team';
+    youtrackLogin?: string;
+    subscriptionId?: string;
+    teamId?: string;
+    periodStart?: string;
+  }): Promise<{ subject: string; html: string }> {
+    const response = await apiClient.post<{ subject: string; html: string }>(
+      '/reports/email-preview',
+      params,
+    );
+    return response.data;
+  },
 };

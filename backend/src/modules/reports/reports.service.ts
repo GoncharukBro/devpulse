@@ -6,6 +6,8 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Subscription } from '../../entities/subscription.entity';
 import { SubscriptionEmployee } from '../../entities/subscription-employee.entity';
 import { MetricReport } from '../../entities/metric-report.entity';
+import { Achievement } from '../../entities/achievement.entity';
+import { Team } from '../../entities/team.entity';
 import { NotFoundError } from '../../common/errors';
 import { formatYTDate } from '../../common/utils/week-utils';
 import { AchievementsService } from '../achievements/achievements.service';
@@ -24,6 +26,15 @@ import {
   ProjectWeekData,
   EmployeeWeekData,
 } from './reports.types';
+import {
+  generateEmployeeEmailHtml,
+  generateProjectEmailHtml,
+  generateTeamEmailHtml,
+  generateSubject,
+  type EmployeeEmailData,
+  type ProjectEmailData,
+  type TeamEmailData,
+} from './email-template';
 
 function getEffectiveScore(report: MetricReport): number | null {
   return report.llmScore ?? report.formulaScore ?? null;
@@ -916,5 +927,389 @@ export class ReportsService {
     }
 
     return concerns;
+  }
+
+  // ─── Email Preview ─────────────────────────────────────────────────
+
+  async getEmailPreview(params: {
+    type: 'employee' | 'project' | 'team';
+    userId: string;
+    youtrackLogin?: string;
+    subscriptionId?: string;
+    teamId?: string;
+    periodStart?: string;
+  }): Promise<{ subject: string; html: string }> {
+    if (params.type === 'employee') {
+      return this.getEmployeeEmailPreview(params.userId, params.youtrackLogin!, params.subscriptionId!, params.periodStart);
+    }
+    if (params.type === 'project') {
+      return this.getProjectEmailPreview(params.userId, params.subscriptionId!, params.periodStart);
+    }
+    return this.getTeamEmailPreview(params.userId, params.teamId!, params.periodStart);
+  }
+
+  private async getEmployeeEmailPreview(
+    userId: string,
+    youtrackLogin: string,
+    subscriptionId: string,
+    periodStart?: string,
+  ): Promise<{ subject: string; html: string }> {
+    const sub = await this.em.findOne(Subscription, {
+      id: subscriptionId,
+      ownerId: userId,
+    });
+    if (!sub) throw new NotFoundError('Subscription not found');
+
+    // Find report
+    const reportWhere: Record<string, unknown> = {
+      subscription: sub,
+      youtrackLogin,
+    };
+    if (periodStart) {
+      reportWhere.periodStart = new Date(periodStart);
+    }
+
+    const report = await this.em.findOne(MetricReport, reportWhere, {
+      orderBy: { periodStart: 'DESC' },
+    });
+    if (!report) throw new NotFoundError('Report not found');
+
+    // Find previous report for trend
+    const prevReport = await this.em.findOne(
+      MetricReport,
+      {
+        subscription: sub,
+        youtrackLogin,
+        periodStart: { $lt: report.periodStart },
+      },
+      { orderBy: { periodStart: 'DESC' } },
+    );
+
+    const employee = await this.em.findOne(SubscriptionEmployee, {
+      subscription: sub,
+      youtrackLogin,
+    });
+
+    // Find achievements for this period
+    const achievements = await this.em.find(Achievement, {
+      subscription: sub,
+      youtrackLogin,
+      periodStart: report.periodStart,
+    });
+
+    const DEFINITIONS_MAP = await this.getAchievementDefinitionsMap();
+
+    const data: EmployeeEmailData = {
+      employee: {
+        displayName: employee?.displayName ?? youtrackLogin,
+        login: youtrackLogin,
+      },
+      project: sub.projectName,
+      period: {
+        start: formatYTDate(report.periodStart),
+        end: formatYTDate(report.periodEnd),
+      },
+      score: getEffectiveScore(report),
+      prevScore: prevReport ? getEffectiveScore(prevReport) : null,
+      kpis: {
+        utilization: report.utilization ?? null,
+        estimationAccuracy: report.estimationAccuracy ?? null,
+        focus: report.focus ?? null,
+        completionRate: report.completionRate ?? null,
+        avgComplexity: report.avgComplexityHours ?? null,
+        avgCycleTimeHours: report.avgCycleTimeHours ?? null,
+      },
+      tasks: {
+        total: report.totalIssues,
+        completed: report.completedIssues,
+        inProgress: report.inProgressIssues,
+        overdue: report.overdueIssues,
+        byType: report.issuesByType,
+      },
+      time: {
+        spentHours: minutesToHours(report.totalSpentMinutes),
+        estimationHours: minutesToHours(report.totalEstimationMinutes),
+      },
+      llm: report.llmSummary
+        ? {
+            summary: report.llmSummary ?? null,
+            achievements: report.llmAchievements ?? [],
+            concerns: report.llmConcerns ?? [],
+            recommendations: report.llmRecommendations ?? [],
+          }
+        : null,
+      nftAchievements: achievements.map((a) => ({
+        icon: DEFINITIONS_MAP.get(a.type) ?? '🏆',
+        title: a.title,
+        rarity: a.rarity,
+      })),
+    };
+
+    const html = generateEmployeeEmailHtml(data);
+    const subject = generateSubject(
+      'employee',
+      data.employee.displayName,
+      data.period.start,
+      data.period.end,
+    );
+
+    return { subject, html };
+  }
+
+  private async getProjectEmailPreview(
+    userId: string,
+    subscriptionId: string,
+    periodStart?: string,
+  ): Promise<{ subject: string; html: string }> {
+    const sub = await this.em.findOne(
+      Subscription,
+      { id: subscriptionId, ownerId: userId },
+      { populate: ['employees'] },
+    );
+    if (!sub) throw new NotFoundError('Subscription not found');
+
+    // Find last report period
+    const reportWhere: Record<string, unknown> = { subscription: sub };
+    if (periodStart) {
+      reportWhere.periodStart = new Date(periodStart);
+    }
+
+    const latestReport = await this.em.findOne(MetricReport, reportWhere, {
+      orderBy: { periodStart: 'DESC' },
+    });
+    if (!latestReport) throw new NotFoundError('No reports found');
+
+    const lastPeriodStart = latestReport.periodStart;
+
+    // All reports for the period
+    const reports = await this.em.find(MetricReport, {
+      subscription: sub,
+      periodStart: lastPeriodStart,
+    });
+
+    // Previous period for trend
+    const prevPeriodReports = await this.getPreviousPeriodReports(sub, lastPeriodStart);
+    const prevAvgScore = prevPeriodReports.length > 0
+      ? avgNullable(prevPeriodReports.map((r) => getEffectiveScore(r)))
+      : null;
+
+    const employeeMap = new Map<string, SubscriptionEmployee>();
+    for (const e of sub.employees.getItems()) {
+      employeeMap.set(e.youtrackLogin, e);
+    }
+
+    const employees = reports.map((r) => {
+      const emp = employeeMap.get(r.youtrackLogin);
+      return {
+        displayName: emp?.displayName ?? r.youtrackLogin,
+        score: getEffectiveScore(r),
+        utilization: r.utilization ?? null,
+        completedIssues: r.completedIssues,
+        totalIssues: r.totalIssues,
+      };
+    });
+
+    // Build concerns
+    const rawConcerns = this.buildProjectConcerns(reports, prevPeriodReports, employeeMap);
+    const concernsByPerson = new Map<string, string[]>();
+    for (const c of rawConcerns) {
+      const arr = concernsByPerson.get(c.displayName) ?? [];
+      arr.push(c.reason);
+      concernsByPerson.set(c.displayName, arr);
+    }
+    const concerns = [...concernsByPerson.entries()].map(([displayName, reasons]) => ({
+      displayName,
+      reasons,
+    }));
+
+    // Aggregate recommendations
+    const recommendations: string[] = [];
+    for (const r of reports) {
+      if (r.llmRecommendations) recommendations.push(...r.llmRecommendations);
+    }
+
+    const data: ProjectEmailData = {
+      project: { name: sub.projectName, shortName: sub.projectShortName },
+      period: {
+        start: formatYTDate(lastPeriodStart),
+        end: formatYTDate(latestReport.periodEnd),
+      },
+      avgScore: avgNullable(reports.map((r) => getEffectiveScore(r))),
+      prevAvgScore: prevAvgScore,
+      employeeCount: employees.length,
+      employees,
+      concerns,
+      recommendations: [...new Set(recommendations)],
+    };
+
+    const html = generateProjectEmailHtml(data);
+    const subject = generateSubject(
+      'project',
+      data.project.name,
+      data.period.start,
+      data.period.end,
+    );
+
+    return { subject, html };
+  }
+
+  private async getTeamEmailPreview(
+    userId: string,
+    teamId: string,
+    periodStart?: string,
+  ): Promise<{ subject: string; html: string }> {
+    const team = await this.em.findOne(
+      Team,
+      { id: teamId, ownerId: userId },
+      { populate: ['members'] },
+    );
+    if (!team) throw new NotFoundError('Team not found');
+
+    const subscriptions = await this.getUserSubscriptions(userId);
+    const subIds = subscriptions.map((s) => s.id);
+    const logins = team.members.getItems().map((m) => m.youtrackLogin);
+
+    if (logins.length === 0 || subIds.length === 0) {
+      throw new NotFoundError('No data for team');
+    }
+
+    // Find latest period
+    const reportWhere: Record<string, unknown> = {
+      subscription: { $in: subIds },
+      youtrackLogin: { $in: logins },
+    };
+    if (periodStart) {
+      reportWhere.periodStart = new Date(periodStart);
+    }
+
+    const latestReport = await this.em.findOne(MetricReport, reportWhere, {
+      orderBy: { periodStart: 'DESC' },
+    });
+    if (!latestReport) throw new NotFoundError('No reports found');
+
+    const lastPeriodStart = latestReport.periodStart;
+
+    // All reports for team members in this period
+    const reports = await this.em.find(MetricReport, {
+      subscription: { $in: subIds },
+      youtrackLogin: { $in: logins },
+      periodStart: lastPeriodStart,
+    }, { populate: ['subscription'] });
+
+    // Previous period for trend
+    const prevReport = await this.em.findOne(MetricReport, {
+      subscription: { $in: subIds },
+      youtrackLogin: { $in: logins },
+      periodStart: { $lt: lastPeriodStart },
+    }, { orderBy: { periodStart: 'DESC' } });
+
+    let prevAvgScore: number | null = null;
+    if (prevReport) {
+      const prevReports = await this.em.find(MetricReport, {
+        subscription: { $in: subIds },
+        youtrackLogin: { $in: logins },
+        periodStart: prevReport.periodStart,
+      });
+      prevAvgScore = avgNullable(prevReports.map((r) => getEffectiveScore(r)));
+    }
+
+    // Employee names
+    const employeeNames = await this.buildEmployeeMap(subscriptions);
+
+    // Build members list (one entry per login, pick best report or first)
+    const byLogin = new Map<string, MetricReport[]>();
+    for (const r of reports) {
+      const arr = byLogin.get(r.youtrackLogin) ?? [];
+      arr.push(r);
+      byLogin.set(r.youtrackLogin, arr);
+    }
+
+    const members: TeamEmailData['members'] = [];
+    for (const login of logins) {
+      const loginReports = byLogin.get(login);
+      if (!loginReports || loginReports.length === 0) continue;
+      const r = loginReports[0];
+      members.push({
+        displayName: employeeNames.get(login)?.displayName ?? login,
+        projectName: r.subscription.projectName,
+        score: getEffectiveScore(r),
+        utilization: r.utilization ?? null,
+        completionRate: r.completionRate ?? null,
+        estimationAccuracy: r.estimationAccuracy ?? null,
+      });
+    }
+
+    // Build concerns
+    const concernsByPerson = new Map<string, string[]>();
+    for (const r of reports) {
+      const displayName = employeeNames.get(r.youtrackLogin)?.displayName ?? r.youtrackLogin;
+      const reasons: string[] = [];
+
+      const score = getEffectiveScore(r);
+      if (score !== null && score < 50) {
+        reasons.push(`Низкий score (${Math.round(score)})`);
+      }
+      if (r.utilization != null && r.utilization < 50) {
+        reasons.push(`Низкая загрузка (${Math.round(r.utilization)}%)`);
+      }
+      if (r.llmConcerns && r.llmConcerns.length > 0) {
+        reasons.push(...r.llmConcerns);
+      }
+
+      if (reasons.length > 0) {
+        const existing = concernsByPerson.get(displayName) ?? [];
+        existing.push(...reasons);
+        concernsByPerson.set(displayName, existing);
+      }
+    }
+
+    const concerns = [...concernsByPerson.entries()].map(([displayName, reasons]) => ({
+      displayName,
+      reasons: [...new Set(reasons)],
+    }));
+
+    // Achievements for team members in this period
+    const achievementRecords = await this.em.find(Achievement, {
+      subscription: { $in: subIds },
+      youtrackLogin: { $in: logins },
+      periodStart: lastPeriodStart,
+    });
+
+    const DEFINITIONS_MAP = await this.getAchievementDefinitionsMap();
+    const teamAchievements = achievementRecords.map((a) => ({
+      icon: DEFINITIONS_MAP.get(a.type) ?? '🏆',
+      title: a.title,
+      rarity: a.rarity,
+      displayName: employeeNames.get(a.youtrackLogin)?.displayName ?? a.youtrackLogin,
+    }));
+
+    const data: TeamEmailData = {
+      team: { name: team.name },
+      period: {
+        start: formatYTDate(lastPeriodStart),
+        end: formatYTDate(latestReport.periodEnd),
+      },
+      avgScore: avgNullable(reports.map((r) => getEffectiveScore(r))),
+      prevAvgScore,
+      memberCount: members.length,
+      members,
+      concerns,
+      achievements: teamAchievements,
+    };
+
+    const html = generateTeamEmailHtml(data);
+    const subject = generateSubject('team', team.name, data.period.start, data.period.end);
+
+    return { subject, html };
+  }
+
+  private async getAchievementDefinitionsMap(): Promise<Map<string, string>> {
+    // Lazy import to avoid circular dependency
+    const { ACHIEVEMENT_DEFINITIONS } = await import('../achievements/achievements.types');
+    const map = new Map<string, string>();
+    for (const def of ACHIEVEMENT_DEFINITIONS) {
+      map.set(def.type, def.icon);
+    }
+    return map;
   }
 }
