@@ -8,6 +8,10 @@ export default {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'fade-in': 'fadeIn 300ms ease-out',
         'slide-up': 'slideUp 300ms ease-out',
+        'legendary-glow': 'legendary-glow 3s ease-in-out infinite alternate',
+        'star-shimmer': 'star-shimmer 2s ease-in-out infinite',
+        'progress-shine': 'progress-shine 2s ease-in-out infinite',
+        'lock-shake': 'lock-shake 0.5s ease',
       },
       keyframes: {
         fadeIn: {

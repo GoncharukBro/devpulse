@@ -9,62 +9,11 @@ import KpiCard from '@/components/metrics/KpiCard';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
 import ConcernsList from '@/components/metrics/ConcernsList';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
+import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
 import { reportsApi } from '@/api/endpoints/reports';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { OverviewDTO } from '@/types/reports';
-import type { Achievement, AchievementRarity } from '@/types/achievement';
-
-const RARITY_STYLES: Record<AchievementRarity, string> = {
-  common: 'from-gray-700 via-slate-600 to-blue-900',
-  rare: 'from-blue-800 via-indigo-700 to-purple-800',
-  epic: 'from-purple-800 via-fuchsia-700 to-pink-700',
-  legendary: 'from-amber-600 via-yellow-500 to-orange-600',
-};
-
-const RARITY_LABELS: Record<AchievementRarity, string> = {
-  common: 'Common',
-  rare: 'Rare',
-  epic: 'Epic',
-  legendary: 'Legendary',
-};
-
-const TYPE_ICONS: Record<string, string> = {
-  speed_demon: '\u26A1',
-  quality_master: '\uD83C\uDFAF',
-  focus_king: '\uD83D\uDD2D',
-  streak_star: '\uD83D\uDD25',
-  team_player: '\uD83E\uDD1D',
-  early_bird: '\uD83C\uDF05',
-  bug_hunter: '\uD83D\uDC1B',
-  overachiever: '\uD83C\uDFC6',
-};
-
-function CompactAchievementCard({ achievement, onClick }: { achievement: Achievement; onClick: () => void }) {
-  const gradient = RARITY_STYLES[achievement.rarity] ?? RARITY_STYLES.common;
-  const icon = TYPE_ICONS[achievement.type] ?? '\uD83C\uDFC5';
-  const label = RARITY_LABELS[achievement.rarity] ?? 'Common';
-
-  return (
-    <button
-      onClick={onClick}
-      className={`relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br ${gradient} p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110`}
-    >
-      <div className="flex items-start gap-2">
-        <span className="text-xl">{icon}</span>
-        <div className="min-w-0 flex-1">
-          <h4 className="truncate text-xs font-bold text-white">{achievement.title}</h4>
-          <p className="truncate text-[11px] text-white/70">
-            {achievement.displayName ?? achievement.youtrackLogin}
-            {achievement.projectName && <span className="text-white/50"> &bull; {achievement.projectName}</span>}
-          </p>
-          <span className="mt-1 inline-block rounded-full border border-white/20 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider text-white/80">
-            {label}
-          </span>
-        </div>
-      </div>
-    </button>
-  );
-}
+import type { Achievement } from '@/types/achievement';
 
 export default function OverviewPage() {
   usePageTitle('Обзор');
@@ -222,7 +171,7 @@ export default function OverviewPage() {
         ) : achievements.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {achievements.slice(0, 5).map((a) => (
-              <CompactAchievementCard
+              <AchievementCardCompact
                 key={a.id}
                 achievement={a}
                 onClick={() => navigate('/achievements')}

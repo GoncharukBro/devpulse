@@ -1,88 +1,55 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Trophy } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
-import EmptyState from '@/components/ui/EmptyState';
 import Card from '@/components/ui/Card';
-import AchievementCard from '@/components/achievements/AchievementCard';
-import AchievementDetail from '@/components/achievements/AchievementDetail';
-import AchievementFilters from '@/components/achievements/AchievementFilters';
+import AchievementStats from '@/components/achievements/AchievementStats';
+import AchievementFeed from '@/components/achievements/AchievementFeed';
+import AchievementCatalog from '@/components/achievements/AchievementCatalog';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { achievementsApi } from '@/api/endpoints/achievements';
-import type { Achievement } from '@/types/achievement';
+import type { CatalogResponse } from '@/types/achievement';
+
+type TabId = 'feed' | 'catalog';
 
 export default function AchievementsPage() {
-  usePageTitle('Ачивки');
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [loading, setLoading] = useState(true);
+  usePageTitle('Достижения');
+  const [activeTab, setActiveTab] = useState<TabId>('feed');
+  const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
-
-  const [filterEmployee, setFilterEmployee] = useState('');
-  const [filterType, setFilterType] = useState('');
-  const [filterProject, setFilterProject] = useState('');
-
-  const load = useCallback(async () => {
+  const loadCatalog = useCallback(async () => {
     try {
-      setLoading(true);
+      setCatalogLoading(true);
       setError(false);
-      const result = await achievementsApi.list();
-      setAchievements(result.data);
+      const result = await achievementsApi.getCatalog();
+      setCatalog(result);
     } catch {
       setError(true);
-      toast.error('Не удалось загрузить ачивки');
+      toast.error('Не удалось загрузить каталог достижений');
     } finally {
-      setLoading(false);
+      setCatalogLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    loadCatalog();
+  }, [loadCatalog]);
 
-  const uniqueEmployees = useMemo(
-    () => [...new Set(achievements.map((a) => a.displayName ?? a.youtrackLogin))].sort(),
-    [achievements],
-  );
-  const uniqueTypes = useMemo(
-    () => [...new Set(achievements.map((a) => a.type))].sort(),
-    [achievements],
-  );
-  const uniqueProjects = useMemo(
-    () => [...new Set(achievements.filter((a) => a.projectName).map((a) => a.projectName!))].sort(),
-    [achievements],
-  );
+  const tabs: { id: TabId; icon: string; label: string }[] = [
+    { id: 'feed', icon: '\uD83D\uDD14', label: 'Лента' },
+    { id: 'catalog', icon: '\uD83D\uDCDA', label: 'Каталог' },
+  ];
 
-  const filtered = useMemo(() => {
-    let list = achievements;
-    if (filterEmployee) {
-      list = list.filter(
-        (a) => (a.displayName ?? a.youtrackLogin) === filterEmployee,
-      );
-    }
-    if (filterType) {
-      list = list.filter((a) => a.type === filterType);
-    }
-    if (filterProject) {
-      list = list.filter((a) => a.projectName === filterProject);
-    }
-    return list;
-  }, [achievements, filterEmployee, filterType, filterProject]);
-
-  const handleCardClick = (achievement: Achievement) => {
-    setSelectedAchievement(achievement);
-    setDetailOpen(true);
-  };
-
-  if (error) {
+  if (error && !catalog) {
     return (
       <>
-        <PageHeader title="Ачивки" description="Галерея достижений сотрудников" />
+        <PageHeader title="Достижения" description="Коллекция наград сотрудников" />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
-              onClick={load}
+              onClick={loadCatalog}
               className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
             >
               Повторить
@@ -93,72 +60,38 @@ export default function AchievementsPage() {
     );
   }
 
-  if (!loading && achievements.length === 0) {
-    return (
-      <>
-        <PageHeader title="Ачивки" description="Галерея достижений сотрудников" />
-        <EmptyState
-          icon={Trophy}
-          title="Пока нет ачивок"
-          description="Они появятся автоматически после сбора метрик по проектам"
-        />
-      </>
-    );
-  }
-
   return (
     <>
-      <PageHeader title="Ачивки" description="Галерея достижений сотрудников" />
+      <PageHeader title="Достижения" description="Коллекция наград сотрудников" />
 
-      {loading ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i}>
-              <div className="animate-pulse">
-                <div className="mb-3 h-8 w-8 rounded bg-gray-200 dark:bg-gray-700/50" />
-                <div className="mb-2 h-4 w-24 rounded bg-gray-200 dark:bg-gray-700/50" />
-                <div className="mb-2 h-3 w-16 rounded bg-gray-200 dark:bg-gray-700/50" />
-                <div className="h-3 w-12 rounded bg-gray-200 dark:bg-gray-700/50" />
-              </div>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <>
-          {achievements.length > 0 && (
-            <AchievementFilters
-              employees={uniqueEmployees}
-              types={uniqueTypes}
-              projects={uniqueProjects}
-              selectedEmployee={filterEmployee}
-              selectedType={filterType}
-              selectedProject={filterProject}
-              onEmployeeChange={setFilterEmployee}
-              onTypeChange={setFilterType}
-              onProjectChange={setFilterProject}
-            />
-          )}
+      {/* Stats */}
+      <AchievementStats stats={catalog?.stats ?? null} loading={catalogLoading} />
 
-          {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 dark:border-surface-border bg-white/50 dark:bg-surface/50 px-6 py-16 text-center">
-              <Trophy size={32} className="mb-4 text-gray-400 dark:text-gray-500" />
-              <p className="text-sm text-gray-400 dark:text-gray-500">Нет ачивок по выбранным фильтрам</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {filtered.map((a) => (
-                <AchievementCard key={a.id} achievement={a} onClick={handleCardClick} />
-              ))}
-            </div>
-          )}
-        </>
+      {/* Tabs */}
+      <div className="mb-6 flex gap-1 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === tab.id
+                ? 'bg-white dark:bg-surface text-gray-900 dark:text-gray-100 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      {activeTab === 'feed' && <AchievementFeed />}
+      {activeTab === 'catalog' && (
+        <AchievementCatalog
+          categories={catalog?.categories ?? []}
+          loading={catalogLoading}
+        />
       )}
-
-      <AchievementDetail
-        achievement={selectedAchievement}
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-      />
     </>
   );
 }

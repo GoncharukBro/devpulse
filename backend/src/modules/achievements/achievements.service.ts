@@ -6,11 +6,14 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Subscription } from '../../entities/subscription.entity';
 import { SubscriptionEmployee } from '../../entities/subscription-employee.entity';
 import { Achievement } from '../../entities/achievement.entity';
-import { formatYTDate } from '../../common/utils/week-utils';
+import { formatYTDate, getMonday } from '../../common/utils/week-utils';
 import {
   ACHIEVEMENT_DEFINITIONS,
+  ACHIEVEMENT_THRESHOLDS,
+  ACHIEVEMENT_CATEGORIES,
   AchievementDTO,
   AchievementTypeInfo,
+  AchievementRarity,
 } from './achievements.types';
 
 // Map type → definition for fast lookup
@@ -143,6 +146,162 @@ export class AchievementsService {
       const projectName = a.subscription?.projectName ?? '';
       return toDTO(a, displayName, projectName);
     });
+  }
+
+  async getCatalog(userId: string) {
+    const subscriptions = await this.getUserSubscriptions(userId);
+    if (subscriptions.length === 0) {
+      return {
+        stats: { totalTypes: ACHIEVEMENT_DEFINITIONS.length, unlockedTypes: 0, totalEarned: 0, legendaryCount: 0, thisWeekCount: 0 },
+        categories: ACHIEVEMENT_CATEGORIES.map((cat) => ({
+          ...cat,
+          unlockedCount: 0,
+          totalCount: cat.types.length,
+          achievements: cat.types.map((type) => this.buildCatalogEntry(type, [])),
+        })),
+      };
+    }
+
+    const subIds = subscriptions.map((s) => s.id);
+
+    const achievements = await this.em.find(
+      Achievement,
+      { subscription: { $in: subIds } },
+      { populate: ['subscription'], orderBy: { createdAt: 'DESC' } },
+    );
+
+    const employeeMap = await this.buildEmployeeMap(subscriptions);
+
+    // Group achievements by type
+    const byType = new Map<string, Achievement[]>();
+    for (const a of achievements) {
+      const arr = byType.get(a.type) ?? [];
+      arr.push(a);
+      byType.set(a.type, arr);
+    }
+
+    // This week boundary
+    const thisWeekStart = getMonday(new Date());
+
+    let unlockedTypes = 0;
+    let totalEarned = 0;
+    let legendaryCount = 0;
+    let thisWeekCount = 0;
+
+    const RARITY_ORDER: Record<string, number> = { common: 0, rare: 1, epic: 2, legendary: 3 };
+
+    const categories = ACHIEVEMENT_CATEGORIES.map((cat) => {
+      let catUnlocked = 0;
+
+      const catAchievements = cat.types.map((type) => {
+        const typeAchievements = byType.get(type) ?? [];
+        const entry = this.buildCatalogEntry(type, typeAchievements, employeeMap, RARITY_ORDER);
+
+        if (entry.unlocked) {
+          catUnlocked++;
+          unlockedTypes++;
+        }
+        totalEarned += entry.earnedCount;
+        legendaryCount += typeAchievements.filter((a) => a.rarity === 'legendary').length;
+        thisWeekCount += typeAchievements.filter((a) => a.createdAt >= thisWeekStart).length;
+
+        return entry;
+      });
+
+      return {
+        id: cat.id,
+        name: cat.name,
+        icon: cat.icon,
+        unlockedCount: catUnlocked,
+        totalCount: cat.types.length,
+        achievements: catAchievements,
+      };
+    });
+
+    return {
+      stats: {
+        totalTypes: ACHIEVEMENT_DEFINITIONS.length,
+        unlockedTypes,
+        totalEarned,
+        legendaryCount,
+        thisWeekCount,
+      },
+      categories,
+    };
+  }
+
+  private buildCatalogEntry(
+    type: string,
+    typeAchievements: Achievement[],
+    employeeMap?: Map<string, string>,
+    rarityOrder?: Record<string, number>,
+  ) {
+    const def = DEFINITIONS_MAP.get(type);
+    const thresholds = ACHIEVEMENT_THRESHOLDS[type];
+    const order = rarityOrder ?? { common: 0, rare: 1, epic: 2, legendary: 3 };
+
+    const unlocked = typeAchievements.length > 0;
+    let bestRarity: AchievementRarity | null = null;
+    let bestValue: number | null = null;
+
+    for (const a of typeAchievements) {
+      const r = a.rarity as AchievementRarity;
+      if (bestRarity === null || order[r] > order[bestRarity]) {
+        bestRarity = r;
+      }
+      const mv = (a.metadata as Record<string, unknown>).metricValue;
+      if (typeof mv === 'number') {
+        if (bestValue === null || mv > bestValue) bestValue = mv;
+      }
+    }
+
+    // Calculate progress to next level
+    const rarityList: AchievementRarity[] = ['common', 'rare', 'epic', 'legendary'];
+    let nextLevel: { rarity: AchievementRarity | null; label: string; value: number; progress: number } | null = null;
+
+    if (bestRarity === 'legendary') {
+      nextLevel = { rarity: null, label: 'Максимальный уровень', value: 0, progress: 100 };
+    } else if (thresholds) {
+      const currentIndex = bestRarity ? rarityList.indexOf(bestRarity) : -1;
+      const nextRarity = rarityList[currentIndex + 1];
+      const nextThreshold = thresholds.levels[nextRarity];
+      if (nextThreshold) {
+        let progress = 0;
+        if (bestValue !== null && nextThreshold.value > 0) {
+          // For inverse metrics (cycle time) where lower is better
+          if (type === 'quick_closer') {
+            progress = Math.min(100, Math.round(((nextThreshold.value) / Math.max(bestValue, 1)) * 100));
+          } else {
+            progress = Math.min(100, Math.round((bestValue / nextThreshold.value) * 100));
+          }
+        }
+        nextLevel = { rarity: nextRarity, label: nextThreshold.label, value: nextThreshold.value, progress };
+      }
+    }
+
+    // Build earnedBy list
+    const earnedBy = typeAchievements.map((a) => ({
+      youtrackLogin: a.youtrackLogin,
+      displayName: employeeMap?.get(a.youtrackLogin) ?? a.youtrackLogin,
+      projectName: a.subscription?.projectName ?? '',
+      rarity: a.rarity as AchievementRarity,
+      description: a.description ?? '',
+      periodStart: formatYTDate(a.periodStart),
+    }));
+
+    return {
+      type,
+      title: def?.title ?? type,
+      icon: def?.icon ?? 'Award',
+      description: thresholds?.description ?? def?.description ?? '',
+      thresholds: thresholds?.levels ?? {},
+      unlocked,
+      bestRarity,
+      bestValue,
+      nextLevel,
+      earnedCount: typeAchievements.length,
+      earnedBy,
+    };
   }
 
   getTypes(): AchievementTypeInfo[] {

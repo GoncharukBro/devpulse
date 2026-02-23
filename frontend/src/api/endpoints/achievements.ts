@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/client';
-import type { Achievement, AchievementTypeInfo } from '@/types/achievement';
+import type { Achievement, AchievementTypeInfo, CatalogResponse } from '@/types/achievement';
 
 export interface AchievementsListParams {
   youtrackLogin?: string;
@@ -35,6 +35,11 @@ export const achievementsApi = {
 
   async getByEmployee(login: string): Promise<Achievement[]> {
     const response = await apiClient.get<Achievement[]>(`/achievements/employee/${login}`);
+    return response.data;
+  },
+
+  async getCatalog(): Promise<CatalogResponse> {
+    const response = await apiClient.get<CatalogResponse>('/achievements/catalog');
     return response.data;
   },
 };

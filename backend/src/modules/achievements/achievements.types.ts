@@ -61,6 +61,147 @@ function minutesToHours(minutes: number): number {
   return Math.round((minutes / 60) * 100) / 100;
 }
 
+export const ACHIEVEMENT_THRESHOLDS: Record<string, {
+  description: string;
+  levels: Record<string, { label: string; value: number }>;
+}> = {
+  speed_demon: {
+    description: 'Количество закрытых задач за неделю',
+    levels: {
+      common: { label: '≥10 задач', value: 10 },
+      rare: { label: '≥15 задач', value: 15 },
+      epic: { label: '≥20 задач', value: 20 },
+      legendary: { label: '≥25 задач', value: 25 },
+    },
+  },
+  task_crusher: {
+    description: 'Процент закрытых задач от общего количества',
+    levels: {
+      common: { label: '≥80%', value: 80 },
+      rare: { label: '≥90%', value: 90 },
+      epic: { label: '≥95%', value: 95 },
+      legendary: { label: '100%', value: 100 },
+    },
+  },
+  marathon_runner: {
+    description: 'Списанные часы за неделю',
+    levels: {
+      common: { label: '≥35 часов', value: 35 },
+      rare: { label: '≥40 часов', value: 40 },
+      epic: { label: '≥45 часов', value: 45 },
+      legendary: { label: '≥50 часов', value: 50 },
+    },
+  },
+  estimation_guru: {
+    description: 'Точность оценки задач',
+    levels: {
+      common: { label: '≥80%', value: 80 },
+      rare: { label: '≥85%', value: 85 },
+      epic: { label: '≥90%', value: 90 },
+      legendary: { label: '≥95%', value: 95 },
+    },
+  },
+  zero_bugs: {
+    description: 'Ноль багов при значительном количестве закрытых задач',
+    levels: {
+      common: { label: '0 багов, ≥5 задач', value: 5 },
+      rare: { label: '0 багов, ≥5 задач', value: 5 },
+      epic: { label: '0 багов, ≥10 задач', value: 10 },
+      legendary: { label: '0 багов, ≥15 задач', value: 15 },
+    },
+  },
+  quick_closer: {
+    description: 'Средний Cycle Time (часы) — чем меньше тем лучше',
+    levels: {
+      common: { label: '≤72 часа', value: 72 },
+      rare: { label: '≤48 часов', value: 48 },
+      epic: { label: '≤36 часов', value: 36 },
+      legendary: { label: '≤24 часа', value: 24 },
+    },
+  },
+  focus_master: {
+    description: 'Процент времени на продуктовую работу',
+    levels: {
+      common: { label: '≥80%', value: 80 },
+      rare: { label: '≥85%', value: 85 },
+      epic: { label: '≥90%', value: 90 },
+      legendary: { label: '≥95%', value: 95 },
+    },
+  },
+  balanced_warrior: {
+    description: 'Загрузка в идеальном диапазоне',
+    levels: {
+      common: { label: '75-95%', value: 0 },
+      rare: { label: '80-90%', value: 0 },
+      epic: { label: '82-88%', value: 0 },
+      legendary: { label: '84-86%', value: 0 },
+    },
+  },
+  ai_pioneer: {
+    description: 'Часы сэкономленные с помощью ИИ',
+    levels: {
+      common: { label: '≥2 часа', value: 2 },
+      rare: { label: '≥5 часов', value: 5 },
+      epic: { label: '≥10 часов', value: 10 },
+      legendary: { label: '≥20 часов', value: 20 },
+    },
+  },
+  rising_star: {
+    description: 'Рост оценки продуктивности за неделю',
+    levels: {
+      common: { label: '+5 пунктов', value: 5 },
+      rare: { label: '+10 пунктов', value: 10 },
+      epic: { label: '+15 пунктов', value: 15 },
+      legendary: { label: '+20 пунктов', value: 20 },
+    },
+  },
+  consistency_king: {
+    description: 'Стабильно высокая оценка на протяжении недель подряд',
+    levels: {
+      common: { label: '≥70 за 3 недели', value: 3 },
+      rare: { label: '≥70 за 5 недель', value: 5 },
+      epic: { label: '≥75 за 5 недель', value: 5 },
+      legendary: { label: '≥80 за 5 недель', value: 5 },
+    },
+  },
+  top_performer: {
+    description: 'Оценка продуктивности за неделю',
+    levels: {
+      common: { label: '≥75 баллов', value: 75 },
+      rare: { label: '≥80 баллов', value: 80 },
+      epic: { label: '≥85 баллов', value: 85 },
+      legendary: { label: '≥90 баллов', value: 90 },
+    },
+  },
+  overachiever: {
+    description: 'Закрытых задач больше чем обычно (vs среднее за 4 недели)',
+    levels: {
+      common: { label: '×1.5 от среднего', value: 150 },
+      rare: { label: '×1.75 от среднего', value: 175 },
+      epic: { label: '×2 от среднего', value: 200 },
+      legendary: { label: '×2.5 от среднего', value: 250 },
+    },
+  },
+  debt_slayer: {
+    description: 'Процент времени посвящённый техдолгу',
+    levels: {
+      common: { label: '≥20% времени', value: 20 },
+      rare: { label: '≥30% времени', value: 30 },
+      epic: { label: '≥40% времени', value: 40 },
+      legendary: { label: '≥50% времени', value: 50 },
+    },
+  },
+};
+
+export const ACHIEVEMENT_CATEGORIES = [
+  { id: 'productivity', name: 'Продуктивность', icon: '⚡', types: ['speed_demon', 'task_crusher', 'marathon_runner'] },
+  { id: 'quality', name: 'Качество', icon: '🎯', types: ['estimation_guru', 'zero_bugs', 'quick_closer'] },
+  { id: 'focus', name: 'Фокус и баланс', icon: '⚖️', types: ['focus_master', 'balanced_warrior'] },
+  { id: 'ai', name: 'Искусственный интеллект', icon: '🤖', types: ['ai_pioneer'] },
+  { id: 'growth', name: 'Рост и стабильность', icon: '📈', types: ['rising_star', 'consistency_king', 'top_performer'] },
+  { id: 'special', name: 'Особые', icon: '🌟', types: ['overachiever', 'debt_slayer'] },
+];
+
 export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   // === PRODUCTIVITY ===
   {

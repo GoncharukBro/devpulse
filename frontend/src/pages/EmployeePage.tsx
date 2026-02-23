@@ -10,7 +10,7 @@ import WeeklyChart from '@/components/metrics/WeeklyChart';
 import IssuesByTypeChart from '@/components/metrics/IssuesByTypeChart';
 import SpentByTypeChart from '@/components/metrics/SpentByTypeChart';
 import LlmSummaryBlock from '@/components/employees/LlmSummaryBlock';
-import AchievementCard from '@/components/achievements/AchievementCard';
+import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
 import AchievementDetail from '@/components/achievements/AchievementDetail';
 import CopyButton from '@/components/shared/CopyButton';
 import PeriodFilter from '@/components/shared/PeriodFilter';
@@ -460,9 +460,9 @@ export default function EmployeePage() {
           <span className="text-sm font-medium">Ачивки</span>
         </div>
         {achievements.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {achievements.map((a) => (
-              <AchievementCard
+              <AchievementCardCompact
                 key={a.id}
                 achievement={a}
                 onClick={(ach) => {

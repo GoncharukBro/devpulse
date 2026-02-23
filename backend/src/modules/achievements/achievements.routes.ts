@@ -37,6 +37,13 @@ export async function achievementsRoutes(app: FastifyInstance): Promise<void> {
     },
   );
 
+  // GET /api/achievements/catalog
+  app.get('/achievements/catalog', async (request) => {
+    const em = request.orm.em.fork();
+    const service = new AchievementsService(em);
+    return service.getCatalog(request.user.id);
+  });
+
   // GET /api/achievements/recent
   app.get<{ Querystring: RecentQuery }>(
     '/achievements/recent',
