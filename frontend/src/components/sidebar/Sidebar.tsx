@@ -9,11 +9,8 @@ import {
   Settings,
   LogOut,
   X,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui.store';
-import { useThemeStore } from '@/stores/theme.store';
 import { useAuthStore } from '@/auth/auth.store';
 import * as authService from '@/auth/auth.service';
 import { useIsMobile } from '@/hooks/useMediaQuery';
@@ -36,9 +33,6 @@ export default function Sidebar() {
   const setSidebarOpen = useUIStore((s) => s.setSidebarOpen);
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const theme = useThemeStore((s) => s.theme);
-  const toggleTheme = useThemeStore((s) => s.toggleTheme);
-
   const handleLogout = () => {
     clearAuth();
     authService.logout();
@@ -86,16 +80,8 @@ export default function Sidebar() {
           <NavSection title="Управление" items={managementNav} onNavigate={isMobile ? closeSidebar : undefined} />
         </nav>
 
-        {/* Theme toggle + User */}
+        {/* User */}
         <div className="border-t border-gray-200 dark:border-surface-border p-4">
-          <button
-            onClick={toggleTheme}
-            className="mb-3 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-surface-lighter dark:hover:text-gray-200"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
-          </button>
-
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-500/20 text-sm font-semibold text-brand-300">
               {(user?.fullName?.[0] ?? user?.username?.[0] ?? 'D').toUpperCase()}

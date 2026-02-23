@@ -180,9 +180,34 @@ export default function CollectionPage() {
         }
       />
 
-      {/* Cron + LLM indicators */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+      {/* Cron + global actions + LLM indicators */}
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <CronControl cronState={cronState} onPause={handlePauseCron} onResume={handleResumeCron} />
+        {hasSubscriptions && (
+          <div className="flex items-center gap-2 sm:border-l sm:border-gray-200 sm:dark:border-surface-border sm:pl-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Play size={14} />}
+              loading={triggerAllLoading}
+              onClick={handleTriggerAll}
+              disabled={
+                subscriptions.filter((s) => s.isActive).length === 0 ||
+                (collectionState?.activeCollections?.length ?? 0) > 0
+              }
+            >
+              Запустить всё
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<Clock size={14} />}
+              onClick={() => openBackfill()}
+            >
+              Восполнить пропуски
+            </Button>
+          </div>
+        )}
         {collectionState && collectionState.llmQueue.length > 0 && (
           <LlmQueueIndicator items={collectionState.llmQueue} />
         )}
@@ -213,31 +238,6 @@ export default function CollectionPage() {
                 triggerLoading={triggerLoadingId === sub.id}
               />
             ))}
-          </div>
-
-          {/* Action buttons */}
-          <div className="mb-8 flex gap-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Play size={14} />}
-              loading={triggerAllLoading}
-              onClick={handleTriggerAll}
-              disabled={
-                subscriptions.filter((s) => s.isActive).length === 0 ||
-                (collectionState?.activeCollections?.length ?? 0) > 0
-              }
-            >
-              Запустить всё
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              leftIcon={<Clock size={14} />}
-              onClick={() => openBackfill()}
-            >
-              Восполнить пропуски
-            </Button>
           </div>
 
           {/* Collection logs */}
