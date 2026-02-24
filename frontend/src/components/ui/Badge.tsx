@@ -19,6 +19,7 @@ interface BadgeProps {
 export default function Badge({ variant = 'neutral', children, className = '' }: BadgeProps) {
   return (
     <span
+      role="status"
       className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${variantStyles[variant]} ${className}`}
     >
       {children}

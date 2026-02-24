@@ -30,6 +30,7 @@ export default function AchievementFilters({
         value={selectedEmployee}
         onChange={(e) => onEmployeeChange(e.target.value)}
         className={selectClass}
+        aria-label="Фильтр по сотруднику"
       >
         <option value="">Все сотрудники</option>
         {employees.map((e) => (
@@ -41,6 +42,7 @@ export default function AchievementFilters({
         value={selectedType}
         onChange={(e) => onTypeChange(e.target.value)}
         className={selectClass}
+        aria-label="Фильтр по типу"
       >
         <option value="">Все типы</option>
         {types.map((t) => (
@@ -52,6 +54,7 @@ export default function AchievementFilters({
         value={selectedProject}
         onChange={(e) => onProjectChange(e.target.value)}
         className={selectClass}
+        aria-label="Фильтр по проекту"
       >
         <option value="">Все проекты</option>
         {projects.map((p) => (

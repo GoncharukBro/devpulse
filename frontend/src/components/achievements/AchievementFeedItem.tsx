@@ -95,8 +95,12 @@ export default function AchievementFeedItem({ login, displayName, achievements }
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-expanded={expanded}
       onClick={() => setExpanded((v) => !v)}
-      className={`cursor-pointer rounded-lg border border-gray-200 dark:border-surface-border border-l-4 ${BORDER_COLORS[bestRarity]} bg-white dark:bg-surface px-4 py-3 transition-all duration-200 hover:shadow-md ${bestRarity === 'legendary' ? 'shadow-[0_0_8px_rgba(245,158,11,0.15)]' : ''}`}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded((v) => !v); } }}
+      className={`cursor-pointer rounded-lg border border-gray-200 dark:border-surface-border border-l-4 ${BORDER_COLORS[bestRarity]} bg-white dark:bg-surface px-4 py-3 transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${bestRarity === 'legendary' ? 'shadow-[0_0_8px_rgba(245,158,11,0.15)]' : ''}`}
     >
       {/* Header — always visible */}
       <div className="flex items-center justify-between gap-2">

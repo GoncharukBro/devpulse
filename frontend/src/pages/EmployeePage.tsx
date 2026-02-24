@@ -159,7 +159,7 @@ export default function EmployeePage() {
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={loadSummary}
-              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
+              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 transition-colors"
             >
               Повторить
             </button>
@@ -317,7 +317,7 @@ export default function EmployeePage() {
       )}
 
       {/* KPI Cards */}
-      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
         <KpiCard title="Score" value={displayScore} metric="score" trend={displayTrend} loading={loading} />
         <KpiCard title="Загрузка" value={displayUtilization} suffix="%" metric="utilization" loading={loading} />
         <KpiCard title="Точность" value={displayEstimation} suffix="%" metric="estimationAccuracy" loading={loading} />
@@ -476,14 +476,16 @@ export default function EmployeePage() {
                   <button
                     onClick={() => setReportsPage((p) => Math.max(1, p - 1))}
                     disabled={reportsList.page <= 1}
-                    className="rounded p-1 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-30"
+                    className="rounded p-1 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    aria-label="Предыдущая страница"
                   >
                     <ChevronLeft size={16} />
                   </button>
                   <button
                     onClick={() => setReportsPage((p) => p + 1)}
                     disabled={reportsList.page * reportsList.limit >= reportsList.total}
-                    className="rounded p-1 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-30"
+                    className="rounded p-1 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    aria-label="Следующая страница"
                   >
                     <ChevronRight size={16} />
                   </button>

@@ -89,11 +89,11 @@ export default function WeeklyChart({ data, metrics, height = 280 }: WeeklyChart
             </linearGradient>
           ))}
         </defs>
-        <CartesianGrid stroke="#2a2a3a" strokeDasharray="3 3" vertical={false} />
+        <CartesianGrid className="stroke-gray-200 dark:stroke-surface-border" strokeDasharray="3 3" vertical={false} />
         <XAxis
           dataKey="label"
           tick={{ fontSize: 11, fill: '#6b7280' }}
-          axisLine={{ stroke: '#2a2a3a' }}
+          axisLine={false}
           tickLine={false}
         />
         <YAxis

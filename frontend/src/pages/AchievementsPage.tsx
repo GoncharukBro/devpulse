@@ -36,9 +36,9 @@ export default function AchievementsPage() {
     loadCatalog();
   }, [loadCatalog]);
 
-  const tabs: { id: TabId; icon: string; label: string }[] = [
-    { id: 'catalog', icon: '\uD83D\uDCDA', label: 'Каталог' },
-    { id: 'feed', icon: '\uD83D\uDD14', label: 'Лента' },
+  const tabs: { id: TabId; label: string }[] = [
+    { id: 'catalog', label: 'Каталог' },
+    { id: 'feed', label: 'Лента' },
   ];
 
   if (error && !catalog) {
@@ -50,7 +50,7 @@ export default function AchievementsPage() {
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
             <button
               onClick={loadCatalog}
-              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600"
+              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 transition-colors"
             >
               Повторить
             </button>
@@ -68,29 +68,38 @@ export default function AchievementsPage() {
       <AchievementStats stats={catalog?.stats ?? null} loading={catalogLoading} />
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-1 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter p-1">
+      <div role="tablist" aria-label="Разделы достижений" className="mb-6 flex gap-1 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter p-1">
         {tabs.map((tab) => (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls={`tabpanel-${tab.id}`}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
               activeTab === tab.id
                 ? 'bg-white dark:bg-surface text-gray-900 dark:text-gray-100 shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
             }`}
           >
-            {tab.icon} {tab.label}
+            {tab.label}
           </button>
         ))}
       </div>
 
       {/* Tab content */}
-      {activeTab === 'feed' && <AchievementFeed />}
+      {activeTab === 'feed' && (
+        <div id="tabpanel-feed" role="tabpanel">
+          <AchievementFeed />
+        </div>
+      )}
       {activeTab === 'catalog' && (
-        <AchievementCatalog
-          categories={catalog?.categories ?? []}
-          loading={catalogLoading}
-        />
+        <div id="tabpanel-catalog" role="tabpanel">
+          <AchievementCatalog
+            categories={catalog?.categories ?? []}
+            loading={catalogLoading}
+          />
+        </div>
       )}
     </>
   );

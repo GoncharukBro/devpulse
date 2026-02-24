@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useState, useId } from 'react';
 
 type Position = 'top' | 'bottom' | 'left' | 'right';
 
@@ -17,17 +17,23 @@ interface TooltipProps {
 
 export default function Tooltip({ content, position = 'top', children }: TooltipProps) {
   const [visible, setVisible] = useState(false);
+  const tooltipId = useId();
 
   return (
     <div
       className="relative inline-flex"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
+      onFocus={() => setVisible(true)}
+      onBlur={() => setVisible(false)}
+      aria-describedby={visible ? tooltipId : undefined}
     >
       {children}
       {visible && (
         <div
-          className={`pointer-events-none absolute z-50 whitespace-nowrap rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-100 shadow-lg ${positionStyles[position]}`}
+          id={tooltipId}
+          role="tooltip"
+          className={`pointer-events-none absolute z-50 max-w-xs rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-100 shadow-lg ${positionStyles[position]}`}
         >
           {content}
         </div>

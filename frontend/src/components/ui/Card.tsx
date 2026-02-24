@@ -16,7 +16,7 @@ export default function Card({ children, className = '', noPadding, header, foot
       {header && (
         <div className="border-b border-gray-200 dark:border-surface-border px-6 py-4">{header}</div>
       )}
-      <div className={noPadding ? '' : 'p-6'}>{children}</div>
+      <div className={noPadding ? '' : 'p-4 sm:p-6'}>{children}</div>
       {footer && (
         <div className="border-t border-gray-200 dark:border-surface-border px-6 py-4">{footer}</div>
       )}

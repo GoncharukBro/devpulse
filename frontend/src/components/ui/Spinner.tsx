@@ -9,9 +9,10 @@ const sizeMap: Record<SpinnerSize, number> = {
 interface SpinnerProps {
   size?: SpinnerSize;
   className?: string;
+  label?: string;
 }
 
-export default function Spinner({ size = 'md', className = '' }: SpinnerProps) {
+export default function Spinner({ size = 'md', className = '', label = 'Загрузка' }: SpinnerProps) {
   const px = sizeMap[size];
   return (
     <svg
@@ -20,6 +21,8 @@ export default function Spinner({ size = 'md', className = '' }: SpinnerProps) {
       height={px}
       viewBox="0 0 24 24"
       fill="none"
+      role="status"
+      aria-label={label}
     >
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path

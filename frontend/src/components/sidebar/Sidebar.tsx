@@ -27,6 +27,8 @@ const managementNav = [
   { label: 'Настройки', to: '/settings', icon: Settings },
 ];
 
+export const SIDEBAR_WIDTH = 260;
+
 export default function Sidebar() {
   const isMobile = useIsMobile();
   const sidebarOpen = useUIStore((s) => s.sidebarOpen);
@@ -75,7 +77,7 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
+        <nav aria-label="Основная навигация" className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
           <NavSection title="Аналитика" items={analyticsNav} onNavigate={isMobile ? closeSidebar : undefined} />
           <NavSection title="Управление" items={managementNav} onNavigate={isMobile ? closeSidebar : undefined} />
         </nav>
@@ -95,6 +97,7 @@ export default function Sidebar() {
               onClick={handleLogout}
               className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-surface-lighter dark:hover:text-gray-300"
               title="Выйти"
+              aria-label="Выйти из аккаунта"
             >
               <LogOut size={18} />
             </button>
@@ -127,7 +130,7 @@ function NavSection({ title, items, onNavigate }: NavSectionProps) {
                 `group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
                   isActive
                     ? 'bg-brand-500/10 text-brand-600 dark:text-brand-400'
-                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-surface-lighter dark:hover:text-gray-200'
+                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-surface-lighter dark:hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500'
                 }`
               }
             >

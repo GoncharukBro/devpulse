@@ -40,12 +40,17 @@ export default function InfoTooltip({ title, lines }: InfoTooltipProps) {
       className="relative inline-flex"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
+      onFocus={() => setVisible(true)}
+      onBlur={() => setVisible(false)}
     >
-      <Info size={14} className="cursor-help text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" />
+      <button type="button" className="cursor-help text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded" aria-label={title}>
+        <Info size={14} />
+      </button>
       {visible && (
         <div
           ref={tooltipRef}
-          className={`absolute z-50 w-72 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 p-3 shadow-xl ${posClass}`}
+          role="tooltip"
+          className={`absolute z-50 w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 p-3 shadow-xl ${posClass}`}
         >
           <div className="mb-1.5 text-sm font-semibold text-gray-900 dark:text-gray-100">{title}</div>
           <div className="space-y-1">

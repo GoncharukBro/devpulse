@@ -110,7 +110,7 @@ export default function CollectionPage() {
 
   // Delete subscription
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Удалить подписку? Все собранные данные будут потеряны.')) return;
+    if (!confirm('Удалить подписку? Все собранные данные будут потеряны.')) return;
     try {
       await subscriptionsApi.delete(id);
       toast.success('Подписка удалена');
@@ -218,7 +218,7 @@ export default function CollectionPage() {
           icon={Database}
           title="Нет зарегистрированных проектов"
           description="Добавьте первый проект для начала сбора метрик разработчиков"
-          action={{ label: 'Добавить проект', to: '#' }}
+          action={{ label: 'Добавить проект', to: '/collection' }}
         />
       ) : (
         <>

@@ -86,7 +86,8 @@ export default function ConcernsList({ concerns, loading }: ConcernsListProps) {
           <button
             key={`${g.youtrackLogin}:${g.projectName ?? ''}`}
             onClick={() => navigate(`/employees/${g.youtrackLogin}`)}
-            className="flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter"
+            aria-label={`Перейти к профилю ${g.displayName}`}
+            className="flex w-full items-start gap-2 rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <span className={g.severity === 'danger' ? 'text-red-400' : 'text-amber-400'}>
               ●

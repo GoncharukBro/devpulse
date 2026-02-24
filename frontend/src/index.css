@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --color-legendary: 245 158 11;
+  }
+
   html {
     @apply bg-gray-50 text-gray-900 antialiased;
   }
@@ -27,6 +31,11 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-400 dark:bg-gray-600;
   }
+
+  /* Focus visible defaults for interactive elements */
+  *:focus-visible {
+    outline: none;
+  }
 }
 
 /* ── Achievement card gamedev styles ── */
@@ -34,12 +43,12 @@
 /* Legendary card pulsing glow */
 @keyframes legendary-glow {
   from {
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2),
-                0 0 40px rgba(245, 158, 11, 0.08);
+    box-shadow: 0 0 20px rgba(var(--color-legendary) / 0.2),
+                0 0 40px rgba(var(--color-legendary) / 0.08);
   }
   to {
-    box-shadow: 0 0 25px rgba(245, 158, 11, 0.35),
-                0 0 50px rgba(245, 158, 11, 0.15);
+    box-shadow: 0 0 25px rgba(var(--color-legendary) / 0.35),
+                0 0 50px rgba(var(--color-legendary) / 0.15);
   }
 }
 
@@ -47,11 +56,11 @@
 @keyframes star-shimmer {
   0%, 100% {
     opacity: 1;
-    filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6));
+    filter: drop-shadow(0 0 4px rgba(var(--color-legendary) / 0.6));
   }
   50% {
     opacity: 0.8;
-    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.9));
+    filter: drop-shadow(0 0 8px rgba(var(--color-legendary) / 0.9));
   }
 }
 

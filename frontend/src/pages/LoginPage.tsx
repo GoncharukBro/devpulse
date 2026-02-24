@@ -40,7 +40,8 @@ export default function LoginPage() {
         const savedUrl = authService.getSavedReturnUrl();
         navigate(savedUrl, { replace: true });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Ошибка авторизации');
+        const message = err instanceof Error ? err.message : 'Ошибка авторизации';
+        setError(message.length > 200 ? 'Ошибка авторизации. Попробуйте снова.' : message);
         setIsProcessing(false);
       }
     })();
