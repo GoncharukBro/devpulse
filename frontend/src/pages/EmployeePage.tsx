@@ -11,8 +11,8 @@ import IssuesByTypeChart from '@/components/metrics/IssuesByTypeChart';
 import SpentByTypeChart from '@/components/metrics/SpentByTypeChart';
 import InfoTooltip from '@/components/metrics/InfoTooltip';
 import LlmSummaryBlock from '@/components/employees/LlmSummaryBlock';
-import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
-import AchievementDetail from '@/components/achievements/AchievementDetail';
+import AchievementPortfolioCard from '@/components/achievements/AchievementPortfolioCard';
+import AchievementPortfolioDetail from '@/components/achievements/AchievementPortfolioDetail';
 import CopyButton from '@/components/shared/CopyButton';
 import PeriodFilter from '@/components/shared/PeriodFilter';
 import StatusBadge from '@/components/shared/StatusBadge';
@@ -31,7 +31,7 @@ import type {
   PaginatedEmployeeReports,
   EmployeeReportListItem,
 } from '@/types/reports';
-import type { Achievement } from '@/types/achievement';
+import type { PortfolioAchievement, PortfolioResponse } from '@/types/achievement';
 
 export default function EmployeePage() {
   const { login } = useParams<{ login: string }>();
@@ -40,12 +40,12 @@ export default function EmployeePage() {
   const [history, setHistory] = useState<EmployeeHistoryDTO | null>(null);
   const [report, setReport] = useState<EmployeeReportDTO | null>(null);
   const [reportsList, setReportsList] = useState<PaginatedEmployeeReports | null>(null);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [portfolio, setPortfolio] = useState<PortfolioResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
-  const [achievementDetailOpen, setAchievementDetailOpen] = useState(false);
+  const [selectedPortfolioAchievement, setSelectedPortfolioAchievement] = useState<PortfolioAchievement | null>(null);
+  const [portfolioDetailOpen, setPortfolioDetailOpen] = useState(false);
 
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [weeks, setWeeks] = useState(12);
@@ -109,12 +109,12 @@ export default function EmployeePage() {
     }
   }, [login, selectedProject, reportsPage]);
 
-  // Load achievements
-  const loadAchievements = useCallback(async () => {
+  // Load portfolio
+  const loadPortfolio = useCallback(async () => {
     if (!login) return;
     try {
-      const result = await achievementsApi.getByEmployee(login);
-      setAchievements(result);
+      const result = await achievementsApi.getPortfolio(login);
+      setPortfolio(result);
     } catch {
       // Non-critical
     }
@@ -123,7 +123,7 @@ export default function EmployeePage() {
   useEffect(() => { loadSummary(); }, [loadSummary]);
   useEffect(() => { loadHistory(); }, [loadHistory]);
   useEffect(() => { loadReportsList(); }, [loadReportsList]);
-  useEffect(() => { loadAchievements(); }, [loadAchievements]);
+  useEffect(() => { loadPortfolio(); }, [loadPortfolio]);
 
   // Auto-load the latest report when summary and project are available
   useEffect(() => {
@@ -494,21 +494,28 @@ export default function EmployeePage() {
         </div>
       )}
 
-      {/* Achievements */}
+      {/* Achievements — Portfolio */}
       <Card>
         <div className="mb-3 flex items-center gap-2 text-gray-500 dark:text-gray-400">
           <Award size={16} />
-          <span className="text-sm font-medium">Ачивки</span>
+          <span className="text-sm font-medium">
+            Ачивки
+            {portfolio && portfolio.stats.unlockedTypes > 0 && (
+              <span className="ml-1 text-gray-400 dark:text-gray-500">
+                ({portfolio.stats.unlockedTypes}/{portfolio.stats.totalTypes} типов &bull; {portfolio.stats.totalLevels} уровней)
+              </span>
+            )}
+          </span>
         </div>
-        {achievements.length > 0 ? (
+        {portfolio && portfolio.achievements.length > 0 ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {achievements.map((a) => (
-              <AchievementCardCompact
-                key={a.id}
+            {portfolio.achievements.map((a) => (
+              <AchievementPortfolioCard
+                key={a.type}
                 achievement={a}
                 onClick={(ach) => {
-                  setSelectedAchievement(ach);
-                  setAchievementDetailOpen(true);
+                  setSelectedPortfolioAchievement(ach);
+                  setPortfolioDetailOpen(true);
                 }}
               />
             ))}
@@ -526,10 +533,10 @@ export default function EmployeePage() {
         youtrackLogin={login}
         subscriptionId={selectedProject ?? summary?.projects[0]?.subscriptionId}
       />
-      <AchievementDetail
-        achievement={selectedAchievement}
-        open={achievementDetailOpen}
-        onClose={() => setAchievementDetailOpen(false)}
+      <AchievementPortfolioDetail
+        achievement={selectedPortfolioAchievement}
+        open={portfolioDetailOpen}
+        onClose={() => setPortfolioDetailOpen(false)}
       />
     </>
   );

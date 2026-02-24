@@ -249,6 +249,11 @@ export default function CatalogCard({ achievement, onClick }: CatalogCardProps) 
         </p>
       )}
 
+      {achievement.maxStreak > 0 && (
+        <p className="text-[10px] text-orange-500 mb-0.5">
+          {'\uD83D\uDD25'} Макс. серия: {achievement.maxStreak} нед.
+        </p>
+      )}
       <p className="text-[10px] text-gray-400 dark:text-gray-500">
         {'\uD83D\uDC64'} {achievement.earnedCount} получил
         {achievement.earnedCount === 1 ? '' : 'и'}

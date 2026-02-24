@@ -1,11 +1,12 @@
 import { apiClient } from '@/api/client';
-import type { Achievement, AchievementTypeInfo, CatalogResponse } from '@/types/achievement';
+import type { Achievement, AchievementTypeInfo, CatalogResponse, PortfolioResponse } from '@/types/achievement';
 
 export interface AchievementsListParams {
   youtrackLogin?: string;
   type?: string;
   subscriptionId?: string;
   rarity?: string;
+  newOnly?: boolean;
   page?: number;
   limit?: number;
 }
@@ -40,6 +41,11 @@ export const achievementsApi = {
 
   async getCatalog(): Promise<CatalogResponse> {
     const response = await apiClient.get<CatalogResponse>('/achievements/catalog');
+    return response.data;
+  },
+
+  async getPortfolio(login: string): Promise<PortfolioResponse> {
+    const response = await apiClient.get<PortfolioResponse>(`/achievements/portfolio/${login}`);
     return response.data;
   },
 };

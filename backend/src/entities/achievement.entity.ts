@@ -6,7 +6,7 @@ export interface AchievementMetadata {
 }
 
 @Entity({ tableName: 'achievements' })
-@Unique({ properties: ['youtrackLogin', 'type', 'periodStart', 'subscription'] })
+@Unique({ properties: ['youtrackLogin', 'type', 'rarity', 'subscription'] })
 export class Achievement {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
@@ -34,6 +34,18 @@ export class Achievement {
 
   @Property({ type: 'jsonb', default: '{}' })
   metadata: AchievementMetadata = {};
+
+  @Property({ type: 'int', default: 0 })
+  currentStreak: number = 0;
+
+  @Property({ type: 'int', default: 0 })
+  bestStreak: number = 0;
+
+  @Property({ type: 'timestamptz', nullable: true })
+  lastConfirmedAt?: Date;
+
+  @Property({ type: 'boolean', default: true })
+  isNew: boolean = true;
 
   @Property({ type: 'timestamptz', defaultRaw: 'now()' })
   createdAt: Date = new Date();

@@ -253,6 +253,12 @@ export default function CatalogCardDetail({ achievement, open, onClose }: Catalo
                   <RarityBadge rarity={person.rarity} />
                   <span>{formatDate(person.periodStart)}</span>
                   {person.description && <span>&bull; {person.description}</span>}
+                  {person.currentStreak > 0 && (
+                    <span className="text-orange-500">{'\uD83D\uDD25'} {person.currentStreak} нед.</span>
+                  )}
+                  {person.bestStreak > 0 && (
+                    <span>рекорд: {person.bestStreak}</span>
+                  )}
                 </div>
               </div>
             ))}

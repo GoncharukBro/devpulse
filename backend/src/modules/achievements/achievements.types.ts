@@ -33,6 +33,9 @@ export interface AchievementDTO {
   rarity: string;
   icon: string;
   metadata: Record<string, unknown>;
+  currentStreak: number;
+  bestStreak: number;
+  isNew: boolean;
   createdAt: string;
 }
 

@@ -40,6 +40,9 @@ function toDTO(
     rarity: achievement.rarity,
     icon: def?.icon ?? 'Award',
     metadata: achievement.metadata,
+    currentStreak: achievement.currentStreak,
+    bestStreak: achievement.bestStreak,
+    isNew: achievement.isNew,
     createdAt: achievement.createdAt.toISOString(),
   };
 }
@@ -53,6 +56,7 @@ export class AchievementsService {
     type?: string;
     subscriptionId?: string;
     rarity?: string;
+    newOnly?: boolean;
     page?: number;
     limit?: number;
   }): Promise<{ data: AchievementDTO[]; total: number }> {
@@ -68,6 +72,7 @@ export class AchievementsService {
     if (params.youtrackLogin) where.youtrackLogin = params.youtrackLogin;
     if (params.type) where.type = params.type;
     if (params.rarity) where.rarity = params.rarity;
+    if (params.newOnly) where.isNew = true;
 
     const page = params.page ?? 1;
     const limit = params.limit ?? 50;
@@ -287,7 +292,15 @@ export class AchievementsService {
       rarity: a.rarity as AchievementRarity,
       description: a.description ?? '',
       periodStart: formatYTDate(a.periodStart),
+      currentStreak: a.currentStreak,
+      bestStreak: a.bestStreak,
     }));
+
+    // Max streak among all earners
+    let maxStreak = 0;
+    for (const a of typeAchievements) {
+      if (a.bestStreak > maxStreak) maxStreak = a.bestStreak;
+    }
 
     return {
       type,
@@ -301,6 +314,137 @@ export class AchievementsService {
       nextLevel,
       earnedCount: typeAchievements.length,
       earnedBy,
+      maxStreak,
+    };
+  }
+
+  async getPortfolio(youtrackLogin: string, userId: string) {
+    const subscriptions = await this.getUserSubscriptions(userId);
+    if (subscriptions.length === 0) {
+      return {
+        achievements: [],
+        stats: {
+          totalTypes: ACHIEVEMENT_DEFINITIONS.length,
+          unlockedTypes: 0,
+          totalLevels: 0,
+          maxPossibleLevels: ACHIEVEMENT_DEFINITIONS.length * 4,
+          activeSeries: 0,
+          longestStreak: 0,
+        },
+      };
+    }
+
+    const subIds = subscriptions.map((s) => s.id);
+
+    const achievements = await this.em.find(
+      Achievement,
+      {
+        subscription: { $in: subIds },
+        youtrackLogin,
+      },
+      {
+        populate: ['subscription'],
+        orderBy: { createdAt: 'DESC' },
+      },
+    );
+
+    // Group by type
+    const byType = new Map<string, Achievement[]>();
+    for (const a of achievements) {
+      const arr = byType.get(a.type) ?? [];
+      arr.push(a);
+      byType.set(a.type, arr);
+    }
+
+    const RARITY_ORD: Record<string, number> = { common: 0, rare: 1, epic: 2, legendary: 3 };
+    const rarityList: AchievementRarity[] = ['common', 'rare', 'epic', 'legendary'];
+
+    let totalLevels = 0;
+    let activeSeries = 0;
+    let longestStreak = 0;
+
+    const portfolioItems = [];
+
+    for (const def of ACHIEVEMENT_DEFINITIONS) {
+      const typeAchievements = byType.get(def.type);
+      if (!typeAchievements || typeAchievements.length === 0) continue;
+
+      // Find best rarity
+      let bestRarity: AchievementRarity = 'common';
+      let bestValue: number | null = null;
+      let currentStreak = 0;
+      let bestStreak = 0;
+
+      for (const a of typeAchievements) {
+        const r = a.rarity as AchievementRarity;
+        if ((RARITY_ORD[r] ?? 0) > (RARITY_ORD[bestRarity] ?? 0)) {
+          bestRarity = r;
+        }
+        const mv = (a.metadata as Record<string, unknown>).metricValue;
+        if (typeof mv === 'number' && (bestValue === null || mv > bestValue)) {
+          bestValue = mv;
+        }
+        if (a.currentStreak > currentStreak) currentStreak = a.currentStreak;
+        if (a.bestStreak > bestStreak) bestStreak = a.bestStreak;
+      }
+
+      totalLevels += typeAchievements.length;
+      if (currentStreak > 0) activeSeries++;
+      if (bestStreak > longestStreak) longestStreak = bestStreak;
+
+      // Build levels array
+      const levels = typeAchievements
+        .sort((a, b) => (RARITY_ORD[a.rarity] ?? 0) - (RARITY_ORD[b.rarity] ?? 0))
+        .map((a) => ({
+          rarity: a.rarity as AchievementRarity,
+          earnedAt: formatYTDate(a.periodStart),
+          description: a.description ?? '',
+        }));
+
+      // Calculate next level
+      const thresholds = ACHIEVEMENT_THRESHOLDS[def.type];
+      let nextLevel: { rarity: AchievementRarity; label: string; progress: number } | null = null;
+
+      if (bestRarity !== 'legendary' && thresholds) {
+        const currentIndex = rarityList.indexOf(bestRarity);
+        const nextRarity = rarityList[currentIndex + 1];
+        const nextThreshold = thresholds.levels[nextRarity];
+        if (nextThreshold) {
+          let progress = 0;
+          if (bestValue !== null && nextThreshold.value > 0) {
+            if (def.type === 'quick_closer') {
+              progress = Math.min(100, Math.round((nextThreshold.value / Math.max(bestValue, 1)) * 100));
+            } else {
+              progress = Math.min(100, Math.round((bestValue / nextThreshold.value) * 100));
+            }
+          }
+          nextLevel = { rarity: nextRarity, label: nextThreshold.label, progress };
+        }
+      }
+
+      portfolioItems.push({
+        type: def.type,
+        title: def.title,
+        icon: def.icon,
+        bestRarity,
+        bestValue,
+        currentStreak,
+        bestStreak,
+        levels,
+        nextLevel,
+      });
+    }
+
+    return {
+      achievements: portfolioItems,
+      stats: {
+        totalTypes: ACHIEVEMENT_DEFINITIONS.length,
+        unlockedTypes: byType.size,
+        totalLevels,
+        maxPossibleLevels: ACHIEVEMENT_DEFINITIONS.length * 4,
+        activeSeries,
+        longestStreak,
+      },
     };
   }
 

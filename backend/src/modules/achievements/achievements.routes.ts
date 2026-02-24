@@ -10,6 +10,7 @@ interface AchievementsListQuery {
   type?: string;
   subscriptionId?: string;
   rarity?: string;
+  newOnly?: string;
   page?: string;
   limit?: string;
 }
@@ -31,6 +32,7 @@ export async function achievementsRoutes(app: FastifyInstance): Promise<void> {
         type: request.query.type,
         subscriptionId: request.query.subscriptionId,
         rarity: request.query.rarity,
+        newOnly: request.query.newOnly === 'true',
         page: request.query.page ? parseInt(request.query.page, 10) : undefined,
         limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
       });
@@ -69,6 +71,16 @@ export async function achievementsRoutes(app: FastifyInstance): Promise<void> {
       const em = request.orm.em.fork();
       const service = new AchievementsService(em);
       return service.getByEmployee(request.params.login, request.user.id);
+    },
+  );
+
+  // GET /api/achievements/portfolio/:login
+  app.get<{ Params: { login: string } }>(
+    '/achievements/portfolio/:login',
+    async (request) => {
+      const em = request.orm.em.fork();
+      const service = new AchievementsService(em);
+      return service.getPortfolio(request.params.login, request.user.id);
     },
   );
 }

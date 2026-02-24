@@ -136,6 +136,19 @@ export default function AchievementCardCompact({ achievement, onClick }: Achieve
         </p>
       )}
 
+      {/* Streak */}
+      {achievement.currentStreak > 0 ? (
+        <p className="text-[10px] text-orange-500 mb-0.5">
+          {'\uD83D\uDD25'} {achievement.currentStreak} нед. подряд
+          {achievement.currentStreak >= achievement.bestStreak && achievement.bestStreak > 0 && achievement.currentStreak > 1
+            && ` — рекорд! ${'\uD83C\uDFC6'}`}
+        </p>
+      ) : achievement.bestStreak > 0 ? (
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-0.5">
+          Рекорд: {achievement.bestStreak} нед.
+        </p>
+      ) : null}
+
       {/* Project + Date */}
       <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">
         {achievement.projectName && <>{achievement.projectName} &bull; </>}

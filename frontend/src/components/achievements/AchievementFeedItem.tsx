@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ArrowUp } from 'lucide-react';
 import RarityBadge from './RarityBadge';
 import type { Achievement, AchievementRarity } from '@/types/achievement';
 
@@ -57,15 +57,41 @@ export function sortByRarity(achievements: Achievement[]): Achievement[] {
   return [...achievements].sort((a, b) => RARITY_ORDER[b.rarity] - RARITY_ORDER[a.rarity]);
 }
 
+/**
+ * Determine if an achievement is a level-up (not the first time — rarity > common,
+ * or there are multiple achievements of same type for same employee in the list).
+ */
+function isLevelUp(achievement: Achievement, allAchievements: Achievement[]): boolean {
+  // If rarity is not common, it's likely a level-up
+  if (achievement.rarity !== 'common') {
+    // Check if there are lower-rarity achievements of the same type for this employee
+    return allAchievements.some(
+      (a) => a.type === achievement.type &&
+        a.youtrackLogin === achievement.youtrackLogin &&
+        RARITY_ORDER[a.rarity] < RARITY_ORDER[achievement.rarity],
+    );
+  }
+  return false;
+}
+
 export default function AchievementFeedItem({ login, displayName, achievements }: AchievementFeedItemProps) {
   const [expanded, setExpanded] = useState(false);
   const bestRarity = getBestRarity(achievements);
   const sorted = sortByRarity(achievements);
 
+  // Deduplicate: for each type, show only best rarity
+  const bestByType = new Map<string, Achievement>();
+  for (const a of sorted) {
+    if (!bestByType.has(a.type)) {
+      bestByType.set(a.type, a);
+    }
+  }
+  const uniqueAchievements = [...bestByType.values()];
+
   // Check if achievements span multiple projects
-  const projects = new Set(sorted.map((a) => a.projectName).filter(Boolean));
+  const projects = new Set(uniqueAchievements.map((a) => a.projectName).filter(Boolean));
   const singleProject = projects.size <= 1;
-  const projectName = singleProject ? (sorted[0]?.projectName ?? '') : '';
+  const projectName = singleProject ? (uniqueAchievements[0]?.projectName ?? '') : '';
 
   return (
     <div
@@ -94,33 +120,48 @@ export default function AchievementFeedItem({ login, displayName, achievements }
       {/* Compact badges — visible when collapsed */}
       {!expanded && (
         <div className="mt-1.5 flex flex-wrap gap-1.5">
-          {sorted.map((a) => (
-            <span key={a.id} className="inline-flex items-center gap-1">
-              <span className="text-sm leading-none">{getIcon(a.type)}</span>
-              <RarityBadge rarity={a.rarity} />
-            </span>
-          ))}
+          {uniqueAchievements.map((a) => {
+            const upgraded = isLevelUp(a, achievements);
+            return (
+              <span key={a.id} className="inline-flex items-center gap-1">
+                <span className="text-sm leading-none">{getIcon(a.type)}</span>
+                <RarityBadge rarity={a.rarity} />
+                {upgraded && <ArrowUp size={10} className="text-green-500" />}
+              </span>
+            );
+          })}
         </div>
       )}
 
       {/* Expanded details */}
       {expanded && (
         <div className="mt-3 space-y-2.5 animate-fade-in">
-          {sorted.map((a) => (
-            <div key={a.id} className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-2 min-w-0">
-                <span className="shrink-0 text-lg leading-tight mt-0.5">{getIcon(a.type)}</span>
-                <div className="min-w-0">
-                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{a.title}</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {!singleProject && a.projectName && <>{a.projectName} &bull; </>}
-                    {a.description}
-                  </p>
+          {uniqueAchievements.map((a) => {
+            const upgraded = isLevelUp(a, achievements);
+            return (
+              <div key={a.id} className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2 min-w-0">
+                  <span className="shrink-0 text-lg leading-tight mt-0.5">{getIcon(a.type)}</span>
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{a.title}</span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {!singleProject && a.projectName && <>{a.projectName} &bull; </>}
+                      {a.description}
+                    </p>
+                    {a.currentStreak > 0 && (
+                      <p className="text-[10px] text-orange-500">
+                        {'\uD83D\uDD25'} {a.currentStreak} нед. подряд
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <RarityBadge rarity={a.rarity} />
+                  {upgraded && <ArrowUp size={12} className="text-green-500" />}
                 </div>
               </div>
-              <RarityBadge rarity={a.rarity} />
-            </div>
-          ))}
+            );
+          })}
 
           {/* Profile link */}
           <div className="pt-1">
