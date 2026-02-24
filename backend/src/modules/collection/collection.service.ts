@@ -91,17 +91,52 @@ export class CollectionService {
 
     const period = this.resolvePeriod(periodStart, periodEnd);
 
-    // Check if a collection is already running or queued for this subscription+period
+    // Check if a collection log already exists for this subscription+period
     const existingLog = await this.em.findOne(CollectionLog, {
       subscription,
       periodStart: period.start,
       periodEnd: period.end,
-      status: { $in: ['queued', 'running', 'collecting'] },
-    });
+    }, { orderBy: { createdAt: 'DESC' } });
+
     if (existingLog) {
+      // If already in progress — just return existing id
+      if (['queued', 'running', 'collecting'].includes(existingLog.status)) {
+        return existingLog.id;
+      }
+
+      // If completed/partial/error — reset and reuse
+      existingLog.type = type;
+      existingLog.status = 'queued';
+      existingLog.totalEmployees = 0;
+      existingLog.processedEmployees = 0;
+      existingLog.errors = [];
+      existingLog.startedAt = new Date();
+      existingLog.completedAt = undefined;
+      await this.em.flush();
+
+      collectionState.addToQueue({
+        subscriptionId: subscription.id,
+        logId: existingLog.id,
+        periodStart: period.start,
+        periodEnd: period.end,
+        type,
+      });
+
+      collectionState.updateProgress(existingLog.id, {
+        subscriptionId: subscription.id,
+        projectName: subscription.projectName,
+        status: 'queued',
+        processedEmployees: 0,
+        totalEmployees: 0,
+        periodStart: formatYTDate(period.start),
+        periodEnd: formatYTDate(period.end),
+        startedAt: new Date().toISOString(),
+      });
+
       return existingLog.id;
     }
 
+    // No existing log — create new
     const log = createCollectionLog(
       this.em,
       subscription,
@@ -224,14 +259,41 @@ export class CollectionService {
     const subscriptions = await this.em.find(Subscription, { isActive: true });
 
     for (const sub of subscriptions) {
-      const log = createCollectionLog(
-        this.em,
-        sub,
-        'scheduled',
-        'queued',
+      // Check if a log already exists for this subscription+period
+      const existingLog = await this.em.findOne(CollectionLog, {
+        subscription: sub,
         periodStart,
         periodEnd,
-      );
+      }, { orderBy: { createdAt: 'DESC' } });
+
+      let log: CollectionLog;
+
+      if (existingLog) {
+        // If already in progress — skip
+        if (['queued', 'running', 'collecting'].includes(existingLog.status)) {
+          continue;
+        }
+
+        // Reset and reuse existing log
+        existingLog.type = 'scheduled';
+        existingLog.status = 'queued';
+        existingLog.totalEmployees = 0;
+        existingLog.processedEmployees = 0;
+        existingLog.errors = [];
+        existingLog.startedAt = new Date();
+        existingLog.completedAt = undefined;
+        log = existingLog;
+      } else {
+        log = createCollectionLog(
+          this.em,
+          sub,
+          'scheduled',
+          'queued',
+          periodStart,
+          periodEnd,
+        );
+      }
+
       await this.em.flush();
 
       collectionState.addToQueue({

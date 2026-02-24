@@ -25,29 +25,6 @@ interface Logger {
 
 const POLL_INTERVAL = 2000;
 
-function createCollectionLog(
-  em: EntityManager,
-  subscription: Subscription,
-  type: string,
-  status: string,
-  periodStart: Date,
-  periodEnd: Date,
-): CollectionLog {
-  const log = new CollectionLog();
-  log.subscription = subscription;
-  log.type = type;
-  log.status = status;
-  log.periodStart = periodStart;
-  log.periodEnd = periodEnd;
-  log.totalEmployees = 0;
-  log.processedEmployees = 0;
-  log.errors = [];
-  log.startedAt = new Date();
-  log.createdAt = new Date();
-  em.persist(log);
-  return log;
-}
-
 function createMetricReport(
   em: EntityManager,
   subscription: Subscription,
@@ -425,35 +402,23 @@ export class CollectionWorker {
         `Recovering interrupted collection: ${log.subscription.projectName}, period ${formatYTDate(log.periodStart)}..${formatYTDate(log.periodEnd)}`,
       );
 
-      // Mark old log as error
-      log.status = 'error';
-      log.errors = [...log.errors, {
-        login: '',
-        error: 'Process interrupted, re-queued',
-        timestamp: new Date().toISOString(),
-      }];
-      log.completedAt = new Date();
-
-      // Create a new log for the re-queued task
-      const newLog = createCollectionLog(
-        em,
-        log.subscription,
-        log.type,
-        'queued',
-        log.periodStart,
-        log.periodEnd,
-      );
+      // Reset the same log to queued instead of creating a new one
+      log.status = 'queued';
+      log.processedEmployees = 0;
+      log.errors = [];
+      log.startedAt = new Date();
+      log.completedAt = undefined;
       await em.flush();
 
       collectionState.addToQueue({
         subscriptionId: log.subscription.id,
-        logId: newLog.id,
+        logId: log.id,
         periodStart: log.periodStart,
         periodEnd: log.periodEnd,
         type: log.type as 'scheduled' | 'manual' | 'backfill',
       });
 
-      collectionState.updateProgress(newLog.id, {
+      collectionState.updateProgress(log.id, {
         subscriptionId: log.subscription.id,
         projectName: log.subscription.projectName,
         status: 'queued',
