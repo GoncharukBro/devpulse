@@ -32,11 +32,7 @@ function processQueue(error: AxiosError | null) {
     if (error) {
       pending.reject(error);
     } else {
-      const token = useAuthStore.getState().accessToken;
-      const cfg = { ...pending } as unknown as InternalAxiosRequestConfig;
-      if (token && cfg.headers) {
-        cfg.headers.Authorization = `Bearer ${token}`;
-      }
+      pending.resolve({} as InternalAxiosRequestConfig);
     }
   });
   failedQueue = [];
@@ -49,8 +45,9 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status !== 401 || originalRequest._retry) {
       if (error.response?.status !== 401) {
+        const data = error.response?.data as Record<string, unknown> | undefined;
         const message =
-          (error.response?.data as { message?: string })?.message || 'Произошла ошибка';
+          (typeof data?.message === 'string' ? data.message : null) || 'Произошла ошибка';
         toast.error(message);
       }
       return Promise.reject(error);

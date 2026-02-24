@@ -69,12 +69,9 @@ export default function ProjectPage() {
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
-            <button
-              onClick={loadSummary}
-              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900 transition-colors"
-            >
+            <Button variant="primary" size="sm" onClick={loadSummary}>
               Повторить
-            </button>
+            </Button>
           </div>
         </Card>
       </>

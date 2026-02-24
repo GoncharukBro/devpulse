@@ -6,12 +6,12 @@ import EmptyState from '@/components/ui/EmptyState';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import SubscriptionCard from '@/components/collection/SubscriptionCard';
-import LlmQueueIndicator from '@/components/collection/LlmQueueIndicator';
 import CronControl from '@/components/collection/CronControl';
 import AddProjectWizard from '@/components/collection/AddProjectWizard';
 import EditSubscriptionModal from '@/components/collection/EditSubscriptionModal';
 import BackfillModal from '@/components/collection/BackfillModal';
 import CollectionLogs from '@/components/collection/CollectionLogs';
+import Modal from '@/components/ui/Modal';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
 import { collectionApi } from '@/api/endpoints/collection';
 import { useCollectionStore } from '@/stores/collection.store';
@@ -34,11 +34,15 @@ export default function CollectionPage() {
   const [editModalMode, setEditModalMode] = useState<'employees' | 'fieldMapping'>('employees');
   const [backfillOpen, setBackfillOpen] = useState(false);
   const [backfillPreselectedId, setBackfillPreselectedId] = useState<string | undefined>();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [logsRefreshKey, setLogsRefreshKey] = useState(0);
 
   // Collection store
   const collectionState = useCollectionStore((s) => s.state);
   const fetchState = useCollectionStore((s) => s.fetchState);
   const stopPolling = useCollectionStore((s) => s.stopPolling);
+  const onCollectionDone = useCollectionStore((s) => s.onCollectionDone);
 
   const loadSubscriptions = useCallback(async () => {
     try {
@@ -69,6 +73,15 @@ export default function CollectionPage() {
     return () => stopPolling();
   }, [loadSubscriptions, fetchState, loadCronState, stopPolling]);
 
+  // Refresh subscriptions when all collections finish
+  useEffect(() => {
+    onCollectionDone(() => {
+      loadSubscriptions();
+      setLogsRefreshKey((k) => k + 1);
+    });
+    return () => onCollectionDone(null);
+  }, [onCollectionDone, loadSubscriptions]);
+
   // Trigger single
   const handleTrigger = async (subscriptionId: string) => {
     setTriggerLoadingId(subscriptionId);
@@ -76,6 +89,7 @@ export default function CollectionPage() {
       await collectionApi.trigger({ subscriptionId });
       toast.success('Сбор запущен');
       fetchState();
+      setLogsRefreshKey((k) => k + 1);
     } catch {
       toast.error('Не удалось запустить сбор');
     } finally {
@@ -90,6 +104,7 @@ export default function CollectionPage() {
       await collectionApi.triggerAll();
       toast.success('Сбор запущен для всех проектов');
       fetchState();
+      setLogsRefreshKey((k) => k + 1);
     } catch {
       toast.error('Не удалось запустить сбор');
     } finally {
@@ -109,14 +124,22 @@ export default function CollectionPage() {
   };
 
   // Delete subscription
-  const handleDelete = async (id: string) => {
-    if (!confirm('Удалить подписку? Все собранные данные будут потеряны.')) return;
+  const openDeleteConfirm = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirmed = async () => {
+    if (!deleteTargetId) return;
+    setDeleteConfirmOpen(false);
     try {
-      await subscriptionsApi.delete(id);
+      await subscriptionsApi.delete(deleteTargetId);
       toast.success('Подписка удалена');
       loadSubscriptions();
     } catch {
       toast.error('Не удалось удалить подписку');
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
@@ -150,6 +173,14 @@ export default function CollectionPage() {
   const getActiveCollection = (subscriptionId: string) =>
     collectionState?.activeCollections.find((ac) => ac.subscriptionId === subscriptionId);
 
+  // Get LLM queue items for a subscription
+  const getLlmItems = (subscriptionId: string) =>
+    collectionState?.llmQueue.filter((item) => item.subscriptionId === subscriptionId) ?? [];
+
+  // Get LLM processed count for a subscription
+  const getLlmProcessed = (subscriptionId: string) =>
+    collectionState?.llmProcessed[subscriptionId] ?? 0;
+
   if (loadingPage) {
     return (
       <>
@@ -180,7 +211,7 @@ export default function CollectionPage() {
         }
       />
 
-      {/* Cron + global actions + LLM indicators */}
+      {/* Cron + global actions */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <CronControl cronState={cronState} onPause={handlePauseCron} onResume={handleResumeCron} />
         {hasSubscriptions && (
@@ -193,7 +224,9 @@ export default function CollectionPage() {
               onClick={handleTriggerAll}
               disabled={
                 subscriptions.filter((s) => s.isActive).length === 0 ||
-                (collectionState?.activeCollections?.length ?? 0) > 0
+                (collectionState?.activeCollections?.length ?? 0) > 0 ||
+                (collectionState?.queue?.length ?? 0) > 0 ||
+                (collectionState?.llmQueue?.length ?? 0) > 0
               }
             >
               Запустить всё
@@ -203,13 +236,15 @@ export default function CollectionPage() {
               size="sm"
               leftIcon={<Clock size={14} />}
               onClick={() => openBackfill()}
+              disabled={
+                (collectionState?.activeCollections?.length ?? 0) > 0 ||
+                (collectionState?.queue?.length ?? 0) > 0 ||
+                (collectionState?.llmQueue?.length ?? 0) > 0
+              }
             >
               Восполнить пропуски
             </Button>
           </div>
-        )}
-        {collectionState && collectionState.llmQueue.length > 0 && (
-          <LlmQueueIndicator items={collectionState.llmQueue} />
         )}
       </div>
 
@@ -229,19 +264,21 @@ export default function CollectionPage() {
                 key={sub.id}
                 subscription={sub}
                 activeCollection={getActiveCollection(sub.id)}
+                llmItems={getLlmItems(sub.id)}
+                llmProcessed={getLlmProcessed(sub.id)}
                 onTrigger={handleTrigger}
                 onBackfill={(id) => openBackfill(id)}
                 onEdit={(id) => openEditModal(id, 'employees')}
                 onFieldMapping={(id) => openEditModal(id, 'fieldMapping')}
                 onToggleActive={handleToggleActive}
-                onDelete={handleDelete}
+                onDelete={openDeleteConfirm}
                 triggerLoading={triggerLoadingId === sub.id}
               />
             ))}
           </div>
 
           {/* Collection logs */}
-          <CollectionLogs subscriptions={subscriptions} />
+          <CollectionLogs subscriptions={subscriptions} refreshKey={logsRefreshKey} />
         </>
       )}
 
@@ -270,6 +307,26 @@ export default function CollectionPage() {
           loadSubscriptions();
         }}
       />
+
+      <Modal
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        title="Удаление подписки"
+        footer={
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setDeleteConfirmOpen(false)}>
+              Отмена
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleDeleteConfirmed}>
+              Удалить
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          Вы уверены, что хотите удалить подписку? Все собранные данные будут потеряны.
+        </p>
+      </Modal>
     </>
   );
 }

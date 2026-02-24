@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import Fastify, { FastifyError, FastifyInstance } from 'fastify';
 import { config } from './config';
 import { registerPlugins } from './plugins';
@@ -48,6 +49,11 @@ export async function buildApp(): Promise<FastifyInstance> {
       error: getHttpErrorName(statusCode),
       message: error.message,
     });
+  });
+
+  app.addHook('onRequest', async (request, reply) => {
+    request.id = request.headers['x-request-id'] as string || crypto.randomUUID();
+    reply.header('X-Request-ID', request.id);
   });
 
   app.addHook('onRequest', authenticate);

@@ -70,6 +70,7 @@ interface CollectedReport {
 export class CollectionWorker {
   private isRunning = false;
   private shouldStop = false;
+  private processing = false;
   private pollTimer: ReturnType<typeof setTimeout> | null = null;
   private llmService: LlmService | null = null;
   private achievementsGenerator: AchievementsGenerator | null = null;
@@ -85,6 +86,16 @@ export class CollectionWorker {
 
   setAchievementsGenerator(generator: AchievementsGenerator): void {
     this.achievementsGenerator = generator;
+  }
+
+  /** Wake up the worker immediately to process queued tasks */
+  nudge(): void {
+    if (!this.isRunning || this.processing) return;
+    if (this.pollTimer) {
+      clearTimeout(this.pollTimer);
+      this.pollTimer = null;
+    }
+    this.poll();
   }
 
   async start(): Promise<void> {
@@ -121,11 +132,13 @@ export class CollectionWorker {
 
     const task = collectionState.shiftQueue();
     if (task) {
+      this.processing = true;
       this.processTask(task)
         .catch((err) => {
           this.log.error(`Worker task failed: ${(err as Error).message}`);
         })
         .finally(() => {
+          this.processing = false;
           if (!this.shouldStop) {
             this.pollTimer = setTimeout(() => this.poll(), 100);
           } else {
@@ -294,10 +307,11 @@ export class CollectionWorker {
         // Formula score
         report.formulaScore = formulaScore ?? undefined;
 
-        // Status
+        // Status — reset LLM fields so report gets re-analyzed
         report.status = 'collected';
         report.collectedAt = new Date();
         report.errorMessage = undefined;
+        report.llmProcessedAt = undefined;
 
         await em.flush();
 

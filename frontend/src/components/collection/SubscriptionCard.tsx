@@ -1,13 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Play, Clock, Users, Calendar, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { MoreVertical, Play, Clock, Users, Calendar, CheckCircle, AlertTriangle, XCircle, Bot, Database, Loader } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import type { Subscription } from '@/types/subscription';
-import type { CollectionProgress } from '@/types/collection';
+import type { CollectionProgress, LlmQueueItem } from '@/types/collection';
 
 interface SubscriptionCardProps {
   subscription: Subscription;
   activeCollection?: CollectionProgress;
+  llmItems?: LlmQueueItem[];
+  llmProcessed?: number;
   onTrigger: (id: string) => void;
   onBackfill: (id: string) => void;
   onEdit: (id: string) => void;
@@ -52,6 +54,8 @@ function formatDate(iso: string | null): string {
 export default function SubscriptionCard({
   subscription,
   activeCollection,
+  llmItems = [],
+  llmProcessed = 0,
   onTrigger,
   onBackfill,
   onEdit,
@@ -62,8 +66,23 @@ export default function SubscriptionCard({
 }: SubscriptionCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const statusInfo = getStatusIndicator(subscription);
+
+  const isQueued = !!activeCollection && activeCollection.status === 'queued';
   const isCollecting = !!activeCollection && activeCollection.status === 'collecting';
+  const hasLlm = llmItems.length > 0;
+  const isBusy = isQueued || isCollecting || hasLlm;
+
+  // Status info — only relevant when idle (no active processes)
+  const statusInfo = getStatusIndicator(subscription);
+
+  // Header dot color reflects current phase
+  const dotColor = isQueued
+    ? 'bg-amber-400 animate-pulse'
+    : isCollecting
+      ? 'bg-brand-500 animate-pulse'
+      : hasLlm
+        ? 'bg-purple-500 animate-pulse'
+        : statusInfo.color;
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -75,9 +94,18 @@ export default function SubscriptionCard({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [menuOpen]);
 
-  const progress = activeCollection
+  // Collection progress percentage
+  const collectionProgress = activeCollection
     ? Math.round((activeCollection.processedEmployees / activeCollection.totalEmployees) * 100)
     : 0;
+
+  // LLM progress calculation
+  const llmRemaining = llmItems.length;
+  const llmTotal = llmRemaining + llmProcessed;
+  const llmProgress = llmTotal > 0 ? Math.round((llmProcessed / llmTotal) * 100) : 0;
+
+  // Show collection bar at 100% when collection done but LLM still working
+  const showCollectionComplete = !isCollecting && hasLlm;
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface transition-colors hover:border-gray-400 dark:hover:border-gray-600">
@@ -85,7 +113,7 @@ export default function SubscriptionCard({
         {/* Header */}
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <span className={`h-2.5 w-2.5 rounded-full ${statusInfo.color}`} />
+            <span className={`h-2.5 w-2.5 rounded-full ${dotColor}`} />
             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{subscription.projectName}</h3>
           </div>
           <div className="relative" ref={menuRef}>
@@ -144,19 +172,22 @@ export default function SubscriptionCard({
                 <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
                 <span>Последний сбор: {formatDate(subscription.lastCollection.completedAt)}</span>
               </div>
-              <div className="flex items-center gap-2">
-                {subscription.lastCollection.status === 'completed' && <CheckCircle size={14} className="text-emerald-500" />}
-                {subscription.lastCollection.status === 'partial' && <AlertTriangle size={14} className="text-amber-500" />}
-                {subscription.lastCollection.status === 'error' && <XCircle size={14} className="text-red-500" />}
-                {!['completed', 'partial', 'error'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-400 dark:text-gray-500" />}
-                <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
-                <span>
-                  {subscription.lastCollection.processedEmployees}/{subscription.lastCollection.totalEmployees} обработано
-                </span>
-              </div>
+              {/* Status badge — only when fully idle (no collection, no LLM) */}
+              {!isBusy && (
+                <div className="flex items-center gap-2">
+                  {subscription.lastCollection.status === 'completed' && <CheckCircle size={14} className="text-emerald-500" />}
+                  {subscription.lastCollection.status === 'partial' && <AlertTriangle size={14} className="text-amber-500" />}
+                  {subscription.lastCollection.status === 'error' && <XCircle size={14} className="text-red-500" />}
+                  {!['completed', 'partial', 'error'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-400 dark:text-gray-500" />}
+                  <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
+                  <span>
+                    {subscription.lastCollection.processedEmployees}/{subscription.lastCollection.totalEmployees} обработано
+                  </span>
+                </div>
+              )}
             </>
           )}
-          {!subscription.lastCollection && (
+          {!subscription.lastCollection && !isBusy && (
             <div className="flex items-center gap-2">
               <Clock size={14} className="text-gray-400 dark:text-gray-500" />
               <span className="text-gray-400 dark:text-gray-500">Сбор ещё не выполнялся</span>
@@ -164,46 +195,90 @@ export default function SubscriptionCard({
           )}
         </div>
 
-        {/* Collection progress */}
-        {isCollecting && activeCollection && (
-          <div className="mb-4">
+        {/* Queued indicator */}
+        {isQueued && (
+          <div className="mb-3">
+            <div className="mb-1 flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <Loader size={12} className="mr-1 animate-spin text-amber-400" />
+              Ожидание в очереди...
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
+              <div className="h-full w-1/4 animate-pulse rounded-full bg-amber-400/60" />
+            </div>
+          </div>
+        )}
+
+        {/* Collection progress bar — during collection OR at 100% while LLM processes */}
+        {(isCollecting || showCollectionComplete) && (
+          <div className="mb-3">
             <div className="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-              <span>
-                {activeCollection.currentEmployee ?? 'Запуск...'} ({activeCollection.processedEmployees}/{activeCollection.totalEmployees})
+              <span className="flex items-center gap-1">
+                <Database size={12} className="text-brand-500" />
+                {isCollecting
+                  ? (activeCollection?.currentEmployee ?? 'Запуск...')
+                  : 'Сбор завершён'
+                }
+                {isCollecting && activeCollection && (
+                  <span className="text-gray-400">
+                    ({activeCollection.processedEmployees}/{activeCollection.totalEmployees})
+                  </span>
+                )}
               </span>
-              <span>{progress}%</span>
+              <span>{isCollecting ? `${collectionProgress}%` : '100%'}</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
               <div
                 className="h-full rounded-full bg-brand-500 transition-all duration-500"
-                style={{ width: `${progress}%` }}
+                style={{ width: isCollecting ? `${collectionProgress}%` : '100%' }}
               />
             </div>
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<Play size={14} />}
-            onClick={() => onTrigger(subscription.id)}
-            disabled={!subscription.isActive || isCollecting}
-            loading={triggerLoading}
-          >
-            {isCollecting ? 'Сбор...' : 'Запустить сбор'}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<Clock size={14} />}
-            onClick={() => onBackfill(subscription.id)}
-            disabled={!subscription.isActive || isCollecting}
-          >
-            Восполнить пропуски
-          </Button>
-        </div>
+        {/* LLM progress bar */}
+        {hasLlm && (
+          <div className="mb-3">
+            <div className="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-1">
+                <Bot size={12} className="text-purple-400" />
+                LLM-анализ
+                <span className="text-gray-400">({llmProcessed}/{llmTotal})</span>
+              </span>
+              <span>{llmProgress}%</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
+              <div
+                className="h-full rounded-full bg-purple-500 transition-all duration-500"
+                style={{ width: `${llmProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Actions — only when fully idle */}
+        {!isBusy && (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Play size={14} />}
+              onClick={() => onTrigger(subscription.id)}
+              disabled={!subscription.isActive}
+              loading={triggerLoading}
+            >
+              Запустить сбор
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<Clock size={14} />}
+              onClick={() => onBackfill(subscription.id)}
+              disabled={!subscription.isActive}
+            >
+              Восполнить пропуски
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

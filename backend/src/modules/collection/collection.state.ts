@@ -28,7 +28,9 @@ export interface CollectionState {
   activeCollections: Map<string, CollectionProgress>;
   queue: QueueTask[];
   cronEnabled: boolean;
-  llmQueue: Array<{ reportId: string; status: string }>;
+  llmQueue: Array<{ reportId: string; status: string; subscriptionId: string }>;
+  /** Tracks how many LLM items have been processed per subscription (for progress calculation) */
+  llmProcessed: Map<string, number>;
 }
 
 class CollectionStateManager {
@@ -39,6 +41,7 @@ class CollectionStateManager {
     queue: [],
     cronEnabled: false,
     llmQueue: [],
+    llmProcessed: new Map(),
   };
 
   static getInstance(): CollectionStateManager {
@@ -88,10 +91,10 @@ class CollectionStateManager {
     this.state.cronEnabled = enabled;
   }
 
-  addToLlmQueue(reportId: string, status: string): void {
+  addToLlmQueue(reportId: string, status: string, subscriptionId: string): void {
     const existing = this.state.llmQueue.find((item) => item.reportId === reportId);
     if (!existing) {
-      this.state.llmQueue.push({ reportId, status });
+      this.state.llmQueue.push({ reportId, status, subscriptionId });
     }
   }
 
@@ -103,7 +106,21 @@ class CollectionStateManager {
   }
 
   removeLlmQueueItem(reportId: string): void {
+    const item = this.state.llmQueue.find((i) => i.reportId === reportId);
+    if (item) {
+      // Increment processed counter for this subscription
+      const prev = this.state.llmProcessed.get(item.subscriptionId) ?? 0;
+      this.state.llmProcessed.set(item.subscriptionId, prev + 1);
+    }
     this.state.llmQueue = this.state.llmQueue.filter((i) => i.reportId !== reportId);
+
+    // Clean up processed counters for subscriptions with no remaining items
+    if (item) {
+      const hasRemaining = this.state.llmQueue.some((i) => i.subscriptionId === item.subscriptionId);
+      if (!hasRemaining) {
+        this.state.llmProcessed.delete(item.subscriptionId);
+      }
+    }
   }
 
   clearCompletedLlmQueue(): void {

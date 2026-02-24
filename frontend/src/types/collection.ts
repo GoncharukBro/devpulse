@@ -23,6 +23,7 @@ export interface QueueItem {
 export interface LlmQueueItem {
   reportId: string;
   status: string;
+  subscriptionId: string;
 }
 
 export interface CollectionState {
@@ -30,6 +31,7 @@ export interface CollectionState {
   queue: QueueItem[];
   cronEnabled: boolean;
   llmQueue: LlmQueueItem[];
+  llmProcessed: Record<string, number>;
 }
 
 export interface CronState {

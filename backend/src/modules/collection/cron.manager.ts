@@ -91,15 +91,42 @@ export class CronManager {
   getNextRun(): Date | null {
     if (!this.isEnabled()) return null;
 
-    // Парсим cron schedule для определения следующего запуска
-    // Для простоты: следующий понедельник 00:00
-    const now = new Date();
-    const next = new Date(now);
-    const dayOfWeek = next.getDay(); // 0=Sun
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : dayOfWeek === 1 ? 7 : 8 - dayOfWeek;
-    next.setDate(next.getDate() + daysUntilMonday);
-    next.setHours(0, 0, 0, 0);
-    return next;
+    try {
+      const parts = this.schedule.split(' ');
+      if (parts.length < 5) return null;
+
+      const [minute, hour, , , dayOfWeekCron] = parts;
+      const now = new Date();
+      const next = new Date(now);
+
+      const targetDay = dayOfWeekCron === '*' ? -1 : parseInt(dayOfWeekCron, 10);
+      const targetHour = hour === '*' ? 0 : parseInt(hour, 10);
+      const targetMinute = minute === '*' ? 0 : parseInt(minute, 10);
+
+      if (targetDay >= 0) {
+        const currentDay = now.getDay();
+        let daysUntil = targetDay - currentDay;
+        if (daysUntil < 0) daysUntil += 7;
+        if (daysUntil === 0) {
+          const targetTime = targetHour * 60 + targetMinute;
+          const currentTime = now.getHours() * 60 + now.getMinutes();
+          if (currentTime >= targetTime) daysUntil = 7;
+        }
+        next.setDate(next.getDate() + daysUntil);
+      } else {
+        const targetTime = targetHour * 60 + targetMinute;
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        if (currentTime >= targetTime) {
+          next.setDate(next.getDate() + 1);
+        }
+      }
+
+      next.setHours(targetHour, targetMinute, 0, 0);
+      return next;
+    } catch {
+      this.log.warn(`Failed to parse cron schedule: ${this.schedule}`);
+      return null;
+    }
   }
 
   private async onTick(): Promise<void> {

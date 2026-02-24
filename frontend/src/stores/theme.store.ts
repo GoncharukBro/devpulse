@@ -32,8 +32,11 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   },
 }));
 
-// Listen for OS theme changes when 'system' is selected
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+// Listen for OS theme changes when 'system' is selected.
+// This is an intentional module-level singleton listener — it lives for the
+// lifetime of the app and does not need cleanup.
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+mediaQuery.addEventListener('change', (e) => {
   if (useThemeStore.getState().theme === 'system') {
     document.documentElement.classList.toggle('dark', e.matches);
   }

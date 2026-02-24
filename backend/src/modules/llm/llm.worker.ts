@@ -44,7 +44,7 @@ export class LlmWorker {
 
   enqueue(task: LlmTask): void {
     this.queue.push(task);
-    collectionState.addToLlmQueue(task.reportId, 'queued');
+    collectionState.addToLlmQueue(task.reportId, 'queued', task.subscriptionId);
   }
 
   async start(): Promise<void> {
@@ -119,7 +119,7 @@ export class LlmWorker {
 
     if (!report) {
       this.log.warn(`LLM: report ${task.reportId} not found, skipping`);
-      collectionState.updateLlmQueueItem(task.reportId, 'error');
+      collectionState.removeLlmQueueItem(task.reportId);
       return;
     }
 
@@ -151,7 +151,7 @@ export class LlmWorker {
       report.status = 'completed';
       await em.flush();
       this.processing = null;
-      collectionState.updateLlmQueueItem(task.reportId, 'completed');
+      collectionState.removeLlmQueueItem(task.reportId);
       return;
     }
 
@@ -164,7 +164,7 @@ export class LlmWorker {
       report.status = 'completed';
       await em.flush();
       this.processing = null;
-      collectionState.updateLlmQueueItem(task.reportId, 'completed');
+      collectionState.removeLlmQueueItem(task.reportId);
       return;
     }
 
@@ -199,7 +199,7 @@ export class LlmWorker {
     }
 
     this.processing = null;
-    collectionState.updateLlmQueueItem(task.reportId, 'completed');
+    collectionState.removeLlmQueueItem(task.reportId);
   }
 
   private buildPromptData(report: MetricReport, task: LlmTask): PromptData {

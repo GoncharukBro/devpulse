@@ -56,6 +56,14 @@ function optional(name: string, defaultValue: string): string {
   return process.env[name] || defaultValue;
 }
 
+function warnIfEmpty(name: string, value: string): string {
+  if (!value) {
+    // eslint-disable-next-line no-console
+    console.warn(`Warning: ${name} is empty — LLM integration may not work`);
+  }
+  return value;
+}
+
 export const config: AppConfig = {
   server: {
     port: parseInt(optional('PORT', '3101'), 10),
@@ -78,7 +86,7 @@ export const config: AppConfig = {
     internal: {
       realm: optional('KEYCLOAK_INTERNAL_REALM', 'internalApi'),
       clientId: optional('KEYCLOAK_INTERNAL_CLIENT_ID', 'api2api'),
-      clientSecret: optional('KEYCLOAK_INTERNAL_CLIENT_SECRET', ''),
+      clientSecret: warnIfEmpty('KEYCLOAK_INTERNAL_CLIENT_SECRET', optional('KEYCLOAK_INTERNAL_CLIENT_SECRET', '')),
     },
   },
   youtrack: {

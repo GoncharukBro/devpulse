@@ -57,6 +57,7 @@ export interface EmployeeReportDTO {
 }
 
 export interface EmployeeWeekData {
+  [key: string]: string | number | null | undefined;
   periodStart: string;
   periodEnd: string;
   score: number | null;
@@ -152,6 +153,7 @@ export interface ProjectSummaryDTO {
 }
 
 export interface ProjectWeekData {
+  [key: string]: string | number | null | undefined;
   periodStart: string;
   avgScore: number | null;
   avgUtilization: number | null;

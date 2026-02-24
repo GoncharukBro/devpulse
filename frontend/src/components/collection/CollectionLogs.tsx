@@ -8,6 +8,7 @@ import type { Subscription } from '@/types/subscription';
 
 interface CollectionLogsProps {
   subscriptions: Subscription[];
+  refreshKey?: number;
 }
 
 function getStatusBadge(status: string) {
@@ -40,7 +41,7 @@ function getTypeLabel(type: string): string {
   }
 }
 
-export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
+export default function CollectionLogs({ subscriptions, refreshKey }: CollectionLogsProps) {
   const [data, setData] = useState<PaginatedCollectionLogs | null>(null);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -66,7 +67,7 @@ export default function CollectionLogs({ subscriptions }: CollectionLogsProps) {
 
   useEffect(() => {
     fetchLogs();
-  }, [fetchLogs]);
+  }, [fetchLogs, refreshKey]);
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 

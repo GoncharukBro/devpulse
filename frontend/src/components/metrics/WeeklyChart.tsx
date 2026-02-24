@@ -14,8 +14,10 @@ interface MetricDef {
   color: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ChartDataItem = Record<string, any>;
+interface ChartDataItem {
+  periodStart: string;
+  [key: string]: string | number | null | undefined;
+}
 
 interface WeeklyChartProps {
   data: ChartDataItem[];
@@ -64,7 +66,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 export default function WeeklyChart({ data, metrics, height = 280 }: WeeklyChartProps) {
   const chartData = data.map((d) => ({
     ...d,
-    label: formatWeek(d.periodStart as string),
+    label: formatWeek(d.periodStart),
   }));
 
   if (!chartData.length) {

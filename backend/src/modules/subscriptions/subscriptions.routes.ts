@@ -19,7 +19,21 @@ import {
   CreateEmployeeDto,
   UpdateEmployeeDto,
   UpdateFieldMappingDto,
+  VALID_TASK_CATEGORIES,
 } from './subscriptions.types';
+import { ValidationError } from '../../common/errors';
+
+function validateFieldMapping(dto: UpdateFieldMappingDto | undefined): void {
+  if (!dto) return;
+  if (dto.taskTypeMapping) {
+    const invalidValues = Object.values(dto.taskTypeMapping).filter(
+      (v) => !VALID_TASK_CATEGORIES.includes(v as (typeof VALID_TASK_CATEGORIES)[number]),
+    );
+    if (invalidValues.length > 0) {
+      throw new ValidationError(`Invalid task category values: ${invalidValues.join(', ')}. Valid: ${VALID_TASK_CATEGORIES.join(', ')}`);
+    }
+  }
+}
 
 export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/subscriptions
@@ -32,6 +46,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
 
   // POST /api/subscriptions
   app.post<{ Body: CreateSubscriptionDto }>('/subscriptions', async (request, reply) => {
+    validateFieldMapping(request.body.fieldMapping);
     const em = request.orm.em.fork();
     const result = await createSubscription(em, request.user.id, request.body);
     reply.status(201).send(result);
@@ -115,6 +130,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
   app.put<{ Params: { id: string }; Body: UpdateFieldMappingDto }>(
     '/subscriptions/:id/field-mapping',
     async (request) => {
+      validateFieldMapping(request.body);
       const em = request.orm.em.fork();
       const mapping = await updateFieldMapping(
         em,

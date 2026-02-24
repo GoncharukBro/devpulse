@@ -4,7 +4,23 @@
 
 import { FastifyInstance } from 'fastify';
 import { CollectionService } from './collection.service';
-import { getCronManager } from './index';
+import { getCronManager } from './collection.singletons';
+import { ValidationError } from '../../common/errors';
+
+function parseDate(value: string, fieldName: string): Date {
+  const date = new Date(value);
+  if (isNaN(date.getTime())) {
+    throw new ValidationError(`Invalid date format for ${fieldName}: ${value}`);
+  }
+  return date;
+}
+
+function clampInt(value: string | undefined, defaultVal: number, min: number, max: number): number {
+  if (!value) return defaultVal;
+  const parsed = parseInt(value, 10);
+  if (isNaN(parsed)) return defaultVal;
+  return Math.max(min, Math.min(max, parsed));
+}
 
 interface TriggerBody {
   subscriptionId?: string;
@@ -41,8 +57,8 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
       return;
     }
 
-    const start = periodStart ? new Date(periodStart) : undefined;
-    const end = periodEnd ? new Date(periodEnd) : undefined;
+    const start = periodStart ? parseDate(periodStart, 'periodStart') : undefined;
+    const end = periodEnd ? parseDate(periodEnd, 'periodEnd') : undefined;
 
     const logId = await service.triggerCollection(
       subscriptionId,
@@ -64,8 +80,8 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     const service = new CollectionService(em);
     const { periodStart, periodEnd } = request.body ?? {};
 
-    const start = periodStart ? new Date(periodStart) : undefined;
-    const end = periodEnd ? new Date(periodEnd) : undefined;
+    const start = periodStart ? parseDate(periodStart, 'periodStart') : undefined;
+    const end = periodEnd ? parseDate(periodEnd, 'periodEnd') : undefined;
 
     const logIds = await service.triggerAllCollections(
       request.user.id,
@@ -90,11 +106,18 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
       return;
     }
 
+    const fromDate = parseDate(from, 'from');
+    const toDate = parseDate(to, 'to');
+
+    if (fromDate >= toDate) {
+      throw new ValidationError('"from" must be before "to"');
+    }
+
     const result = await service.backfill(
       subscriptionId,
       request.user.id,
-      new Date(from),
-      new Date(to),
+      fromDate,
+      toDate,
     );
 
     reply.status(202).send({
@@ -120,8 +143,8 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     return service.getCollectionLogs(
       request.user.id,
       subscriptionId,
-      page ? parseInt(page, 10) : 1,
-      limit ? parseInt(limit, 10) : 20,
+      clampInt(page, 1, 1, 1000),
+      clampInt(limit, 20, 1, 100),
     );
   });
 

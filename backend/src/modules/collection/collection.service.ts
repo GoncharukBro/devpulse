@@ -9,6 +9,7 @@ import { MetricReport } from '../../entities/metric-report.entity';
 import { collectionState, CollectionProgress } from './collection.state';
 import { getCurrentWeekRange, getWeeksBetween, formatYTDate } from '../../common/utils/week-utils';
 import { ValidationError, NotFoundError } from '../../common/errors';
+import { getCollectionWorker } from './collection.singletons';
 
 export interface CollectionStateResponse {
   activeCollections: Array<
@@ -22,7 +23,8 @@ export interface CollectionStateResponse {
     type: string;
   }>;
   cronEnabled: boolean;
-  llmQueue: Array<{ reportId: string; status: string }>;
+  llmQueue: Array<{ reportId: string; status: string; subscriptionId: string }>;
+  llmProcessed: Record<string, number>;
 }
 
 export interface PaginatedCollectionLogs {
@@ -133,6 +135,7 @@ export class CollectionService {
         startedAt: new Date().toISOString(),
       });
 
+      getCollectionWorker()?.nudge();
       return existingLog.id;
     }
 
@@ -166,6 +169,7 @@ export class CollectionService {
       startedAt: new Date().toISOString(),
     });
 
+    getCollectionWorker()?.nudge();
     return log.id;
   }
 
@@ -315,6 +319,8 @@ export class CollectionService {
         startedAt: new Date().toISOString(),
       });
     }
+
+    getCollectionWorker()?.nudge();
   }
 
   /**
@@ -336,11 +342,18 @@ export class CollectionService {
       type: t.type,
     }));
 
+    // Convert llmProcessed Map to plain object for JSON serialization
+    const llmProcessed: Record<string, number> = {};
+    for (const [subId, count] of state.llmProcessed) {
+      llmProcessed[subId] = count;
+    }
+
     return {
       activeCollections,
       queue,
       cronEnabled: state.cronEnabled,
       llmQueue: state.llmQueue,
+      llmProcessed,
     };
   }
 

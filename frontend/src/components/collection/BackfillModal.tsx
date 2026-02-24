@@ -91,18 +91,24 @@ export default function BackfillModal({
       <div className="space-y-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Проект</label>
-          <select
-            value={selectedId}
-            onChange={(e) => setSelectedId(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
-          >
-            <option value="">Выберите проект</option>
-            {activeSubscriptions.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.projectName} ({s.projectShortName})
-              </option>
-            ))}
-          </select>
+          {preselectedId ? (
+            <p className="rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200">
+              {subscriptions.find((s) => s.id === preselectedId)?.projectName ?? '—'}
+            </p>
+          ) : (
+            <select
+              value={selectedId}
+              onChange={(e) => setSelectedId(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
+            >
+              <option value="">Выберите проект</option>
+              {activeSubscriptions.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.projectName} ({s.projectShortName})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
