@@ -20,7 +20,6 @@ export default function BackfillModal({
   preselectedId,
   onStarted,
 }: BackfillModalProps) {
-  const [selectedId, setSelectedId] = useState(preselectedId ?? '');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,11 +27,12 @@ export default function BackfillModal({
   // Reset state when opening
   useState(() => {
     if (open) {
-      setSelectedId(preselectedId ?? subscriptions[0]?.id ?? '');
       setDateFrom('');
       setDateTo('');
     }
   });
+
+  const isGlobal = !preselectedId;
 
   const weeksEstimate = useMemo(() => {
     if (!dateFrom || !dateTo) return 0;
@@ -44,22 +44,20 @@ export default function BackfillModal({
   }, [dateFrom, dateTo]);
 
   const isValid = useMemo(() => {
-    if (!selectedId || !dateFrom || !dateTo) return false;
+    if (!dateFrom || !dateTo) return false;
     const from = new Date(dateFrom);
     const to = new Date(dateTo);
     const now = new Date();
     return from < to && to <= now;
-  }, [selectedId, dateFrom, dateTo]);
+  }, [dateFrom, dateTo]);
 
   const handleSubmit = async () => {
     if (!isValid) return;
     setLoading(true);
     try {
-      const result = await collectionApi.backfill({
-        subscriptionId: selectedId,
-        from: dateFrom,
-        to: dateTo,
-      });
+      const result = isGlobal
+        ? await collectionApi.backfillAll({ from: dateFrom, to: dateTo })
+        : await collectionApi.backfill({ subscriptionId: preselectedId, from: dateFrom, to: dateTo });
       toast.success(`Восполнение запущено: ${result.weeksToProcess} недель`);
       onStarted();
       onClose();
@@ -69,8 +67,6 @@ export default function BackfillModal({
       setLoading(false);
     }
   };
-
-  const activeSubscriptions = subscriptions.filter((s) => s.isActive);
 
   return (
     <Modal
@@ -89,27 +85,20 @@ export default function BackfillModal({
       }
     >
       <div className="space-y-4">
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Проект</label>
-          {preselectedId ? (
+        {preselectedId && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">Проект</label>
             <p className="rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200">
               {subscriptions.find((s) => s.id === preselectedId)?.projectName ?? '—'}
             </p>
-          ) : (
-            <select
-              value={selectedId}
-              onChange={(e) => setSelectedId(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
-            >
-              <option value="">Выберите проект</option>
-              {activeSubscriptions.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.projectName} ({s.projectShortName})
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+          </div>
+        )}
+
+        {isGlobal && (
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Восполнение будет запущено для всех активных проектов ({subscriptions.filter((s) => s.isActive).length})
+          </p>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div>

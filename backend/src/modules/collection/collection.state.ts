@@ -44,6 +44,9 @@ class CollectionStateManager {
     llmProcessed: new Map(),
   };
 
+  /** Subscription IDs that should be cancelled */
+  private cancelledSubscriptions = new Set<string>();
+
   static getInstance(): CollectionStateManager {
     if (!CollectionStateManager.instance) {
       CollectionStateManager.instance = new CollectionStateManager();
@@ -127,6 +130,62 @@ class CollectionStateManager {
     this.state.llmQueue = this.state.llmQueue.filter(
       (i) => i.status !== 'completed' && i.status !== 'error',
     );
+  }
+
+  /**
+   * Mark subscription(s) as cancelled — removes from queue and active collections.
+   */
+  cancelBySubscriptionIds(subscriptionIds: string[]): string[] {
+    const cancelledLogIds: string[] = [];
+
+    for (const subId of subscriptionIds) {
+      this.cancelledSubscriptions.add(subId);
+    }
+
+    // Remove queued tasks for these subscriptions
+    const removedTasks = this.state.queue.filter((t) =>
+      subscriptionIds.includes(t.subscriptionId),
+    );
+    for (const task of removedTasks) {
+      cancelledLogIds.push(task.logId);
+    }
+    this.state.queue = this.state.queue.filter(
+      (t) => !subscriptionIds.includes(t.subscriptionId),
+    );
+
+    // Remove active collections for these subscriptions
+    for (const [logId, progress] of this.state.activeCollections) {
+      if (subscriptionIds.includes(progress.subscriptionId)) {
+        cancelledLogIds.push(logId);
+        this.state.activeCollections.delete(logId);
+      }
+    }
+
+    // Remove LLM queue items for these subscriptions
+    this.state.llmQueue = this.state.llmQueue.filter(
+      (i) => !subscriptionIds.includes(i.subscriptionId),
+    );
+
+    // Clean up processed counters
+    for (const subId of subscriptionIds) {
+      this.state.llmProcessed.delete(subId);
+    }
+
+    return cancelledLogIds;
+  }
+
+  /**
+   * Check if a subscription is cancelled (used by worker).
+   */
+  isCancelled(subscriptionId: string): boolean {
+    return this.cancelledSubscriptions.has(subscriptionId);
+  }
+
+  /**
+   * Clear cancellation flag for a subscription (after worker acknowledges it).
+   */
+  clearCancellation(subscriptionId: string): void {
+    this.cancelledSubscriptions.delete(subscriptionId);
   }
 }
 

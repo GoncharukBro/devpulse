@@ -39,6 +39,15 @@ interface BackfillBody {
   to: string;
 }
 
+interface BackfillAllBody {
+  from: string;
+  to: string;
+}
+
+interface StopBody {
+  subscriptionIds: string[];
+}
+
 interface LogsQuery {
   subscriptionId?: string;
   page?: string;
@@ -124,6 +133,72 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
       message: 'Backfill started',
       weeksToProcess: result.weeksToProcess,
       collectionLogIds: result.collectionLogIds,
+    });
+  });
+
+  // POST /api/collection/backfill-all
+  app.post<{ Body: BackfillAllBody }>('/collection/backfill-all', async (request, reply) => {
+    const em = request.orm.em.fork();
+    const service = new CollectionService(em);
+    const { from, to } = request.body ?? {};
+
+    if (!from || !to) {
+      reply.status(400).send({ message: 'from and to are required' });
+      return;
+    }
+
+    const fromDate = parseDate(from, 'from');
+    const toDate = parseDate(to, 'to');
+
+    if (fromDate >= toDate) {
+      throw new ValidationError('"from" must be before "to"');
+    }
+
+    const result = await service.backfillAll(
+      request.user.id,
+      fromDate,
+      toDate,
+    );
+
+    reply.status(202).send({
+      message: 'Backfill started for all active subscriptions',
+      weeksToProcess: result.weeksToProcess,
+      collectionLogIds: result.collectionLogIds,
+    });
+  });
+
+  // POST /api/collection/stop
+  app.post<{ Body: StopBody }>('/collection/stop', async (request, reply) => {
+    const em = request.orm.em.fork();
+    const service = new CollectionService(em);
+    const { subscriptionIds } = request.body ?? {};
+
+    if (!subscriptionIds || !Array.isArray(subscriptionIds) || subscriptionIds.length === 0) {
+      reply.status(400).send({ message: 'subscriptionIds array is required' });
+      return;
+    }
+
+    const cancelledLogIds = await service.cancelCollections(
+      subscriptionIds,
+      request.user.id,
+    );
+
+    reply.send({
+      message: 'Collections stopped',
+      cancelledLogIds,
+    });
+  });
+
+  // POST /api/collection/stop-all
+  app.post('/collection/stop-all', async (request, reply) => {
+    const em = request.orm.em.fork();
+    const service = new CollectionService(em);
+
+    const cancelledLogIds = await service.cancelAllCollections(request.user.id);
+
+    reply.send({
+      message: 'All collections stopped',
+      cancelledLogIds,
     });
   });
 

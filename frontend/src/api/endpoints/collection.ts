@@ -5,6 +5,7 @@ import type {
   PaginatedCollectionLogs,
   TriggerResponse,
   BackfillResponse,
+  StopResponse,
 } from '@/types/collection';
 
 export const collectionApi = {
@@ -31,6 +32,26 @@ export const collectionApi = {
     to: string;
   }): Promise<BackfillResponse> {
     const response = await apiClient.post<BackfillResponse>('/collection/backfill', data);
+    return response.data;
+  },
+
+  async backfillAll(data: {
+    from: string;
+    to: string;
+  }): Promise<BackfillResponse> {
+    const response = await apiClient.post<BackfillResponse>('/collection/backfill-all', data);
+    return response.data;
+  },
+
+  async stop(data: {
+    subscriptionIds: string[];
+  }): Promise<StopResponse> {
+    const response = await apiClient.post<StopResponse>('/collection/stop', data);
+    return response.data;
+  },
+
+  async stopAll(): Promise<StopResponse> {
+    const response = await apiClient.post<StopResponse>('/collection/stop-all');
     return response.data;
   },
 

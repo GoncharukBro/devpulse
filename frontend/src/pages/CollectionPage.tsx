@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Database, Plus, Play, Clock } from 'lucide-react';
+import { Database, Plus, Play, Square } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -9,7 +9,8 @@ import SubscriptionCard from '@/components/collection/SubscriptionCard';
 import CronControl from '@/components/collection/CronControl';
 import AddProjectWizard from '@/components/collection/AddProjectWizard';
 import EditSubscriptionModal from '@/components/collection/EditSubscriptionModal';
-import BackfillModal from '@/components/collection/BackfillModal';
+import CollectModal from '@/components/collection/CollectModal';
+import CollectAllModal from '@/components/collection/CollectAllModal';
 import CollectionLogs from '@/components/collection/CollectionLogs';
 import Modal from '@/components/ui/Modal';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
@@ -24,16 +25,17 @@ export default function CollectionPage() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [cronState, setCronState] = useState<CronState | null>(null);
   const [loadingPage, setLoadingPage] = useState(true);
-  const [triggerAllLoading, setTriggerAllLoading] = useState(false);
-  const [triggerLoadingId, setTriggerLoadingId] = useState<string | null>(null);
+  const [stopAllLoading, setStopAllLoading] = useState(false);
+  const [stopLoadingId, setStopLoadingId] = useState<string | null>(null);
 
   // Modals
   const [wizardOpen, setWizardOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editModalId, setEditModalId] = useState<string | null>(null);
   const [editModalMode, setEditModalMode] = useState<'employees' | 'fieldMapping'>('employees');
-  const [backfillOpen, setBackfillOpen] = useState(false);
-  const [backfillPreselectedId, setBackfillPreselectedId] = useState<string | undefined>();
+  const [collectModalOpen, setCollectModalOpen] = useState(false);
+  const [collectModalSubscription, setCollectModalSubscription] = useState<Subscription | null>(null);
+  const [collectAllModalOpen, setCollectAllModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [logsRefreshKey, setLogsRefreshKey] = useState(0);
@@ -82,33 +84,40 @@ export default function CollectionPage() {
     return () => onCollectionDone(null);
   }, [onCollectionDone, loadSubscriptions]);
 
-  // Trigger single
-  const handleTrigger = async (subscriptionId: string) => {
-    setTriggerLoadingId(subscriptionId);
+  // Open collect modal for single project
+  const openCollectModal = (subscriptionId: string) => {
+    const sub = subscriptions.find((s) => s.id === subscriptionId) ?? null;
+    setCollectModalSubscription(sub);
+    setCollectModalOpen(true);
+  };
+
+  // Stop single subscription
+  const handleStop = async (subscriptionId: string) => {
+    setStopLoadingId(subscriptionId);
     try {
-      await collectionApi.trigger({ subscriptionId });
-      toast.success('Сбор запущен');
+      await collectionApi.stop({ subscriptionIds: [subscriptionId] });
+      toast.success('Сбор остановлен');
       fetchState();
       setLogsRefreshKey((k) => k + 1);
     } catch {
-      toast.error('Не удалось запустить сбор');
+      toast.error('Не удалось остановить сбор');
     } finally {
-      setTriggerLoadingId(null);
+      setStopLoadingId(null);
     }
   };
 
-  // Trigger all
-  const handleTriggerAll = async () => {
-    setTriggerAllLoading(true);
+  // Stop all
+  const handleStopAll = async () => {
+    setStopAllLoading(true);
     try {
-      await collectionApi.triggerAll();
-      toast.success('Сбор запущен для всех проектов');
+      await collectionApi.stopAll();
+      toast.success('Все сборы остановлены');
       fetchState();
       setLogsRefreshKey((k) => k + 1);
     } catch {
-      toast.error('Не удалось запустить сбор');
+      toast.error('Не удалось остановить сборы');
     } finally {
-      setTriggerAllLoading(false);
+      setStopAllLoading(false);
     }
   };
 
@@ -150,12 +159,6 @@ export default function CollectionPage() {
     setEditModalOpen(true);
   };
 
-  // Backfill
-  const openBackfill = (preselectedId?: string) => {
-    setBackfillPreselectedId(preselectedId);
-    setBackfillOpen(true);
-  };
-
   // Cron
   const handlePauseCron = async () => {
     await collectionApi.pauseCron();
@@ -180,6 +183,12 @@ export default function CollectionPage() {
   // Get LLM processed count for a subscription
   const getLlmProcessed = (subscriptionId: string) =>
     collectionState?.llmProcessed[subscriptionId] ?? 0;
+
+  // Is any collection running globally?
+  const isGlobalBusy =
+    (collectionState?.activeCollections?.length ?? 0) > 0 ||
+    (collectionState?.queue?.length ?? 0) > 0 ||
+    (collectionState?.llmQueue?.length ?? 0) > 0;
 
   if (loadingPage) {
     return (
@@ -215,35 +224,28 @@ export default function CollectionPage() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <CronControl cronState={cronState} onPause={handlePauseCron} onResume={handleResumeCron} />
         {hasSubscriptions && (
-          <div className="flex items-center gap-2 sm:border-l sm:border-gray-200 sm:dark:border-surface-border sm:pl-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Play size={14} />}
-              loading={triggerAllLoading}
-              onClick={handleTriggerAll}
-              disabled={
-                subscriptions.filter((s) => s.isActive).length === 0 ||
-                (collectionState?.activeCollections?.length ?? 0) > 0 ||
-                (collectionState?.queue?.length ?? 0) > 0 ||
-                (collectionState?.llmQueue?.length ?? 0) > 0
-              }
-            >
-              Запустить всё
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              leftIcon={<Clock size={14} />}
-              onClick={() => openBackfill()}
-              disabled={
-                (collectionState?.activeCollections?.length ?? 0) > 0 ||
-                (collectionState?.queue?.length ?? 0) > 0 ||
-                (collectionState?.llmQueue?.length ?? 0) > 0
-              }
-            >
-              Восполнить пропуски
-            </Button>
+          <div className="flex items-center gap-2 sm:ml-auto">
+            {isGlobalBusy ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Square size={14} />}
+                loading={stopAllLoading}
+                onClick={handleStopAll}
+              >
+                Остановить всё
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Play size={14} />}
+                onClick={() => setCollectAllModalOpen(true)}
+                disabled={subscriptions.filter((s) => s.isActive).length === 0}
+              >
+                Запустить всё
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -266,13 +268,14 @@ export default function CollectionPage() {
                 activeCollection={getActiveCollection(sub.id)}
                 llmItems={getLlmItems(sub.id)}
                 llmProcessed={getLlmProcessed(sub.id)}
-                onTrigger={handleTrigger}
-                onBackfill={(id) => openBackfill(id)}
+                onTrigger={openCollectModal}
+                onStop={handleStop}
                 onEdit={(id) => openEditModal(id, 'employees')}
                 onFieldMapping={(id) => openEditModal(id, 'fieldMapping')}
                 onToggleActive={handleToggleActive}
                 onDelete={openDeleteConfirm}
-                triggerLoading={triggerLoadingId === sub.id}
+                triggerLoading={false}
+                stopLoading={stopLoadingId === sub.id}
               />
             ))}
           </div>
@@ -297,14 +300,25 @@ export default function CollectionPage() {
         onUpdated={loadSubscriptions}
       />
 
-      <BackfillModal
-        open={backfillOpen}
-        onClose={() => setBackfillOpen(false)}
-        subscriptions={subscriptions}
-        preselectedId={backfillPreselectedId}
+      <CollectModal
+        open={collectModalOpen}
+        onClose={() => setCollectModalOpen(false)}
+        subscription={collectModalSubscription}
         onStarted={() => {
           fetchState();
           loadSubscriptions();
+          setLogsRefreshKey((k) => k + 1);
+        }}
+      />
+
+      <CollectAllModal
+        open={collectAllModalOpen}
+        onClose={() => setCollectAllModalOpen(false)}
+        subscriptions={subscriptions}
+        onStarted={() => {
+          fetchState();
+          loadSubscriptions();
+          setLogsRefreshKey((k) => k + 1);
         }}
       />
 

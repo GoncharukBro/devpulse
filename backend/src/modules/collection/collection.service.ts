@@ -257,6 +257,38 @@ export class CollectionService {
   }
 
   /**
+   * Backfill all active subscriptions — найти пропущенные недели для всех активных подписок.
+   */
+  async backfillAll(
+    ownerId: string,
+    from: Date,
+    to: Date,
+  ): Promise<{ weeksToProcess: number; collectionLogIds: string[] }> {
+    const subscriptions = await this.em.find(Subscription, {
+      ownerId,
+      isActive: true,
+    });
+
+    if (subscriptions.length === 0) {
+      throw new ValidationError('No active subscriptions found');
+    }
+
+    let totalWeeks = 0;
+    const allLogIds: string[] = [];
+
+    for (const subscription of subscriptions) {
+      const result = await this.backfill(subscription.id, ownerId, from, to);
+      totalWeeks += result.weeksToProcess;
+      allLogIds.push(...result.collectionLogIds);
+    }
+
+    return {
+      weeksToProcess: totalWeeks,
+      collectionLogIds: allLogIds,
+    };
+  }
+
+  /**
    * Запуск сбора по расписанию (вызывается из CronManager).
    */
   async triggerScheduledCollection(periodStart: Date, periodEnd: Date): Promise<void> {
@@ -417,6 +449,64 @@ export class CollectionService {
     });
 
     return { data, total, page, limit };
+  }
+
+  /**
+   * Отменить сбор для конкретных подписок.
+   * Удаляет из очереди, останавливает текущий процесс, обновляет логи в БД.
+   */
+  async cancelCollections(subscriptionIds: string[], ownerId: string): Promise<string[]> {
+    // Verify ownership
+    const subscriptions = await this.em.find(Subscription, {
+      id: { $in: subscriptionIds },
+      ownerId,
+    });
+    const validIds = subscriptions.map((s) => s.id);
+
+    if (validIds.length === 0) {
+      throw new ValidationError('No valid subscriptions to cancel');
+    }
+
+    // Cancel in state (removes from queue + marks for worker)
+    const cancelledLogIds = collectionState.cancelBySubscriptionIds(validIds);
+
+    // Update cancelled logs in DB
+    if (cancelledLogIds.length > 0) {
+      const logs = await this.em.find(CollectionLog, {
+        id: { $in: cancelledLogIds },
+        status: { $in: ['queued', 'running', 'collecting'] },
+      });
+
+      for (const log of logs) {
+        log.status = 'error';
+        log.completedAt = new Date();
+        log.errors = [...log.errors, {
+          login: '',
+          error: 'Сбор отменён пользователем',
+          timestamp: new Date().toISOString(),
+        }];
+      }
+
+      await this.em.flush();
+    }
+
+    return cancelledLogIds;
+  }
+
+  /**
+   * Отменить сбор по всем активным подпискам пользователя.
+   */
+  async cancelAllCollections(ownerId: string): Promise<string[]> {
+    const subscriptions = await this.em.find(Subscription, {
+      ownerId,
+      isActive: true,
+    });
+
+    if (subscriptions.length === 0) {
+      return [];
+    }
+
+    return this.cancelCollections(subscriptions.map((s) => s.id), ownerId);
   }
 
   private resolvePeriod(

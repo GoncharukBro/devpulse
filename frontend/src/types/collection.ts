@@ -79,3 +79,8 @@ export interface BackfillResponse {
   weeksToProcess: number;
   collectionLogIds: string[];
 }
+
+export interface StopResponse {
+  message: string;
+  cancelledLogIds: string[];
+}

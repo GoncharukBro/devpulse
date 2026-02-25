@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Play, Clock, Users, Calendar, CheckCircle, AlertTriangle, XCircle, Bot, Database, Loader } from 'lucide-react';
+import { MoreVertical, Play, Square, Clock, Users, Calendar, CheckCircle, AlertTriangle, XCircle, Bot, Database, Loader } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import type { Subscription } from '@/types/subscription';
@@ -11,12 +11,13 @@ interface SubscriptionCardProps {
   llmItems?: LlmQueueItem[];
   llmProcessed?: number;
   onTrigger: (id: string) => void;
-  onBackfill: (id: string) => void;
+  onStop: (id: string) => void;
   onEdit: (id: string) => void;
   onFieldMapping: (id: string) => void;
   onToggleActive: (id: string, isActive: boolean) => void;
   onDelete: (id: string) => void;
   triggerLoading?: boolean;
+  stopLoading?: boolean;
 }
 
 function getStatusIndicator(subscription: Subscription): {
@@ -57,12 +58,13 @@ export default function SubscriptionCard({
   llmItems = [],
   llmProcessed = 0,
   onTrigger,
-  onBackfill,
+  onStop,
   onEdit,
   onFieldMapping,
   onToggleActive,
   onDelete,
   triggerLoading,
+  stopLoading,
 }: SubscriptionCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -255,8 +257,20 @@ export default function SubscriptionCard({
           </div>
         )}
 
-        {/* Actions — only when fully idle */}
-        {!isBusy && (
+        {/* Actions */}
+        {isBusy ? (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Square size={14} />}
+              onClick={() => onStop(subscription.id)}
+              loading={stopLoading}
+            >
+              Остановить
+            </Button>
+          </div>
+        ) : (
           <div className="flex gap-2">
             <Button
               variant="secondary"
@@ -267,15 +281,6 @@ export default function SubscriptionCard({
               loading={triggerLoading}
             >
               Запустить сбор
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              leftIcon={<Clock size={14} />}
-              onClick={() => onBackfill(subscription.id)}
-              disabled={!subscription.isActive}
-            >
-              Восполнить пропуски
             </Button>
           </div>
         )}

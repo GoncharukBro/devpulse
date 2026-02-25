@@ -240,6 +240,22 @@ export class CollectionWorker {
         break;
       }
 
+      // Check if this subscription was cancelled
+      if (collectionState.isCancelled(subscription.id)) {
+        this.log.info(`Collection cancelled for ${subscription.projectName}`);
+        collectionState.clearCancellation(subscription.id);
+        collectionLog.status = 'error';
+        collectionLog.completedAt = new Date();
+        collectionLog.errors = [...collectionLog.errors, {
+          login: '',
+          error: 'Сбор отменён пользователем',
+          timestamp: new Date().toISOString(),
+        }];
+        await em.flush();
+        collectionState.removeProgress(logId);
+        return;
+      }
+
       const employeeIndex = processedCount + 1;
       this.log.info(
         `Collecting metrics for ${employee.youtrackLogin} (${employeeIndex}/${activeEmployees.length})`,
