@@ -133,6 +133,9 @@ export class CollectionWorker {
     const task = collectionState.shiftQueue();
     if (task) {
       this.processing = true;
+      // Immediately transition from 'queued' to 'collecting' so the frontend
+      // doesn't show "В очереди" when there is no actual queue ahead of this task.
+      collectionState.updateProgress(task.logId, { status: 'collecting' });
       this.processTask(task)
         .catch((err) => {
           this.log.error(`Worker task failed: ${(err as Error).message}`);
@@ -195,7 +198,7 @@ export class CollectionWorker {
       startedAt: new Date().toISOString(),
     });
 
-    await this.collectForSubscription(subscription, task.periodStart, task.periodEnd, logId, em);
+    await this.collectForSubscription(subscription, task.periodStart, task.periodEnd, logId, em, task.overwrite);
   }
 
   private async collectForSubscription(
@@ -204,6 +207,7 @@ export class CollectionWorker {
     periodEnd: Date,
     logId: string,
     em: EntityManager,
+    overwrite = false,
   ): Promise<void> {
     const activeEmployees = subscription.employees
       .getItems()
@@ -244,11 +248,11 @@ export class CollectionWorker {
       if (collectionState.isCancelled(subscription.id)) {
         this.log.info(`Collection cancelled for ${subscription.projectName}`);
         collectionState.clearCancellation(subscription.id);
-        collectionLog.status = 'error';
+        collectionLog.status = 'stopped';
         collectionLog.completedAt = new Date();
         collectionLog.errors = [...collectionLog.errors, {
           login: '',
-          error: 'Сбор отменён пользователем',
+          error: 'Сбор остановлен пользователем',
           timestamp: new Date().toISOString(),
         }];
         await em.flush();
@@ -266,6 +270,27 @@ export class CollectionWorker {
       });
 
       try {
+        // Skip if report already exists and overwrite is false
+        if (!overwrite) {
+          const existingReport = await em.findOne(MetricReport, {
+            subscription,
+            youtrackLogin: employee.youtrackLogin,
+            periodStart,
+          });
+          if (existingReport) {
+            this.log.info(
+              `Skipping ${employee.youtrackLogin}: report already exists (overwrite=false)`,
+            );
+            processedCount++;
+            collectionLog.processedEmployees = processedCount;
+            await em.flush();
+            collectionState.updateProgress(logId, {
+              processedEmployees: processedCount,
+            });
+            continue;
+          }
+        }
+
         const collector = new MetricsCollector(ytClient, fieldMapping, this.log);
         const rawMetrics = await collector.collectForEmployee(
           subscription.projectShortName,
@@ -395,7 +420,7 @@ export class CollectionWorker {
     const hasErrors = errors.length > 0;
     const allFailed = errors.length === activeEmployees.length;
 
-    collectionLog.status = allFailed ? 'error' : hasErrors ? 'partial' : 'completed';
+    collectionLog.status = allFailed ? 'failed' : hasErrors ? 'partial' : 'completed';
     collectionLog.completedAt = new Date();
     collectionLog.errors = errors;
     await em.flush();
@@ -446,6 +471,7 @@ export class CollectionWorker {
         periodStart: log.periodStart,
         periodEnd: log.periodEnd,
         type: log.type as 'scheduled' | 'manual' | 'backfill',
+        overwrite: true, // Recovered tasks should overwrite since they were interrupted
       });
 
       collectionState.updateProgress(log.id, {

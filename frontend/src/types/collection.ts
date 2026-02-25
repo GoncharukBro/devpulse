@@ -2,7 +2,7 @@ export interface CollectionProgress {
   id: string;
   subscriptionId: string;
   projectName: string;
-  status: 'queued' | 'collecting' | 'completed' | 'error';
+  status: 'pending' | 'queued' | 'running' | 'collecting' | 'completed' | 'partial' | 'stopped' | 'failed' | 'error';
   currentEmployee?: string;
   processedEmployees: number;
   totalEmployees: number;

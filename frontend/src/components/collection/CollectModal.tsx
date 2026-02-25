@@ -46,19 +46,12 @@ export default function CollectModal({
     if (!isValid || !subscription) return;
     setLoading(true);
     try {
-      if (overwrite) {
-        await collectionApi.trigger({
-          subscriptionId: subscription.id,
-          periodStart,
-          periodEnd,
-        });
-      } else {
-        await collectionApi.backfill({
-          subscriptionId: subscription.id,
-          from: periodStart,
-          to: periodEnd,
-        });
-      }
+      await collectionApi.trigger({
+        subscriptionId: subscription.id,
+        periodStart,
+        periodEnd,
+        overwrite,
+      });
       toast.success(`Сбор запущен: ${subscription.projectName}`);
       onStarted();
       onClose();

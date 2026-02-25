@@ -17,9 +17,14 @@ function getStatusBadge(status: string) {
       return <Badge variant="success">Успешно</Badge>;
     case 'partial':
       return <Badge variant="warning">Частично</Badge>;
+    case 'stopped':
+      return <Badge variant="neutral">Остановлен</Badge>;
+    case 'failed':
+      return <Badge variant="danger">Ошибка</Badge>;
     case 'error':
       return <Badge variant="danger">Ошибка</Badge>;
     case 'running':
+    case 'collecting':
       return <Badge variant="info">Выполняется</Badge>;
     case 'queued':
       return <Badge variant="neutral">В очереди</Badge>;

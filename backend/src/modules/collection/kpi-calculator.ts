@@ -56,9 +56,10 @@ export class KpiCalculator {
     return Math.round((raw.totalSpentMinutes / 60 / raw.completedIssues) * 10) / 10;
   }
 
-  /** Скорость закрытия: completed / total * 100 */
+  /** Скорость закрытия: completed / total * 100 (capped at 100%) */
   private static calcCompletionRate(raw: RawMetrics): number | null {
     if (raw.totalIssues === 0) return null;
-    return Math.round((raw.completedIssues / raw.totalIssues) * 100 * 10) / 10;
+    const rate = (raw.completedIssues / raw.totalIssues) * 100;
+    return Math.round(Math.min(rate, 100) * 10) / 10;
   }
 }

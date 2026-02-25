@@ -1,24 +1,24 @@
 /**
- * Returns the current week range (Sunday–Sunday) as ISO date strings (YYYY-MM-DD).
+ * Returns the current week range (Monday–Sunday) as ISO date strings (YYYY-MM-DD).
  *
- * Logic:
- * - If today is Sunday → returns previous week (last Sunday → today).
- * - Otherwise → returns current week start (last Sunday) → today.
- *
- * The end date is always clamped to today so the range is immediately valid.
+ * ISO 8601: week starts on Monday.
+ * The end date is the Sunday of the current week (or clamped to today if the week hasn't ended).
  */
 export function getCurrentWeekRange(): { start: string; end: string } {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  const day = now.getDay(); // 0 = Sunday
+  const day = now.getDay(); // 0 = Sunday, 1 = Monday, ...
 
-  // Start = most recent past Sunday
+  // Start = Monday of current week
   const start = new Date(now);
-  // If today is Sunday, go back 7 days so the range has > 0 span
-  start.setDate(now.getDate() - (day === 0 ? 7 : day));
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  start.setDate(now.getDate() + diffToMonday);
 
-  // End = today (clamped to not exceed current date)
-  const end = new Date(now);
+  // End = Sunday of current week (but clamped to today)
+  const sunday = new Date(start);
+  sunday.setDate(start.getDate() + 6);
+
+  const end = sunday <= now ? sunday : now;
 
   return {
     start: formatDateISO(start),

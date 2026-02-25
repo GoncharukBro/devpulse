@@ -26,11 +26,13 @@ interface TriggerBody {
   subscriptionId?: string;
   periodStart?: string;
   periodEnd?: string;
+  overwrite?: boolean;
 }
 
 interface TriggerAllBody {
   periodStart?: string;
   periodEnd?: string;
+  overwrite?: boolean;
 }
 
 interface BackfillBody {
@@ -59,7 +61,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
   app.post<{ Body: TriggerBody }>('/collection/trigger', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { subscriptionId, periodStart, periodEnd } = request.body ?? {};
+    const { subscriptionId, periodStart, periodEnd, overwrite } = request.body ?? {};
 
     if (!subscriptionId) {
       reply.status(400).send({ message: 'subscriptionId is required' });
@@ -75,6 +77,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
       start,
       end,
       'manual',
+      overwrite ?? false,
     );
 
     reply.status(202).send({
@@ -87,7 +90,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
   app.post<{ Body: TriggerAllBody }>('/collection/trigger-all', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { periodStart, periodEnd } = request.body ?? {};
+    const { periodStart, periodEnd, overwrite } = request.body ?? {};
 
     const start = periodStart ? parseDate(periodStart, 'periodStart') : undefined;
     const end = periodEnd ? parseDate(periodEnd, 'periodEnd') : undefined;
@@ -96,6 +99,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
       request.user.id,
       start,
       end,
+      overwrite ?? false,
     );
 
     reply.status(202).send({

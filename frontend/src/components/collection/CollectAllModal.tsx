@@ -51,17 +51,11 @@ export default function CollectAllModal({
     if (!isValid) return;
     setLoading(true);
     try {
-      if (overwrite) {
-        await collectionApi.triggerAll({
-          periodStart,
-          periodEnd,
-        });
-      } else {
-        await collectionApi.backfillAll({
-          from: periodStart,
-          to: periodEnd,
-        });
-      }
+      await collectionApi.triggerAll({
+        periodStart,
+        periodEnd,
+        overwrite,
+      });
       toast.success(`Сбор запущен для ${activeSubscriptions.length} проектов`);
       onStarted();
       onClose();

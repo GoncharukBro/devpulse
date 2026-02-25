@@ -13,6 +13,7 @@ export const collectionApi = {
     subscriptionId: string;
     periodStart?: string;
     periodEnd?: string;
+    overwrite?: boolean;
   }): Promise<TriggerResponse> {
     const response = await apiClient.post<TriggerResponse>('/collection/trigger', data);
     return response.data;
@@ -21,6 +22,7 @@ export const collectionApi = {
   async triggerAll(data?: {
     periodStart?: string;
     periodEnd?: string;
+    overwrite?: boolean;
   }): Promise<TriggerResponse> {
     const response = await apiClient.post<TriggerResponse>('/collection/trigger-all', data);
     return response.data;

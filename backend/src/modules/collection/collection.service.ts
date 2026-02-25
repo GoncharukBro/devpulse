@@ -83,6 +83,7 @@ export class CollectionService {
     periodStart?: Date,
     periodEnd?: Date,
     type: 'manual' | 'backfill' = 'manual',
+    overwrite = false,
   ): Promise<string> {
     const subscription = await this.em.findOne(Subscription, {
       id: subscriptionId,
@@ -122,6 +123,7 @@ export class CollectionService {
         periodStart: period.start,
         periodEnd: period.end,
         type,
+        overwrite,
       });
 
       collectionState.updateProgress(existingLog.id, {
@@ -156,6 +158,7 @@ export class CollectionService {
       periodStart: period.start,
       periodEnd: period.end,
       type,
+      overwrite,
     });
 
     collectionState.updateProgress(log.id, {
@@ -180,6 +183,7 @@ export class CollectionService {
     ownerId: string,
     periodStart?: Date,
     periodEnd?: Date,
+    overwrite = false,
   ): Promise<string[]> {
     const subscriptions = await this.em.find(Subscription, {
       ownerId,
@@ -199,6 +203,7 @@ export class CollectionService {
         periodStart,
         periodEnd,
         'manual',
+        overwrite,
       );
       logIds.push(logId);
     }
@@ -338,6 +343,7 @@ export class CollectionService {
         periodStart,
         periodEnd,
         type: 'scheduled',
+        overwrite: false,
       });
 
       collectionState.updateProgress(log.id, {
@@ -366,13 +372,24 @@ export class CollectionService {
       activeCollections.push({ id, ...progress });
     }
 
-    const queue = state.queue.map((t) => ({
-      subscriptionId: t.subscriptionId,
-      projectName: '',
-      periodStart: formatYTDate(t.periodStart),
-      periodEnd: formatYTDate(t.periodEnd),
-      type: t.type,
-    }));
+    // Resolve project names for queue items from active collections or subscription lookup
+    const queue = state.queue.map((t) => {
+      // Try to find project name from active collections with same subscriptionId
+      let projectName = '';
+      for (const [, progress] of state.activeCollections) {
+        if (progress.subscriptionId === t.subscriptionId) {
+          projectName = progress.projectName;
+          break;
+        }
+      }
+      return {
+        subscriptionId: t.subscriptionId,
+        projectName,
+        periodStart: formatYTDate(t.periodStart),
+        periodEnd: formatYTDate(t.periodEnd),
+        type: t.type,
+      };
+    });
 
     // Convert llmProcessed Map to plain object for JSON serialization
     const llmProcessed: Record<string, number> = {};
@@ -478,11 +495,11 @@ export class CollectionService {
       });
 
       for (const log of logs) {
-        log.status = 'error';
+        log.status = 'stopped';
         log.completedAt = new Date();
         log.errors = [...log.errors, {
           login: '',
-          error: 'Сбор отменён пользователем',
+          error: 'Сбор остановлен пользователем',
           timestamp: new Date().toISOString(),
         }];
       }

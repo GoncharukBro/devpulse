@@ -130,6 +130,13 @@ export class CronManager {
   }
 
   private async onTick(): Promise<void> {
+    // Check if collection is already running (manual or another cron)
+    const state = collectionState.getState();
+    if (state.activeCollections.size > 0 || state.queue.length > 0) {
+      this.log.warn('Cron skipped: collection already in progress');
+      return;
+    }
+
     this.log.info('Cron triggered: starting scheduled collection');
 
     // Собираем за прошлую неделю

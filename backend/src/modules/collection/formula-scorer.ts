@@ -41,7 +41,7 @@ export class FormulaScorer {
         score: (v) => FormulaScorer.cyclePenalty(v),
       },
       {
-        value: raw.bugsAfterRelease + raw.bugsOnTest > 0 ? raw.bugsAfterRelease + raw.bugsOnTest : null,
+        value: raw.bugsAfterRelease + raw.bugsOnTest,
         weight: 10,
         score: (v) => FormulaScorer.bugPenalty(v),
       },

@@ -38,7 +38,10 @@ function getStatusIndicator(subscription: Subscription): {
   if (status === 'partial') {
     return { color: 'bg-amber-500', label: 'Частично', variant: 'warning' };
   }
-  if (status === 'error') {
+  if (status === 'stopped') {
+    return { color: 'bg-gray-500', label: 'Остановлен', variant: 'neutral' };
+  }
+  if (status === 'failed' || status === 'error') {
     return { color: 'bg-red-500', label: 'Ошибка', variant: 'danger' };
   }
   return { color: 'bg-gray-500', label: status, variant: 'neutral' };
@@ -96,8 +99,8 @@ export default function SubscriptionCard({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [menuOpen]);
 
-  // Collection progress percentage
-  const collectionProgress = activeCollection
+  // Collection progress percentage (guard against division by zero)
+  const collectionProgress = activeCollection && activeCollection.totalEmployees > 0
     ? Math.round((activeCollection.processedEmployees / activeCollection.totalEmployees) * 100)
     : 0;
 
@@ -179,8 +182,9 @@ export default function SubscriptionCard({
                 <div className="flex items-center gap-2">
                   {subscription.lastCollection.status === 'completed' && <CheckCircle size={14} className="text-emerald-500" />}
                   {subscription.lastCollection.status === 'partial' && <AlertTriangle size={14} className="text-amber-500" />}
-                  {subscription.lastCollection.status === 'error' && <XCircle size={14} className="text-red-500" />}
-                  {!['completed', 'partial', 'error'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-400 dark:text-gray-500" />}
+                  {subscription.lastCollection.status === 'stopped' && <Square size={14} className="text-gray-400 dark:text-gray-500" />}
+                  {(subscription.lastCollection.status === 'error' || subscription.lastCollection.status === 'failed') && <XCircle size={14} className="text-red-500" />}
+                  {!['completed', 'partial', 'error', 'failed', 'stopped'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-400 dark:text-gray-500" />}
                   <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
                   <span>
                     {subscription.lastCollection.processedEmployees}/{subscription.lastCollection.totalEmployees} обработано
