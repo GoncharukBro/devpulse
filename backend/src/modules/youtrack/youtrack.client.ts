@@ -8,16 +8,11 @@ import {
   YouTrackWorkItem,
   YouTrackActivity,
 } from './youtrack.types';
+import { Logger } from '../../common/types/logger';
 
 const REQUEST_TIMEOUT = 30_000;
 const MAX_RETRIES = 3;
 const PAGE_SIZE = 100;
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
 
 const defaultLogger: Logger = {
   // eslint-disable-next-line no-console

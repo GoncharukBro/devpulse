@@ -9,12 +9,7 @@ import { CollectionService } from './collection.service';
 import { collectionState } from './collection.state';
 import { getWeekRange } from '../../common/utils/week-utils';
 import { config } from '../../config';
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 export class CronManager {
   private task: cron.ScheduledTask | null = null;

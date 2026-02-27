@@ -107,13 +107,6 @@ class CollectionStateManager {
     this.state.queue.push(task);
   }
 
-  removeFromQueue(subscriptionId: string, periodStart: Date): void {
-    this.state.queue = this.state.queue.filter(
-      (t) =>
-        !(t.subscriptionId === subscriptionId && t.periodStart.getTime() === periodStart.getTime()),
-    );
-  }
-
   shiftQueue(): QueueTask | undefined {
     return this.state.queue.shift();
   }

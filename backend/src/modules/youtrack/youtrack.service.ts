@@ -3,14 +3,9 @@ import { RateLimiter } from '../../common/utils/rate-limiter';
 import { NotFoundError } from '../../common/errors';
 import { YouTrackClient } from './youtrack.client';
 import { YouTrackProject, YouTrackUser } from './youtrack.types';
+import { Logger } from '../../common/types/logger';
 
 const RATE_LIMIT_INTERVAL = 200;
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
 
 export class YouTrackService {
   private instances: YouTrackInstance[];

@@ -13,12 +13,7 @@ export { CollectionWorker } from './collection.worker';
 export { CronManager } from './cron.manager';
 export { CollectionService } from './collection.service';
 export { getCollectionWorker, getCronManager } from './collection.singletons';
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 export function initCollectionModule(
   orm: MikroORM<PostgreSqlDriver>,

@@ -16,12 +16,7 @@ import { parseLlmResponse } from './llm.parser';
 import { LlmTask, LlmWorkerState, PromptData } from './llm.types';
 import { formatYTDate } from '../../common/utils/week-utils';
 import { AchievementsGenerator } from '../achievements/achievements.generator';
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 const POLL_INTERVAL = 3000;
 
@@ -324,38 +319,61 @@ export class LlmWorker {
       `LLM worker: recovering ${pendingReports.length} reports (${resetCount} reset from processing)`,
     );
 
+    // Batch-загрузка связанных данных (вместо N+1 запросов в цикле)
+    const subscriptionIds = [...new Set(pendingReports.map((r) => r.subscription.id))];
+
+    // 1. Все сотрудники для затронутых подписок — один запрос
+    const allEmployees = await em.find(SubscriptionEmployee, {
+      subscription: { $in: subscriptionIds },
+    });
+    const employeeMap = new Map<string, SubscriptionEmployee>();
+    for (const emp of allEmployees) {
+      employeeMap.set(`${emp.subscription.id}:${emp.youtrackLogin}`, emp);
+    }
+
+    // 2. Все подписки — один запрос
+    const allSubscriptions = await em.find(Subscription, { id: { $in: subscriptionIds } });
+    const subscriptionMap = new Map<string, Subscription>();
+    for (const sub of allSubscriptions) {
+      subscriptionMap.set(sub.id, sub);
+    }
+
+    // 3. Все CollectionLog для затронутых подписок — один запрос
+    const allLogs = await em.find(
+      CollectionLog,
+      {
+        subscription: { $in: subscriptionIds },
+        status: { $nin: ['cancelled', 'failed'] },
+      },
+      { orderBy: { createdAt: 'DESC' } },
+    );
+
     // Маппинг collectionLogId → subscriptionId для восстановления счётчиков
     const logIdToSubId = new Map<string, string>();
 
     for (const report of pendingReports) {
-      const employee = await em.findOne(SubscriptionEmployee, {
-        subscription: report.subscription,
-        youtrackLogin: report.youtrackLogin,
-      });
-
-      const sub = await em.findOne(Subscription, { id: report.subscription.id });
+      const subId = report.subscription.id;
+      const employee = employeeMap.get(`${subId}:${report.youtrackLogin}`);
+      const sub = subscriptionMap.get(subId);
 
       // Найти collectionLogId для привязки LLM-счётчиков
       // Range query: CollectionLog покрывает весь backfill-диапазон,
       // а MetricReport.periodStart — конкретная неделя внутри него
-      const relatedLog = await em.findOne(
-        CollectionLog,
-        {
-          subscription: report.subscription,
-          periodStart: { $lte: report.periodStart },
-          periodEnd: { $gte: report.periodEnd },
-          status: { $nin: ['cancelled', 'failed'] },
-        },
-        { orderBy: { createdAt: 'DESC' } },
+      const relatedLog = allLogs.find(
+        (l) =>
+          l.subscription?.id === subId &&
+          l.periodStart && l.periodEnd &&
+          l.periodStart <= report.periodStart &&
+          l.periodEnd >= report.periodEnd,
       );
 
       if (relatedLog) {
-        logIdToSubId.set(relatedLog.id, report.subscription.id);
+        logIdToSubId.set(relatedLog.id, subId);
       }
 
       this.enqueue({
         reportId: report.id,
-        subscriptionId: report.subscription.id,
+        subscriptionId: subId,
         collectionLogId: relatedLog?.id,
         youtrackLogin: report.youtrackLogin,
         employeeName: employee?.displayName ?? report.youtrackLogin,
@@ -366,8 +384,9 @@ export class LlmWorker {
 
     // Восстановить счётчики уже обработанных отчётов из CollectionLog
     // Без этого UI показывает 0/13 вместо 2/15 после рестарта
+    // (logIdToSubId уже содержит уникальные логи, данные предзагружены)
     for (const [logId, subId] of logIdToSubId) {
-      const log = await em.findOne(CollectionLog, { id: logId });
+      const log = allLogs.find((l) => l.id === logId);
       if (log) {
         const processedCount = log.llmCompleted + log.llmFailed + log.llmSkipped;
         if (processedCount > 0) {

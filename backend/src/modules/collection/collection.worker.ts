@@ -15,12 +15,7 @@ import { getYouTrackService } from '../youtrack/youtrack.service';
 import { formatYTDate, getWeeksBetween } from '../../common/utils/week-utils';
 import { LlmService } from '../llm/llm.service';
 import { AchievementsGenerator } from '../achievements/achievements.generator';
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 const POLL_INTERVAL = 2000;
 const RETRY_COUNT = 3;

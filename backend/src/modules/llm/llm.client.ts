@@ -5,12 +5,7 @@
 import { RateLimiter } from '../../common/utils/rate-limiter';
 import { KeycloakTokenService } from './keycloak-token.service';
 import { ChatMessage, LlmConfig } from './llm.types';
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 interface ChatCompletionResponse {
   choices: Array<{

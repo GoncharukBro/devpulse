@@ -89,6 +89,31 @@ function createCollectionLog(
   return log;
 }
 
+/** Инициализировать pending-прогресс для нового лога сбора */
+function initPendingProgress(
+  logId: string,
+  subscriptionId: string,
+  projectName: string,
+  type: CollectionLogType,
+  periodStart: Date,
+  periodEnd: Date,
+): void {
+  collectionState.updateProgress(logId, {
+    subscriptionId,
+    projectName,
+    status: 'pending',
+    type,
+    processedEmployees: 0,
+    totalEmployees: 0,
+    skippedEmployees: 0,
+    failedEmployees: 0,
+    reQueuedEmployees: 0,
+    periodStart: formatYTDate(periodStart),
+    periodEnd: formatYTDate(periodEnd),
+    startedAt: new Date().toISOString(),
+  });
+}
+
 export class CollectionService {
   constructor(private em: EntityManager) {}
 
@@ -148,20 +173,7 @@ export class CollectionService {
       overwrite,
     });
 
-    collectionState.updateProgress(log.id, {
-      subscriptionId: subscription.id,
-      projectName: subscription.projectName,
-      status: 'pending',
-      type,
-      processedEmployees: 0,
-      totalEmployees: 0,
-      skippedEmployees: 0,
-      failedEmployees: 0,
-      reQueuedEmployees: 0,
-      periodStart: formatYTDate(period.start),
-      periodEnd: formatYTDate(period.end),
-      startedAt: new Date().toISOString(),
-    });
+    initPendingProgress(log.id, subscription.id, subscription.projectName, type, period.start, period.end);
 
     getCollectionWorker()?.nudge();
     return log.id;
@@ -337,20 +349,7 @@ export class CollectionService {
         overwrite: false,
       });
 
-      collectionState.updateProgress(log.id, {
-        subscriptionId: sub.id,
-        projectName: sub.projectName,
-        status: 'pending',
-        type: 'cron',
-        processedEmployees: 0,
-        totalEmployees: 0,
-        skippedEmployees: 0,
-        failedEmployees: 0,
-        reQueuedEmployees: 0,
-        periodStart: formatYTDate(periodStart),
-        periodEnd: formatYTDate(periodEnd),
-        startedAt: new Date().toISOString(),
-      });
+      initPendingProgress(log.id, sub.id, sub.projectName, 'cron', periodStart, periodEnd);
     }
 
     getCollectionWorker()?.nudge();

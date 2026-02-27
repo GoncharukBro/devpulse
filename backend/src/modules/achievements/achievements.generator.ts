@@ -17,6 +17,7 @@ import {
   AchievementRarity,
   isHigherRarity,
 } from './achievements.types';
+import { Logger } from '../../common/types/logger';
 
 const RARITY_ORDER: Record<AchievementRarity, number> = {
   common: 0,
@@ -24,12 +25,6 @@ const RARITY_ORDER: Record<AchievementRarity, number> = {
   epic: 2,
   legendary: 3,
 };
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
 
 export class AchievementsGenerator {
   constructor(

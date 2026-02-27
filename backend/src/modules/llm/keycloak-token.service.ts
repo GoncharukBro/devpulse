@@ -3,11 +3,7 @@
  * взаимодействия (client_credentials grant).
  */
 
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 interface KeycloakInternalConfig {
   url: string;
@@ -62,10 +58,6 @@ export class KeycloakTokenService {
     this.expiresAt = 0;
     // Re-enable on invalidate so we try again
     this.disabled = false;
-  }
-
-  isDisabled(): boolean {
-    return this.disabled;
   }
 
   private async requestToken(): Promise<TokenResponse> {

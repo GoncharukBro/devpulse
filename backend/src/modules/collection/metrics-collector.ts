@@ -10,6 +10,7 @@ import {
 } from '../youtrack/youtrack.types';
 import { FieldMapping } from '../../entities/field-mapping.entity';
 import { formatYTDate } from '../../common/utils/week-utils';
+import { Logger } from '../../common/types/logger';
 
 export interface TaskSummary {
   id: string;
@@ -38,12 +39,6 @@ export interface RawMetrics {
   aiSavingMinutes: number;
 
   taskSummaries: TaskSummary[];
-}
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
 }
 
 const ISSUE_FIELDS = [
@@ -191,12 +186,7 @@ export class MetricsCollector {
     const avgCycleTimeHours = await this.calculateAvgCycleTime(completedIssueIds);
 
     // D. Баги после релиза
-    const bugsAfterRelease = await this.countBugsAfterRelease(
-      issues,
-      projectShortName,
-      periodStart,
-      periodEnd,
-    );
+    const bugsAfterRelease = await this.countBugsAfterRelease(issues);
 
     // E. Баги на тесте (возвраты)
     const bugsOnTest = await this.countBugsOnTest(completedIssueIds);
@@ -369,9 +359,6 @@ export class MetricsCollector {
 
   private async countBugsAfterRelease(
     issues: YouTrackIssue[],
-    _projectShortName: string,
-    _periodStart: Date,
-    _periodEnd: Date,
   ): Promise<number> {
     const releaseStatuses = this.fieldMapping.releaseStatuses;
     if (releaseStatuses.length === 0) return 0;

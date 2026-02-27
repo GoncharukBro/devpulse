@@ -11,12 +11,7 @@ import { LlmClient } from './llm.client';
 import { LlmWorker } from './llm.worker';
 import { LlmConfig, LlmWorkerState } from './llm.types';
 import { AchievementsGenerator } from '../achievements/achievements.generator';
-
-interface Logger {
-  info(msg: string): void;
-  warn(msg: string): void;
-  error(msg: string): void;
-}
+import { Logger } from '../../common/types/logger';
 
 export class LlmService {
   private worker: LlmWorker | null = null;
