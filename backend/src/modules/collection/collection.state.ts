@@ -147,6 +147,13 @@ class CollectionStateManager {
     this.state.cronEnabled = enabled;
   }
 
+  /** Restore LLM processed counter (used during recovery to account for already-completed reports) */
+  setLlmProcessed(subscriptionId: string, count: number): void {
+    if (count > 0) {
+      this.state.llmProcessed.set(subscriptionId, count);
+    }
+  }
+
   addToLlmQueue(reportId: string, status: string, subscriptionId: string, employeeName?: string): void {
     const existing = this.state.llmQueue.find((item) => item.reportId === reportId);
     if (!existing) {

@@ -296,13 +296,14 @@ export class LlmWorker {
 
     // Найти отчёты с llmStatus 'pending' или 'processing'
     // processing → прервался при рестарте, нужно повторить
+    // Сортировка по createdAt ASC сохраняет исходный порядок очереди
     const pendingReports = await em.find(
       MetricReport,
       {
         llmStatus: { $in: ['pending', 'processing'] },
         totalIssues: { $gt: 0 },
       },
-      { populate: ['subscription'] },
+      { populate: ['subscription'], orderBy: { createdAt: 'ASC' } },
     );
 
     if (pendingReports.length === 0) return;
@@ -323,6 +324,9 @@ export class LlmWorker {
       `LLM worker: recovering ${pendingReports.length} reports (${resetCount} reset from processing)`,
     );
 
+    // Маппинг collectionLogId → subscriptionId для восстановления счётчиков
+    const logIdToSubId = new Map<string, string>();
+
     for (const report of pendingReports) {
       const employee = await em.findOne(SubscriptionEmployee, {
         subscription: report.subscription,
@@ -332,16 +336,22 @@ export class LlmWorker {
       const sub = await em.findOne(Subscription, { id: report.subscription.id });
 
       // Найти collectionLogId для привязки LLM-счётчиков
+      // Range query: CollectionLog покрывает весь backfill-диапазон,
+      // а MetricReport.periodStart — конкретная неделя внутри него
       const relatedLog = await em.findOne(
         CollectionLog,
         {
           subscription: report.subscription,
-          periodStart: report.periodStart,
-          periodEnd: report.periodEnd,
+          periodStart: { $lte: report.periodStart },
+          periodEnd: { $gte: report.periodEnd },
           status: { $nin: ['cancelled', 'failed'] },
         },
         { orderBy: { createdAt: 'DESC' } },
       );
+
+      if (relatedLog) {
+        logIdToSubId.set(relatedLog.id, report.subscription.id);
+      }
 
       this.enqueue({
         reportId: report.id,
@@ -352,6 +362,21 @@ export class LlmWorker {
         projectName: sub?.projectName ?? 'Unknown',
         taskSummaries: [],
       });
+    }
+
+    // Восстановить счётчики уже обработанных отчётов из CollectionLog
+    // Без этого UI показывает 0/13 вместо 2/15 после рестарта
+    for (const [logId, subId] of logIdToSubId) {
+      const log = await em.findOne(CollectionLog, { id: logId });
+      if (log) {
+        const processedCount = log.llmCompleted + log.llmFailed + log.llmSkipped;
+        if (processedCount > 0) {
+          collectionState.setLlmProcessed(subId, processedCount);
+          this.log.info(
+            `LLM recovery: restored ${processedCount} processed count for subscription (log ${logId})`,
+          );
+        }
+      }
     }
   }
 }
