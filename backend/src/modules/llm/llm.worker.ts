@@ -294,21 +294,36 @@ export class LlmWorker {
   private async recoverPending(): Promise<void> {
     const em = this.orm.em.fork();
 
-    // Find reports that were collected but not LLM-processed
+    // Найти отчёты с llmStatus 'pending' или 'processing'
+    // processing → прервался при рестарте, нужно повторить
     const pendingReports = await em.find(
       MetricReport,
-      { status: 'collected', llmProcessedAt: null },
+      {
+        llmStatus: { $in: ['pending', 'processing'] },
+        totalIssues: { $gt: 0 },
+      },
       { populate: ['subscription'] },
     );
 
     if (pendingReports.length === 0) return;
 
+    // Сбросить processing → pending
+    let resetCount = 0;
+    for (const report of pendingReports) {
+      if (report.llmStatus === 'processing') {
+        report.llmStatus = 'pending';
+        resetCount++;
+      }
+    }
+    if (resetCount > 0) {
+      await em.flush();
+    }
+
     this.log.info(
-      `LLM worker: recovering ${pendingReports.length} pending reports`,
+      `LLM worker: recovering ${pendingReports.length} reports (${resetCount} reset from processing)`,
     );
 
     for (const report of pendingReports) {
-      // Resolve employee name
       const employee = await em.findOne(SubscriptionEmployee, {
         subscription: report.subscription,
         youtrackLogin: report.youtrackLogin,
@@ -316,13 +331,25 @@ export class LlmWorker {
 
       const sub = await em.findOne(Subscription, { id: report.subscription.id });
 
+      // Найти collectionLogId для привязки LLM-счётчиков
+      const relatedLog = await em.findOne(
+        CollectionLog,
+        {
+          subscription: report.subscription,
+          periodStart: report.periodStart,
+          status: { $nin: ['cancelled', 'failed'] },
+        },
+        { orderBy: { createdAt: 'DESC' } },
+      );
+
       this.enqueue({
         reportId: report.id,
         subscriptionId: report.subscription.id,
+        collectionLogId: relatedLog?.id,
         youtrackLogin: report.youtrackLogin,
         employeeName: employee?.displayName ?? report.youtrackLogin,
         projectName: sub?.projectName ?? 'Unknown',
-        taskSummaries: [], // Not available after recovery
+        taskSummaries: [],
       });
     }
   }
