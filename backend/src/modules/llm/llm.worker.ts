@@ -337,6 +337,7 @@ export class LlmWorker {
         {
           subscription: report.subscription,
           periodStart: report.periodStart,
+          periodEnd: report.periodEnd,
           status: { $nin: ['cancelled', 'failed'] },
         },
         { orderBy: { createdAt: 'DESC' } },

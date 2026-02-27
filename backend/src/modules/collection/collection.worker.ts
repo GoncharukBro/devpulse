@@ -267,12 +267,15 @@ export class CollectionWorker {
       return;
     }
 
-    const errors: Array<{ login: string; error: string; timestamp: string }> = [];
+    const errors: Array<{ login: string; error: string; timestamp: string }> = resume ? [...collectionLog.errors] : [];
     const collectedReports: CollectedReport[] = [];
-    let processedCount = resume ? collectionLog.processedEmployees : 0;
-    let skippedCount = resume ? collectionLog.skippedEmployees : 0;
-    let failedCount = resume ? collectionLog.failedEmployees : 0;
-    let reQueuedCount = resume ? collectionLog.reQueuedEmployees : 0;
+    // При resume && !overwrite — восстановить счётчики из БД (бесшовное продолжение)
+    // При resume && overwrite — сбросить (пересбор всех, нельзя отличить "уже обработан" от "старые данные")
+    const resumeCounters = resume && !overwrite;
+    let processedCount = resumeCounters ? collectionLog.processedEmployees : 0;
+    let skippedCount = resumeCounters ? collectionLog.skippedEmployees : 0;
+    let failedCount = resumeCounters ? collectionLog.failedEmployees : 0;
+    let reQueuedCount = resumeCounters ? collectionLog.reQueuedEmployees : 0;
 
     for (let weekIdx = 0; weekIdx < weeks.length; weekIdx++) {
       const week = weeks[weekIdx];
@@ -301,7 +304,8 @@ export class CollectionWorker {
         }
 
         // Resume: молча пропустить уже собранных (не инкрементить счётчики)
-        if (resume) {
+        // При overwrite=true пропуск не нужен — данные должны быть перезаписаны
+        if (resume && !overwrite) {
           const existingReport = await em.findOne(MetricReport, {
             subscription,
             youtrackLogin: employee.youtrackLogin,
@@ -521,7 +525,7 @@ export class CollectionWorker {
     collectionLog.skippedEmployees = skippedCount;
     collectionLog.failedEmployees = failedCount;
     collectionLog.reQueuedEmployees = reQueuedCount;
-    collectionLog.llmTotal = collectedReports.length;
+    collectionLog.llmTotal = (resume ? collectionLog.llmTotal : 0) + collectedReports.length;
     collectionLog.errors = errors;
 
     // Determine final status
