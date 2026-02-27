@@ -242,12 +242,14 @@ export class CollectionWorker {
     if (!resume) {
       collectionLog.totalEmployees = activeEmployees.length;
       await em.flush();
-
-      collectionState.updateProgress(logId, {
-        totalEmployees: totalUnits > activeEmployees.length ? totalUnits : activeEmployees.length,
-        totalWeeks: totalWeeks > 1 ? totalWeeks : undefined,
-      });
     }
+
+    // Всегда обновлять totalEmployees в in-memory state (в т.ч. при resume,
+    // т.к. в БД хранится число сотрудников, а фронту нужны employee×weeks юниты)
+    collectionState.updateProgress(logId, {
+      totalEmployees: totalUnits > activeEmployees.length ? totalUnits : activeEmployees.length,
+      totalWeeks: totalWeeks > 1 ? totalWeeks : undefined,
+    });
 
     const ytService = getYouTrackService(this.log);
     const ytClient = ytService.getClient(subscription.youtrackInstanceId);
@@ -690,7 +692,7 @@ export class CollectionWorker {
         periodStart: log.periodStart,
         periodEnd: log.periodEnd,
         type: log.type as 'cron' | 'manual',
-        overwrite: false,
+        overwrite: log.overwrite,
         resume: true,
       });
     }
