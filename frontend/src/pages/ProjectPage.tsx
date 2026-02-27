@@ -63,7 +63,7 @@ export default function ProjectPage() {
       <>
         <PageHeader
           title="Проект"
-          description="Динамика и метрики проекта"
+          description="Метрики команды, тренды по неделям и рекомендации по проекту"
           backLink={{ to: '/projects', label: 'Проекты' }}
         />
         <Card>
@@ -83,7 +83,7 @@ export default function ProjectPage() {
       <>
         <PageHeader
           title="Проект"
-          description="Динамика и метрики проекта"
+          description="Метрики команды, тренды по неделям и рекомендации по проекту"
           backLink={{ to: '/projects', label: 'Проекты' }}
         />
         <EmptyState
@@ -124,7 +124,7 @@ export default function ProjectPage() {
     <>
       <PageHeader
         title={summary?.projectName ?? 'Загрузка...'}
-        description="Динамика и метрики проекта"
+        description="Метрики команды, тренды по неделям и рекомендации по проекту"
         backLink={{ to: '/projects', label: 'Проекты' }}
         actions={
           summary ? (

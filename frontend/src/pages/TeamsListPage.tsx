@@ -38,7 +38,7 @@ export default function TeamsListPage() {
       <>
         <PageHeader
           title="Команды"
-          description="Ваши команды и их показатели"
+          description="Объединяйте сотрудников из разных проектов и следите за показателями группы"
           actions={
             <Button
               variant="primary"
@@ -74,7 +74,7 @@ export default function TeamsListPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="Команды" description="Ваши команды и их показатели" />
+        <PageHeader title="Команды" description="Объединяйте сотрудников из разных проектов и следите за показателями группы" />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
@@ -94,7 +94,7 @@ export default function TeamsListPage() {
     <>
       <PageHeader
         title="Команды"
-        description="Ваши команды и их показатели"
+        description="Объединяйте сотрудников из разных проектов и следите за показателями группы"
         actions={
           <Button
             variant="primary"

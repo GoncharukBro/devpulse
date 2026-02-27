@@ -20,7 +20,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Настройки" description="Конфигурация и информация" />
+      <PageHeader title="Настройки" description="Конфигурация AI-модели и параметров email-отчётов" />
       <div className="space-y-6">
         <Card header={<SectionTitle icon={Palette} title="Персонализация" />}>
           <ThemeSelector />

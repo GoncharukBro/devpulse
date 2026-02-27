@@ -68,7 +68,7 @@ export default function TeamPage() {
       <>
         <PageHeader
           title="Команда"
-          description="Сводка по команде"
+          description="Сводные показатели и динамика участников команды"
           backLink={{ to: '/teams', label: 'Команды' }}
         />
         <Card>
@@ -91,7 +91,7 @@ export default function TeamPage() {
       <>
         <PageHeader
           title="Команда"
-          description="Сводка по команде"
+          description="Сводные показатели и динамика участников команды"
           backLink={{ to: '/teams', label: 'Команды' }}
         />
         <EmptyState
@@ -112,7 +112,7 @@ export default function TeamPage() {
     <>
       <PageHeader
         title={team?.name ?? 'Загрузка...'}
-        description="Сводка по команде"
+        description="Сводные показатели и динамика участников команды"
         backLink={{ to: '/teams', label: 'Команды' }}
         actions={
           team ? (

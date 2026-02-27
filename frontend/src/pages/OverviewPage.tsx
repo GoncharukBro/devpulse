@@ -42,7 +42,7 @@ export default function OverviewPage() {
   if (!loading && !error && data && data.totalEmployees === 0) {
     return (
       <>
-        <PageHeader title="Обзор" description="Общая динамика по всем сотрудникам" />
+        <PageHeader title="Обзор" description="Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания" />
         <EmptyState
           icon={BarChart3}
           title="Нет данных"
@@ -56,7 +56,7 @@ export default function OverviewPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="Обзор" description="Общая динамика по всем сотрудникам" />
+        <PageHeader title="Обзор" description="Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания" />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
@@ -81,7 +81,7 @@ export default function OverviewPage() {
 
   return (
     <>
-      <PageHeader title="Обзор" description="Общая динамика по всем сотрудникам" />
+      <PageHeader title="Обзор" description="Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания" />
 
       {/* KPI Cards */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

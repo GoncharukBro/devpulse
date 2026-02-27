@@ -44,7 +44,7 @@ export default function AchievementsPage() {
   if (error && !catalog) {
     return (
       <>
-        <PageHeader title="Достижения" description="Коллекция наград сотрудников" />
+        <PageHeader title="Достижения" description="Коллекция наград сотрудников за выдающиеся результаты по метрикам" />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
@@ -62,7 +62,7 @@ export default function AchievementsPage() {
 
   return (
     <>
-      <PageHeader title="Достижения" description="Коллекция наград сотрудников" />
+      <PageHeader title="Достижения" description="Коллекция наград сотрудников за выдающиеся результаты по метрикам" />
 
       {/* Stats */}
       <AchievementStats stats={catalog?.stats ?? null} loading={catalogLoading} />

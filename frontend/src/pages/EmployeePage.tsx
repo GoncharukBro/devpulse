@@ -266,6 +266,7 @@ export default function EmployeePage() {
                 Проекты: {summary.projects.map((p) => p.projectName).join(', ')}
               </div>
             )}
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Цифровой профиль — загрузка, качество, динамика и AI-анализ</p>
             {summary && (
               <div className="mt-2 flex items-center gap-2">
                 <ScoreBadge score={summary.avgScore} size="sm" />

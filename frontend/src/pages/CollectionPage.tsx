@@ -264,7 +264,7 @@ export default function CollectionPage() {
   if (loadingPage) {
     return (
       <>
-        <PageHeader title="Сбор данных" description="Управление сбором метрик" />
+        <PageHeader title="Сбор данных" description="Управление проектами, запуск сборов и мониторинг процессов" />
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
@@ -278,7 +278,7 @@ export default function CollectionPage() {
     <>
       <PageHeader
         title="Сбор данных"
-        description="Управление сбором метрик"
+        description="Управление проектами, запуск сборов и мониторинг процессов"
         actions={
           <Button
             variant="primary"

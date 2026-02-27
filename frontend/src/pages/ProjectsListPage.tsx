@@ -135,7 +135,7 @@ export default function ProjectsListPage() {
   if (!loading && !error && projects.length === 0) {
     return (
       <>
-        <PageHeader title="Проекты" description="Зарегистрированные проекты и их метрики" />
+        <PageHeader title="Проекты" description="Динамика и эффективность по каждому проекту под мониторингом" />
         <EmptyState
           icon={FolderKanban}
           title="Нет проектов"
@@ -149,7 +149,7 @@ export default function ProjectsListPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="Проекты" description="Зарегистрированные проекты и их метрики" />
+        <PageHeader title="Проекты" description="Динамика и эффективность по каждому проекту под мониторингом" />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
@@ -167,7 +167,7 @@ export default function ProjectsListPage() {
 
   return (
     <>
-      <PageHeader title="Проекты" description="Зарегистрированные проекты и их метрики" />
+      <PageHeader title="Проекты" description="Динамика и эффективность по каждому проекту под мониторингом" />
 
       {loading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
