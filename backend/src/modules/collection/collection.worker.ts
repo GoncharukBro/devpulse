@@ -112,7 +112,9 @@ export class CollectionWorker {
     this.shouldStop = false;
     this.log.info('Collection worker started');
 
-    await this.recoverInterrupted();
+    await this.recoverLlmQueue();
+    await this.recoverRunningCollections();
+    await this.recoverPendingCollections();
     this.poll();
   }
 
@@ -177,7 +179,6 @@ export class CollectionWorker {
       return;
     }
 
-    // Reuse the existing CollectionLog
     const log = await em.findOne(CollectionLog, { id: task.logId });
     if (!log) {
       this.log.warn(`CollectionLog ${task.logId} not found, skipping task`);
@@ -185,31 +186,35 @@ export class CollectionWorker {
       return;
     }
 
-    log.status = 'running';
-    await em.flush();
+    if (!task.resume) {
+      log.status = 'running';
+      await em.flush();
+    }
 
     const logId = task.logId;
 
     this.log.info(
-      `Collection started: ${subscription.projectName}, period ${startStr}..${endStr}`,
+      `Collection ${task.resume ? 'resumed' : 'started'}: ${subscription.projectName}, period ${startStr}..${endStr}`,
     );
 
-    collectionState.updateProgress(logId, {
-      subscriptionId: subscription.id,
-      projectName: subscription.projectName,
-      status: 'running',
-      type: task.type,
-      processedEmployees: 0,
-      totalEmployees: 0,
-      skippedEmployees: 0,
-      failedEmployees: 0,
-      reQueuedEmployees: 0,
-      periodStart: startStr,
-      periodEnd: endStr,
-      startedAt: new Date().toISOString(),
-    });
+    if (!task.resume) {
+      collectionState.updateProgress(logId, {
+        subscriptionId: subscription.id,
+        projectName: subscription.projectName,
+        status: 'running',
+        type: task.type,
+        processedEmployees: 0,
+        totalEmployees: 0,
+        skippedEmployees: 0,
+        failedEmployees: 0,
+        reQueuedEmployees: 0,
+        periodStart: startStr,
+        periodEnd: endStr,
+        startedAt: new Date().toISOString(),
+      });
+    }
 
-    await this.collectForSubscription(subscription, task.periodStart, task.periodEnd, logId, em, task.overwrite);
+    await this.collectForSubscription(subscription, task.periodStart, task.periodEnd, logId, em, task.overwrite, task.resume);
   }
 
   private async collectForSubscription(
@@ -219,6 +224,7 @@ export class CollectionWorker {
     logId: string,
     em: EntityManager,
     overwrite = false,
+    resume = false,
   ): Promise<void> {
     const activeEmployees = subscription.employees
       .getItems()
@@ -232,13 +238,16 @@ export class CollectionWorker {
     const totalUnits = activeEmployees.length * totalWeeks;
 
     const collectionLog = await em.findOneOrFail(CollectionLog, { id: logId });
-    collectionLog.totalEmployees = activeEmployees.length;
-    await em.flush();
 
-    collectionState.updateProgress(logId, {
-      totalEmployees: totalUnits > activeEmployees.length ? totalUnits : activeEmployees.length,
-      totalWeeks: totalWeeks > 1 ? totalWeeks : undefined,
-    });
+    if (!resume) {
+      collectionLog.totalEmployees = activeEmployees.length;
+      await em.flush();
+
+      collectionState.updateProgress(logId, {
+        totalEmployees: totalUnits > activeEmployees.length ? totalUnits : activeEmployees.length,
+        totalWeeks: totalWeeks > 1 ? totalWeeks : undefined,
+      });
+    }
 
     const ytService = getYouTrackService(this.log);
     const ytClient = ytService.getClient(subscription.youtrackInstanceId);
@@ -258,10 +267,10 @@ export class CollectionWorker {
 
     const errors: Array<{ login: string; error: string; timestamp: string }> = [];
     const collectedReports: CollectedReport[] = [];
-    let processedCount = 0;
-    let skippedCount = 0;
-    let failedCount = 0;
-    let reQueuedCount = 0;
+    let processedCount = resume ? collectionLog.processedEmployees : 0;
+    let skippedCount = resume ? collectionLog.skippedEmployees : 0;
+    let failedCount = resume ? collectionLog.failedEmployees : 0;
+    let reQueuedCount = resume ? collectionLog.reQueuedEmployees : 0;
 
     for (let weekIdx = 0; weekIdx < weeks.length; weekIdx++) {
       const week = weeks[weekIdx];
@@ -287,6 +296,18 @@ export class CollectionWorker {
           await em.flush();
           collectionState.removeProgress(logId);
           return;
+        }
+
+        // Resume: молча пропустить уже собранных (не инкрементить счётчики)
+        if (resume) {
+          const existingReport = await em.findOne(MetricReport, {
+            subscription,
+            youtrackLogin: employee.youtrackLogin,
+            periodStart: week.start,
+          });
+          if (existingReport) {
+            continue;
+          }
         }
 
         const totalProgress = processedCount + skippedCount + failedCount + reQueuedCount;
@@ -579,63 +600,128 @@ export class CollectionWorker {
     throw lastError!;
   }
 
-  private async recoverInterrupted(): Promise<void> {
+  /**
+   * Recovery 1: LLM-очередь.
+   * MetricReport с llmStatus 'pending' или 'processing' → сбросить processing → pending.
+   * Фактический enqueue сделает LlmWorker.recoverPending() при своём старте.
+   */
+  private async recoverLlmQueue(): Promise<void> {
     const em = this.orm.em.fork();
 
-    const interrupted = await em.find(CollectionLog, { status: 'running' }, {
-      populate: ['subscription'],
-    });
+    const stuckReports = await em.find(
+      MetricReport,
+      { llmStatus: { $in: ['pending', 'processing'] } },
+      { populate: ['subscription'] },
+    );
 
-    for (const log of interrupted) {
+    if (stuckReports.length === 0) return;
+
+    let resetCount = 0;
+    for (const report of stuckReports) {
+      if (report.llmStatus === 'processing') {
+        report.llmStatus = 'pending';
+        resetCount++;
+      }
+    }
+
+    if (resetCount > 0) {
+      await em.flush();
+    }
+
+    this.log.info(
+      `Recovery: ${stuckReports.length} LLM reports to re-process (${resetCount} reset from processing)`,
+    );
+  }
+
+  /**
+   * Recovery 2: Running YouTrack-сборы.
+   * CollectionLog с status='running' → восстановить счётчики, дособрать.
+   * Лог остаётся running. Фронт видит те же счётчики, что и до рестарта.
+   */
+  private async recoverRunningCollections(): Promise<void> {
+    const em = this.orm.em.fork();
+
+    const runningLogs = await em.find(
+      CollectionLog,
+      { status: 'running' },
+      { populate: ['subscription'] },
+    );
+
+    for (const log of runningLogs) {
       if (!log.subscription || !log.periodStart || !log.periodEnd) {
         log.status = 'failed';
-        log.error = 'Interrupted during processing (recovery)';
+        log.error = 'Нет данных подписки при recovery';
         log.completedAt = new Date();
-        log.duration = Math.round((log.completedAt.getTime() - log.startedAt.getTime()) / 1000);
+        log.duration = Math.round(
+          (log.completedAt.getTime() - log.startedAt.getTime()) / 1000,
+        );
         await em.flush();
         continue;
       }
 
+      const totalProgress =
+        log.processedEmployees + log.skippedEmployees +
+        log.failedEmployees + log.reQueuedEmployees;
+
       this.log.info(
-        `Recovering interrupted collection: ${log.subscription.projectName}, period ${formatYTDate(log.periodStart)}..${formatYTDate(log.periodEnd)}`,
+        `Recovery running: ${log.subscription.projectName}, ` +
+        `progress ${totalProgress}/${log.totalEmployees}, ` +
+        `period ${formatYTDate(log.periodStart)}..${formatYTDate(log.periodEnd)}`,
       );
 
-      // Create a new log for recovery instead of reusing the old one
-      // Mark the old one as failed
-      log.status = 'failed';
-      log.error = 'Прервано перезапуском сервера';
-      log.completedAt = new Date();
-      log.duration = Math.round((log.completedAt.getTime() - log.startedAt.getTime()) / 1000);
-
-      const newLog = new CollectionLog();
-      newLog.subscription = log.subscription;
-      newLog.userId = log.userId;
-      newLog.type = log.type;
-      newLog.status = 'pending';
-      newLog.periodStart = log.periodStart;
-      newLog.periodEnd = log.periodEnd;
-      newLog.totalEmployees = 0;
-      newLog.processedEmployees = 0;
-      newLog.skippedEmployees = 0;
-      newLog.failedEmployees = 0;
-      newLog.overwrite = true; // Recovered tasks should overwrite since they were interrupted
-      newLog.errors = [];
-      newLog.startedAt = new Date();
-      newLog.createdAt = new Date();
-      newLog.updatedAt = new Date();
-      em.persist(newLog);
-      await em.flush();
+      collectionState.updateProgress(log.id, {
+        subscriptionId: log.subscription.id,
+        projectName: log.subscription.projectName,
+        status: 'running',
+        type: log.type as 'manual' | 'cron',
+        processedEmployees: totalProgress,
+        totalEmployees: log.totalEmployees,
+        skippedEmployees: log.skippedEmployees,
+        failedEmployees: log.failedEmployees,
+        reQueuedEmployees: log.reQueuedEmployees,
+        periodStart: formatYTDate(log.periodStart),
+        periodEnd: formatYTDate(log.periodEnd),
+        startedAt: log.startedAt.toISOString(),
+      });
 
       collectionState.addToQueue({
         subscriptionId: log.subscription.id,
-        logId: newLog.id,
+        logId: log.id,
         periodStart: log.periodStart,
         periodEnd: log.periodEnd,
         type: log.type as 'cron' | 'manual',
-        overwrite: true,
+        overwrite: false,
+        resume: true,
       });
+    }
 
-      collectionState.updateProgress(newLog.id, {
+    await em.flush();
+  }
+
+  /**
+   * Recovery 3: Pending сборы.
+   * CollectionLog с status='pending' → добавить в очередь.
+   */
+  private async recoverPendingCollections(): Promise<void> {
+    const em = this.orm.em.fork();
+
+    const pendingLogs = await em.find(
+      CollectionLog,
+      { status: 'pending' },
+      { populate: ['subscription'] },
+    );
+
+    for (const log of pendingLogs) {
+      if (!log.subscription || !log.periodStart || !log.periodEnd) {
+        continue;
+      }
+
+      this.log.info(
+        `Recovery pending: ${log.subscription.projectName}, ` +
+        `period ${formatYTDate(log.periodStart)}..${formatYTDate(log.periodEnd)}`,
+      );
+
+      collectionState.updateProgress(log.id, {
         subscriptionId: log.subscription.id,
         projectName: log.subscription.projectName,
         status: 'pending',
@@ -647,10 +733,17 @@ export class CollectionWorker {
         reQueuedEmployees: 0,
         periodStart: formatYTDate(log.periodStart),
         periodEnd: formatYTDate(log.periodEnd),
-        startedAt: new Date().toISOString(),
+        startedAt: log.startedAt.toISOString(),
+      });
+
+      collectionState.addToQueue({
+        subscriptionId: log.subscription.id,
+        logId: log.id,
+        periodStart: log.periodStart,
+        periodEnd: log.periodEnd,
+        type: log.type as 'cron' | 'manual',
+        overwrite: log.overwrite,
       });
     }
-
-    await em.flush();
   }
 }

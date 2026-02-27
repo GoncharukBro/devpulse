@@ -40,6 +40,7 @@ export interface QueueTask {
   periodEnd: Date;
   type: 'cron' | 'manual';
   overwrite: boolean;
+  resume?: boolean;
 }
 
 export interface CollectionState {
