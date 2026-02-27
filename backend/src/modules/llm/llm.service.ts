@@ -61,6 +61,7 @@ export class LlmService {
     reports: Array<{
       reportId: string;
       subscriptionId: string;
+      collectionLogId?: string;
       login: string;
       name: string;
       project: string;
@@ -76,6 +77,7 @@ export class LlmService {
       this.worker.enqueue({
         reportId: r.reportId,
         subscriptionId: r.subscriptionId,
+        collectionLogId: r.collectionLogId,
         youtrackLogin: r.login,
         employeeName: r.name,
         projectName: r.project,

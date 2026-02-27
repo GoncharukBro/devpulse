@@ -3,6 +3,7 @@ import type {
   CollectionState,
   CronState,
   PaginatedCollectionLogs,
+  LogDetails,
   TriggerResponse,
   BackfillResponse,
   StopResponse,
@@ -20,6 +21,7 @@ export const collectionApi = {
   },
 
   async triggerAll(data?: {
+    subscriptionIds?: string[];
     periodStart?: string;
     periodEnd?: string;
     overwrite?: boolean;
@@ -64,11 +66,29 @@ export const collectionApi = {
 
   async getLogs(params?: {
     subscriptionId?: string;
+    status?: string;
+    type?: string;
     page?: number;
     limit?: number;
   }): Promise<PaginatedCollectionLogs> {
     const response = await apiClient.get<PaginatedCollectionLogs>('/collection/logs', {
       params,
+    });
+    return response.data;
+  },
+
+  async getLogDetails(logId: string): Promise<LogDetails> {
+    const response = await apiClient.get<LogDetails>(`/collection/logs/${logId}/details`);
+    return response.data;
+  },
+
+  async deleteLog(logId: string): Promise<void> {
+    await apiClient.delete(`/collection/logs/${logId}`);
+  },
+
+  async deleteAllLogs(subscriptionId?: string): Promise<{ deleted: number }> {
+    const response = await apiClient.delete<{ deleted: number }>('/collection/logs', {
+      params: subscriptionId ? { subscriptionId } : undefined,
     });
     return response.data;
   },

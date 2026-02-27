@@ -57,7 +57,7 @@ export function isHigherRarity(a: AchievementRarity, b: AchievementRarity): bool
 }
 
 function getEffectiveScore(report: MetricReport): number | null {
-  return report.llmScore ?? report.formulaScore ?? null;
+  return report.llmScore ?? null;
 }
 
 function minutesToHours(minutes: number): number {

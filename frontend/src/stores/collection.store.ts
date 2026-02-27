@@ -7,11 +7,13 @@ interface CollectionStore {
   isPolling: boolean;
   _intervalId: ReturnType<typeof setInterval> | null;
   _onCollectionDone: (() => void) | null;
+  _onLlmDone: (() => void) | null;
 
   fetchState: () => Promise<void>;
   startPolling: () => void;
   stopPolling: () => void;
   onCollectionDone: (callback: (() => void) | null) => void;
+  onLlmDone: (callback: (() => void) | null) => void;
 }
 
 export const useCollectionStore = create<CollectionStore>((set, get) => ({
@@ -19,6 +21,7 @@ export const useCollectionStore = create<CollectionStore>((set, get) => ({
   isPolling: false,
   _intervalId: null,
   _onCollectionDone: null,
+  _onLlmDone: null,
 
   async fetchState() {
     try {
@@ -37,6 +40,12 @@ export const useCollectionStore = create<CollectionStore>((set, get) => ({
       );
       if (wasCollectionActive && !collectionActive) {
         get()._onCollectionDone?.();
+      }
+
+      // Detect LLM completion
+      const wasLlmActive = prevState && prevState.llmQueue.length > 0;
+      if (wasLlmActive && !llmActive) {
+        get()._onLlmDone?.();
       }
 
       if (hasActive && !get().isPolling) {
@@ -67,5 +76,9 @@ export const useCollectionStore = create<CollectionStore>((set, get) => ({
 
   onCollectionDone(callback: (() => void) | null) {
     set({ _onCollectionDone: callback });
+  },
+
+  onLlmDone(callback: (() => void) | null) {
+    set({ _onLlmDone: callback });
   },
 }));

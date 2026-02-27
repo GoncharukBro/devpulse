@@ -1,3 +1,14 @@
+export interface CurrentPeriodStatus {
+  periodStart: string;
+  totalEmployees: number;
+  dataCollected: number;
+  llmCompleted: number;
+  llmPending: number;
+  llmProcessing: number;
+  llmFailed: number;
+  llmSkipped: number;
+}
+
 export interface Subscription {
   id: string;
   youtrackInstanceId: string;
@@ -12,7 +23,15 @@ export interface Subscription {
     completedAt: string | null;
     processedEmployees: number;
     totalEmployees: number;
+    skippedEmployees: number;
+    failedEmployees: number;
+    reQueuedEmployees: number;
+    llmTotal: number;
+    llmCompleted: number;
+    llmFailed: number;
+    llmSkipped: number;
   } | null;
+  currentPeriodStatus: CurrentPeriodStatus | null;
   createdAt: string;
 }
 

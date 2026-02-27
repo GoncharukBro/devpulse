@@ -132,13 +132,13 @@ const MONTHS_RU = [
 function formatPeriodRu(start: string, end: string): string {
   const s = new Date(start);
   const e = new Date(end);
-  const sDay = s.getDate();
-  const eDay = e.getDate();
-  const sMonth = MONTHS_RU[s.getMonth()];
-  const eMonth = MONTHS_RU[e.getMonth()];
-  const eYear = e.getFullYear();
+  const sDay = s.getUTCDate();
+  const eDay = e.getUTCDate();
+  const sMonth = MONTHS_RU[s.getUTCMonth()];
+  const eMonth = MONTHS_RU[e.getUTCMonth()];
+  const eYear = e.getUTCFullYear();
 
-  if (s.getMonth() === e.getMonth()) {
+  if (s.getUTCMonth() === e.getUTCMonth()) {
     return `${sDay}\u2013${eDay} ${eMonth} ${eYear}`;
   }
   return `${sDay} ${sMonth} \u2013 ${eDay} ${eMonth} ${eYear}`;

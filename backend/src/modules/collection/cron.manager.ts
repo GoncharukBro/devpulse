@@ -130,18 +130,17 @@ export class CronManager {
   }
 
   private async onTick(): Promise<void> {
-    // Check if collection is already running (manual or another cron)
-    const state = collectionState.getState();
-    if (state.activeCollections.size > 0 || state.queue.length > 0) {
-      this.log.warn('Cron skipped: collection already in progress');
+    // Check if any collection is already running (Scenario 10)
+    if (collectionState.isAnyCollectionActive()) {
+      this.log.warn('Cron пропущен: сбор уже выполняется');
       return;
     }
 
     this.log.info('Cron triggered: starting scheduled collection');
 
-    // Собираем за прошлую неделю
+    // Собираем за прошлую неделю (UTC-арифметика, чтобы совпадать с UTC-based getWeekRange)
     const lastWeekDate = new Date();
-    lastWeekDate.setDate(lastWeekDate.getDate() - 7);
+    lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
     const { start, end } = getWeekRange(lastWeekDate);
 
     const em = this.orm.em.fork();

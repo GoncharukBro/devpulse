@@ -21,7 +21,7 @@ export interface EmployeeReportDTO {
   periodEnd: string;
 
   score: number | null;
-  scoreSource: 'llm' | 'formula' | null;
+  scoreSource: 'llm' | null;
 
   totalIssues: number;
   completedIssues: number;
@@ -50,6 +50,7 @@ export interface EmployeeReportDTO {
   llmTaskClassification: LlmTaskClassification | null;
 
   status: string;
+  llmStatus: string;
   llmProcessedAt: string | null;
 
   bugsAfterRelease: number;
@@ -196,7 +197,7 @@ export interface EmployeeReportListItem {
   periodStart: string;
   periodEnd: string;
   score: number | null;
-  scoreSource: 'llm' | 'formula' | null;
+  scoreSource: 'llm' | null;
   utilization: number | null;
   completedIssues: number;
   totalIssues: number;

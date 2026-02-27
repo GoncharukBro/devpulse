@@ -5,7 +5,7 @@
 import { RawMetrics } from './metrics-collector';
 
 export interface CalculatedKpi {
-  utilization: number;
+  utilization: number | null;
   estimationAccuracy: number | null;
   focus: number | null;
   avgComplexityHours: number | null;
@@ -17,6 +17,18 @@ const STANDARD_WEEK_MINUTES = 40 * 60; // 2400 min
 
 export class KpiCalculator {
   static calculate(raw: RawMetrics): CalculatedKpi {
+    // Нет задач → все KPI бессмысленны
+    if (raw.totalIssues === 0) {
+      return {
+        utilization: null,
+        estimationAccuracy: null,
+        focus: null,
+        avgComplexityHours: null,
+        completionRate: null,
+        avgCycleTimeHours: null,
+      };
+    }
+
     return {
       utilization: KpiCalculator.calcUtilization(raw),
       estimationAccuracy: KpiCalculator.calcEstimationAccuracy(raw),

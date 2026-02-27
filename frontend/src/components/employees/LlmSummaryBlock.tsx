@@ -8,6 +8,8 @@ interface LlmSummaryBlockProps {
   recommendations: string[] | null;
   isProcessing?: boolean;
   loading?: boolean;
+  llmStatus?: string;
+  hasNoData?: boolean;
 }
 
 export default function LlmSummaryBlock({
@@ -17,6 +19,8 @@ export default function LlmSummaryBlock({
   recommendations,
   isProcessing,
   loading,
+  llmStatus,
+  hasNoData,
 }: LlmSummaryBlockProps) {
   if (loading) {
     return (
@@ -43,9 +47,17 @@ export default function LlmSummaryBlock({
   }
 
   if (!summary && !achievements?.length && !concerns?.length && !recommendations?.length) {
+    let message = 'LLM-анализ ещё не выполнен';
+    if (hasNoData) {
+      message = 'Нет данных для анализа за этот период. Проверьте настройки маппинга полей проекта.';
+    } else if (llmStatus === 'failed') {
+      message = 'LLM-анализ не выполнен. Метрики доступны в карточках выше.';
+    } else if (llmStatus === 'skipped') {
+      message = 'Нет данных для анализа за этот период.';
+    }
     return (
       <Card>
-        <p className="text-sm text-gray-400 dark:text-gray-500">LLM-анализ ещё не выполнен</p>
+        <p className="text-sm text-gray-400 dark:text-gray-500">{message}</p>
       </Card>
     );
   }

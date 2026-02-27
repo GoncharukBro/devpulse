@@ -37,12 +37,11 @@ import {
 } from './email-template';
 
 function getEffectiveScore(report: MetricReport): number | null {
-  return report.llmScore ?? report.formulaScore ?? null;
+  return report.llmScore ?? null;
 }
 
-function getScoreSource(report: MetricReport): 'llm' | 'formula' | null {
+function getScoreSource(report: MetricReport): 'llm' | null {
   if (report.llmScore != null) return 'llm';
-  if (report.formulaScore != null) return 'formula';
   return null;
 }
 
@@ -143,6 +142,7 @@ export class ReportsService {
       llmTaskClassification: report.llmTaskClassification ?? null,
 
       status: report.status,
+      llmStatus: report.llmStatus,
       llmProcessedAt: report.llmProcessedAt?.toISOString() ?? null,
 
       bugsAfterRelease: report.bugsAfterRelease,

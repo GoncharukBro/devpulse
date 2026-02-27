@@ -5,7 +5,8 @@
 import { FastifyInstance } from 'fastify';
 import { CollectionService } from './collection.service';
 import { getCronManager } from './collection.singletons';
-import { ValidationError } from '../../common/errors';
+import { ValidationError, ConflictError, NotFoundError } from '../../common/errors';
+import { collectionState } from './collection.state';
 
 function parseDate(value: string, fieldName: string): Date {
   const date = new Date(value);
@@ -30,6 +31,7 @@ interface TriggerBody {
 }
 
 interface TriggerAllBody {
+  subscriptionIds?: string[];
   periodStart?: string;
   periodEnd?: string;
   overwrite?: boolean;
@@ -52,6 +54,8 @@ interface StopBody {
 
 interface LogsQuery {
   subscriptionId?: string;
+  status?: string;
+  type?: string;
   page?: string;
   limit?: string;
 }
@@ -71,35 +75,70 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     const start = periodStart ? parseDate(periodStart, 'periodStart') : undefined;
     const end = periodEnd ? parseDate(periodEnd, 'periodEnd') : undefined;
 
-    const logId = await service.triggerCollection(
-      subscriptionId,
-      request.user.id,
-      start,
-      end,
-      'manual',
-      overwrite ?? false,
-    );
+    // Validate future period on backend (Scenario 17)
+    if (start) {
+      const today = new Date();
+      today.setUTCHours(23, 59, 59, 999);
+      if (start > today) {
+        reply.status(400).send({ message: 'Нельзя собрать данные за будущий период' });
+        return;
+      }
+    }
 
-    reply.status(202).send({
-      message: 'Collection started',
-      collectionLogIds: [logId],
-    });
+    try {
+      const logId = await service.triggerCollection(
+        subscriptionId,
+        request.user.id,
+        start,
+        end,
+        'manual',
+        overwrite ?? false,
+      );
+
+      reply.status(202).send({
+        message: 'Collection started',
+        collectionLogIds: [logId],
+      });
+    } catch (err) {
+      if (err instanceof ConflictError) {
+        reply.status(409).send({ message: (err as ConflictError).message });
+        return;
+      }
+      throw err;
+    }
   });
 
   // POST /api/collection/trigger-all
   app.post<{ Body: TriggerAllBody }>('/collection/trigger-all', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { periodStart, periodEnd, overwrite } = request.body ?? {};
+    const { subscriptionIds, periodStart, periodEnd, overwrite } = request.body ?? {};
 
     const start = periodStart ? parseDate(periodStart, 'periodStart') : undefined;
     const end = periodEnd ? parseDate(periodEnd, 'periodEnd') : undefined;
+
+    // If cron is running → 409 (Scenario 10)
+    if (collectionState.isAnyCollectionActive()) {
+      // Check if any active collection is cron type
+      const state = collectionState.getState();
+      const hasCronRunning = [...state.activeCollections.values()].some(
+        (ac) => ac.type === 'cron' && ['pending', 'running', 'stopping'].includes(ac.status),
+      );
+      // Check queue too
+      const hasCronQueued = state.queue.some((t) => t.type === 'cron');
+
+      if (hasCronRunning || hasCronQueued) {
+        reply.status(409).send({ message: 'Автоматический сбор уже выполняется. Дождитесь завершения.' });
+        return;
+      }
+    }
 
     const logIds = await service.triggerAllCollections(
       request.user.id,
       start,
       end,
       overwrite ?? false,
+      subscriptionIds,
     );
 
     reply.status(202).send({
@@ -171,7 +210,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     });
   });
 
-  // POST /api/collection/stop
+  // POST /api/collection/stop — idempotent (Scenario: stop when nothing runs → 200)
   app.post<{ Body: StopBody }>('/collection/stop', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
@@ -193,7 +232,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     });
   });
 
-  // POST /api/collection/stop-all
+  // POST /api/collection/stop-all — idempotent
   app.post('/collection/stop-all', async (request, reply) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
@@ -213,18 +252,51 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     return service.getCollectionState();
   });
 
-  // GET /api/collection/logs
+  // GET /api/collection/logs — with status and type filters
   app.get<{ Querystring: LogsQuery }>('/collection/logs', async (request) => {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
-    const { subscriptionId, page, limit } = request.query;
+    const { subscriptionId, status, type, page, limit } = request.query;
 
     return service.getCollectionLogs(
       request.user.id,
       subscriptionId,
       clampInt(page, 1, 1, 1000),
       clampInt(limit, 20, 1, 100),
+      status,
+      type,
     );
+  });
+
+  // GET /api/collection/logs/:logId/details
+  app.get<{ Params: { logId: string } }>('/collection/logs/:logId/details', async (request) => {
+    const em = request.orm.em.fork();
+    const service = new CollectionService(em);
+    return service.getLogDetails(request.params.logId, request.user.id);
+  });
+
+  // DELETE /api/collection/logs/:logId
+  app.delete<{ Params: { logId: string } }>('/collection/logs/:logId', async (request, reply) => {
+    const em = request.orm.em.fork();
+    const service = new CollectionService(em);
+    try {
+      await service.deleteLog(request.params.logId, request.user.id);
+      reply.send({ message: 'Log deleted' });
+    } catch (err) {
+      if (err instanceof NotFoundError) {
+        reply.status(404).send({ message: (err as NotFoundError).message });
+        return;
+      }
+      throw err;
+    }
+  });
+
+  // DELETE /api/collection/logs
+  app.delete<{ Querystring: { subscriptionId?: string } }>('/collection/logs', async (request, reply) => {
+    const em = request.orm.em.fork();
+    const service = new CollectionService(em);
+    const deleted = await service.deleteLogs(request.user.id, request.query.subscriptionId);
+    reply.send({ deleted });
   });
 
   // POST /api/collection/cron/pause

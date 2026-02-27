@@ -4,8 +4,9 @@
  */
 
 import { MikroORM } from '@mikro-orm/core';
-import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { PostgreSqlDriver, EntityManager } from '@mikro-orm/postgresql';
 import { MetricReport } from '../../entities/metric-report.entity';
+import { CollectionLog } from '../../entities/collection-log.entity';
 import { SubscriptionEmployee } from '../../entities/subscription-employee.entity';
 import { Subscription } from '../../entities/subscription.entity';
 import { collectionState } from '../collection/collection.state';
@@ -44,7 +45,7 @@ export class LlmWorker {
 
   enqueue(task: LlmTask): void {
     this.queue.push(task);
-    collectionState.addToLlmQueue(task.reportId, 'queued', task.subscriptionId);
+    collectionState.addToLlmQueue(task.reportId, 'pending', task.subscriptionId, task.employeeName);
   }
 
   async start(): Promise<void> {
@@ -130,6 +131,31 @@ export class LlmWorker {
       return;
     }
 
+    // Cancelled by user (stop during LLM phase)
+    if (report.llmStatus === 'skipped') {
+      this.log.info(`LLM: report ${task.reportId} was cancelled, skipping`);
+      this.processing = null;
+      collectionState.removeLlmQueueItem(task.reportId);
+      return;
+    }
+
+    // Нет данных → не отправлять в LLM
+    if (report.totalIssues === 0) {
+      report.llmScore = undefined;
+      report.llmSummary = undefined;
+      report.llmAchievements = undefined;
+      report.llmConcerns = undefined;
+      report.llmRecommendations = undefined;
+      report.llmTaskClassification = undefined;
+      report.llmStatus = 'skipped';
+      await em.flush();
+      await this.updateCollectionLogLlm(em, task.collectionLogId, 'llmSkipped');
+      this.log.info(`Пропущен LLM — нет данных за период для ${task.youtrackLogin}`);
+      this.processing = null;
+      collectionState.removeLlmQueueItem(task.reportId);
+      return;
+    }
+
     this.processing = task.reportId;
     collectionState.updateLlmQueueItem(task.reportId, 'processing');
 
@@ -146,10 +172,13 @@ export class LlmWorker {
 
     if (!rawResponse) {
       this.log.warn(
-        `LLM: no response for ${task.youtrackLogin}, falling back to formula score`,
+        `LLM: нет ответа для ${task.youtrackLogin}, score = null`,
       );
-      report.status = 'completed';
+      report.llmScore = undefined;
+      report.status = 'analyzed';
+      report.llmStatus = 'failed';
       await em.flush();
+      await this.updateCollectionLogLlm(em, task.collectionLogId, 'llmFailed');
       this.processing = null;
       collectionState.removeLlmQueueItem(task.reportId);
       return;
@@ -159,10 +188,13 @@ export class LlmWorker {
 
     if (!analysis) {
       this.log.warn(
-        `LLM parse error: invalid JSON for ${task.youtrackLogin}, falling back to formula score`,
+        `LLM parse error: невалидный JSON для ${task.youtrackLogin}, score = null`,
       );
-      report.status = 'completed';
+      report.llmScore = undefined;
+      report.status = 'analyzed';
+      report.llmStatus = 'failed';
       await em.flush();
+      await this.updateCollectionLogLlm(em, task.collectionLogId, 'llmFailed');
       this.processing = null;
       collectionState.removeLlmQueueItem(task.reportId);
       return;
@@ -179,12 +211,15 @@ export class LlmWorker {
       technicallySignificant: analysis.taskClassification.technicallySignificant,
     };
     report.llmProcessedAt = new Date();
-    report.status = 'completed';
+    report.status = 'analyzed';
+    report.llmStatus = 'completed';
 
     await em.flush();
 
+    await this.updateCollectionLogLlm(em, task.collectionLogId, 'llmCompleted');
+
     this.log.info(
-      `LLM score for ${task.youtrackLogin}: ${analysis.score} (formula was ${report.formulaScore ?? 'n/a'})`,
+      `LLM score для ${task.youtrackLogin}: ${analysis.score}`,
     );
 
     // Regenerate achievements with updated LLM score
@@ -200,6 +235,34 @@ export class LlmWorker {
 
     this.processing = null;
     collectionState.removeLlmQueueItem(task.reportId);
+  }
+
+  private async updateCollectionLogLlm(
+    em: EntityManager,
+    collectionLogId: string | undefined,
+    field: 'llmCompleted' | 'llmFailed' | 'llmSkipped',
+  ): Promise<void> {
+    if (!collectionLogId) return;
+    try {
+      const log = await em.findOne(CollectionLog, { id: collectionLogId });
+      if (log) {
+        log[field]++;
+
+        // Check if all LLM tasks are done → record llmDuration
+        const done = log.llmCompleted + log.llmFailed + log.llmSkipped;
+        if (log.llmTotal > 0 && done >= log.llmTotal && log.llmDuration === 0) {
+          if (log.completedAt) {
+            log.llmDuration = Math.round(
+              (Date.now() - log.completedAt.getTime()) / 1000,
+            );
+          }
+        }
+
+        await em.flush();
+      }
+    } catch (err) {
+      this.log.warn(`Failed to update CollectionLog LLM counter: ${(err as Error).message}`);
+    }
   }
 
   private buildPromptData(report: MetricReport, task: LlmTask): PromptData {

@@ -103,7 +103,7 @@ export class YouTrackClient {
 
         const body = await response.text();
         this.log.error(
-          `[${this.instanceName}] ${method} ${path} → ${response.status} (${elapsed}ms): ${body}`,
+          `[${this.instanceName}] ${method} ${path} → ${response.status} (${elapsed}ms)\n  URL: ${url.toString()}\n  Response: ${body}`,
         );
         throw new AppError(502, `YouTrack error: ${response.status}`);
       } catch (err) {
@@ -194,6 +194,14 @@ export class YouTrackClient {
       endDate,
       fields,
     });
+  }
+
+  async getIssuesByIds(issueIds: string[], fields: string): Promise<YouTrackIssue[]> {
+    if (issueIds.length === 0) return [];
+
+    // YouTrack query syntax: "issue id: PROJ-1, PROJ-2, PROJ-3"
+    const query = `issue id: ${issueIds.join(', ')}`;
+    return this.getIssues(query, fields);
   }
 
   async getIssueActivities(issueId: string): Promise<YouTrackActivity[]> {

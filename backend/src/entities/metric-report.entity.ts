@@ -118,9 +118,13 @@ export class MetricReport {
   @Property({ nullable: true })
   formulaScore?: number;
 
-  // Status
+  // Status: 'collected' | 'analyzed' | 'failed'
+  @Property({ default: 'collected' })
+  status: string = 'collected';
+
+  // LLM status: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped'
   @Property({ default: 'pending' })
-  status: string = 'pending';
+  llmStatus: string = 'pending';
 
   @Property({ type: 'text', nullable: true })
   errorMessage?: string;

@@ -337,7 +337,7 @@ export default function EmployeePage() {
                   title="Динамика по неделям"
                   lines={[
                     'График изменения Score и загрузки сотрудника за каждую неделю.',
-                    'Фиолетовая линия — Score (LLM-оценка или формульный расчёт).\nЗелёная линия — загрузка (% от 40-часовой недели).',
+                    'Фиолетовая линия — Score (LLM-оценка).\nЗелёная линия — загрузка (% от 40-часовой недели).',
                     'Позволяет отследить индивидуальный тренд продуктивности.',
                   ]}
                 />
@@ -361,6 +361,8 @@ export default function EmployeePage() {
             recommendations={report?.llmRecommendations ?? null}
             isProcessing={report?.status === 'completed' && !report?.llmProcessedAt}
             loading={loading}
+            llmStatus={report?.llmStatus}
+            hasNoData={report != null && report.totalIssues === 0}
           />
         </div>
       </div>

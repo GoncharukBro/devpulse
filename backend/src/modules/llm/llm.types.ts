@@ -49,6 +49,7 @@ export interface PromptData {
 export interface LlmTask {
   reportId: string;
   subscriptionId: string;
+  collectionLogId?: string;
   youtrackLogin: string;
   employeeName: string;
   projectName: string;

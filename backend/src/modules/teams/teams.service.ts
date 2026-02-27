@@ -19,7 +19,7 @@ import {
 } from './teams.types';
 
 function getEffectiveScore(report: MetricReport): number | null {
-  return report.llmScore ?? report.formulaScore ?? null;
+  return report.llmScore ?? null;
 }
 
 function avgNullable(values: Array<number | null | undefined>): number | null {

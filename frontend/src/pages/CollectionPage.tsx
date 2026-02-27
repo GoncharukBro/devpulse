@@ -18,7 +18,7 @@ import { collectionApi } from '@/api/endpoints/collection';
 import { useCollectionStore } from '@/stores/collection.store';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { Subscription } from '@/types/subscription';
-import type { CronState } from '@/types/collection';
+import type { CollectionProgress, CronState } from '@/types/collection';
 
 export default function CollectionPage() {
   usePageTitle('Сбор данных');
@@ -27,6 +27,7 @@ export default function CollectionPage() {
   const [loadingPage, setLoadingPage] = useState(true);
   const [stopAllLoading, setStopAllLoading] = useState(false);
   const [stopLoadingId, setStopLoadingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Modals
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -45,6 +46,7 @@ export default function CollectionPage() {
   const fetchState = useCollectionStore((s) => s.fetchState);
   const stopPolling = useCollectionStore((s) => s.stopPolling);
   const onCollectionDone = useCollectionStore((s) => s.onCollectionDone);
+  const onLlmDone = useCollectionStore((s) => s.onLlmDone);
 
   const loadSubscriptions = useCallback(async () => {
     try {
@@ -84,6 +86,15 @@ export default function CollectionPage() {
     return () => onCollectionDone(null);
   }, [onCollectionDone, loadSubscriptions]);
 
+  // Refresh subscriptions when all LLM processing finishes
+  useEffect(() => {
+    onLlmDone(() => {
+      loadSubscriptions();
+      setLogsRefreshKey((k) => k + 1);
+    });
+    return () => onLlmDone(null);
+  }, [onLlmDone, loadSubscriptions]);
+
   // Open collect modal for single project
   const openCollectModal = (subscriptionId: string) => {
     const sub = subscriptions.find((s) => s.id === subscriptionId) ?? null;
@@ -91,16 +102,36 @@ export default function CollectionPage() {
     setCollectModalOpen(true);
   };
 
-  // Stop single subscription
+  // Stop single subscription (running → stopping → stopped, or LLM cancel)
   const handleStop = async (subscriptionId: string) => {
     setStopLoadingId(subscriptionId);
     try {
+      const ac = getActiveCollection(subscriptionId);
+      const isLlmOnly = !ac && getLlmItems(subscriptionId).length > 0;
+
       await collectionApi.stop({ subscriptionIds: [subscriptionId] });
-      toast.success('Сбор остановлен');
+      toast.success(isLlmOnly ? 'LLM-анализ отменён' : 'Сбор остановлен');
       fetchState();
+      loadSubscriptions();
       setLogsRefreshKey((k) => k + 1);
     } catch {
       toast.error('Не удалось остановить сбор');
+    } finally {
+      setStopLoadingId(null);
+    }
+  };
+
+  // Cancel single subscription (pending in queue → cancelled)
+  const handleCancel = async (subscriptionId: string) => {
+    setStopLoadingId(subscriptionId);
+    try {
+      await collectionApi.stop({ subscriptionIds: [subscriptionId] });
+      toast.success('Сбор отменён');
+      fetchState();
+      loadSubscriptions();
+      setLogsRefreshKey((k) => k + 1);
+    } catch {
+      toast.error('Не удалось отменить сбор');
     } finally {
       setStopLoadingId(null);
     }
@@ -113,6 +144,7 @@ export default function CollectionPage() {
       await collectionApi.stopAll();
       toast.success('Все сборы остановлены');
       fetchState();
+      loadSubscriptions();
       setLogsRefreshKey((k) => k + 1);
     } catch {
       toast.error('Не удалось остановить сборы');
@@ -138,16 +170,31 @@ export default function CollectionPage() {
     setDeleteConfirmOpen(true);
   };
 
+  // Scenario 12: stop collection before deleting subscription
   const handleDeleteConfirmed = async () => {
     if (!deleteTargetId) return;
     setDeleteConfirmOpen(false);
+    setDeletingId(deleteTargetId);
+
     try {
+      // Check if subscription has active collection or LLM work
+      const ac = getActiveCollection(deleteTargetId);
+      const hasLlm = getLlmItems(deleteTargetId).length > 0;
+
+      if (ac || hasLlm) {
+        // Stop collection first
+        await collectionApi.stop({ subscriptionIds: [deleteTargetId] });
+        await fetchState();
+      }
+
       await subscriptionsApi.delete(deleteTargetId);
       toast.success('Подписка удалена');
       loadSubscriptions();
+      fetchState();
     } catch {
       toast.error('Не удалось удалить подписку');
     } finally {
+      setDeletingId(null);
       setDeleteTargetId(null);
     }
   };
@@ -172,9 +219,33 @@ export default function CollectionPage() {
     loadCronState();
   };
 
-  // Find active collection for a subscription
-  const getActiveCollection = (subscriptionId: string) =>
-    collectionState?.activeCollections.find((ac) => ac.subscriptionId === subscriptionId);
+  // Find active collection for a subscription (checks both active and queue)
+  const getActiveCollection = (subscriptionId: string): CollectionProgress | undefined => {
+    // First check running/stopping collections
+    const active = collectionState?.activeCollections.find((ac) => ac.subscriptionId === subscriptionId);
+    if (active) return active;
+
+    // Then check queue — synthesize a pending CollectionProgress
+    const queued = collectionState?.queue.find((q) => q.subscriptionId === subscriptionId);
+    if (queued) {
+      return {
+        id: '',
+        subscriptionId: queued.subscriptionId,
+        projectName: queued.projectName,
+        status: 'pending',
+        processedEmployees: 0,
+        totalEmployees: 0,
+        skippedEmployees: 0,
+        failedEmployees: 0,
+        reQueuedEmployees: 0,
+        periodStart: queued.periodStart,
+        periodEnd: queued.periodEnd,
+        startedAt: '',
+      };
+    }
+
+    return undefined;
+  };
 
   // Get LLM queue items for a subscription
   const getLlmItems = (subscriptionId: string) =>
@@ -270,12 +341,13 @@ export default function CollectionPage() {
                 llmProcessed={getLlmProcessed(sub.id)}
                 onTrigger={openCollectModal}
                 onStop={handleStop}
+                onCancel={handleCancel}
                 onEdit={(id) => openEditModal(id, 'employees')}
                 onFieldMapping={(id) => openEditModal(id, 'fieldMapping')}
                 onToggleActive={handleToggleActive}
                 onDelete={openDeleteConfirm}
                 triggerLoading={false}
-                stopLoading={stopLoadingId === sub.id}
+                stopLoading={stopLoadingId === sub.id || deletingId === sub.id}
               />
             ))}
           </div>
@@ -340,6 +412,11 @@ export default function CollectionPage() {
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Вы уверены, что хотите удалить подписку? Все собранные данные будут потеряны.
         </p>
+        {deleteTargetId && (getActiveCollection(deleteTargetId) || getLlmItems(deleteTargetId).length > 0) && (
+          <p className="mt-2 text-xs text-amber-500">
+            Активный сбор будет остановлен перед удалением.
+          </p>
+        )}
       </Modal>
     </>
   );

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Play, Square, Clock, Users, Calendar, CheckCircle, AlertTriangle, XCircle, Bot, Database, Loader } from 'lucide-react';
+import { MoreVertical, Play, Square, X, Clock, Hourglass, Users, Calendar, Bot, Database, Loader } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
 import type { Subscription } from '@/types/subscription';
 import type { CollectionProgress, LlmQueueItem } from '@/types/collection';
 
@@ -12,39 +11,13 @@ interface SubscriptionCardProps {
   llmProcessed?: number;
   onTrigger: (id: string) => void;
   onStop: (id: string) => void;
+  onCancel: (id: string) => void;
   onEdit: (id: string) => void;
   onFieldMapping: (id: string) => void;
   onToggleActive: (id: string, isActive: boolean) => void;
   onDelete: (id: string) => void;
   triggerLoading?: boolean;
   stopLoading?: boolean;
-}
-
-function getStatusIndicator(subscription: Subscription): {
-  color: string;
-  label: string;
-  variant: 'success' | 'warning' | 'danger' | 'neutral';
-} {
-  if (!subscription.isActive) {
-    return { color: 'bg-gray-500', label: 'Деактивирован', variant: 'neutral' };
-  }
-  if (!subscription.lastCollection) {
-    return { color: 'bg-gray-500', label: 'Нет данных', variant: 'neutral' };
-  }
-  const { status } = subscription.lastCollection;
-  if (status === 'completed') {
-    return { color: 'bg-emerald-500', label: 'Успешно', variant: 'success' };
-  }
-  if (status === 'partial') {
-    return { color: 'bg-amber-500', label: 'Частично', variant: 'warning' };
-  }
-  if (status === 'stopped') {
-    return { color: 'bg-gray-500', label: 'Остановлен', variant: 'neutral' };
-  }
-  if (status === 'failed' || status === 'error') {
-    return { color: 'bg-red-500', label: 'Ошибка', variant: 'danger' };
-  }
-  return { color: 'bg-gray-500', label: status, variant: 'neutral' };
 }
 
 function formatDate(iso: string | null): string {
@@ -62,6 +35,7 @@ export default function SubscriptionCard({
   llmProcessed = 0,
   onTrigger,
   onStop,
+  onCancel,
   onEdit,
   onFieldMapping,
   onToggleActive,
@@ -72,22 +46,24 @@ export default function SubscriptionCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const isQueued = !!activeCollection && activeCollection.status === 'queued';
-  const isCollecting = !!activeCollection && activeCollection.status === 'collecting';
+  const isPending = !!activeCollection && activeCollection.status === 'pending';
+  const isRunning = !!activeCollection && activeCollection.status === 'running';
+  const isStopping = !!activeCollection && activeCollection.status === 'stopping';
   const hasLlm = llmItems.length > 0;
-  const isBusy = isQueued || isCollecting || hasLlm;
+  const isBusy = isPending || isRunning || isStopping || hasLlm;
 
-  // Status info — only relevant when idle (no active processes)
-  const statusInfo = getStatusIndicator(subscription);
+  const lastCol = subscription.lastCollection;
 
-  // Header dot color reflects current phase
-  const dotColor = isQueued
+  // Header dot color — только busy/inactive/failed/ok
+  const dotColor = isBusy
     ? 'bg-amber-400 animate-pulse'
-    : isCollecting
-      ? 'bg-brand-500 animate-pulse'
-      : hasLlm
-        ? 'bg-purple-500 animate-pulse'
-        : statusInfo.color;
+    : !subscription.isActive
+      ? 'bg-gray-500'
+      : lastCol?.status === 'failed'
+        ? 'bg-red-500'
+        : lastCol
+          ? 'bg-emerald-500'
+          : 'bg-gray-500';
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -99,18 +75,28 @@ export default function SubscriptionCard({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [menuOpen]);
 
-  // Collection progress percentage (guard against division by zero)
+  // Collection progress percentage
   const collectionProgress = activeCollection && activeCollection.totalEmployees > 0
     ? Math.round((activeCollection.processedEmployees / activeCollection.totalEmployees) * 100)
     : 0;
 
-  // LLM progress calculation
+  // LLM progress calculation — always use live queue counters (remaining + processed)
+  // currentPeriodStatus.dataCollected counts only the latest week, not multi-week backfills
   const llmRemaining = llmItems.length;
   const llmTotal = llmRemaining + llmProcessed;
-  const llmProgress = llmTotal > 0 ? Math.round((llmProcessed / llmTotal) * 100) : 0;
+  const llmDone = llmProcessed;
+  const llmProgress = llmTotal > 0 ? Math.round((llmDone / llmTotal) * 100) : 0;
+
+  // Current LLM employee name (from processing item)
+  const llmCurrentEmployee = llmItems.find((i) => i.status === 'processing')?.employeeName;
 
   // Show collection bar at 100% when collection done but LLM still working
-  const showCollectionComplete = !isCollecting && hasLlm;
+  const showCollectionComplete = !isRunning && !isPending && !isStopping && hasLlm;
+
+  // Multi-week progress label
+  const weekLabel = activeCollection?.totalWeeks && activeCollection.totalWeeks > 1
+    ? `Неделя ${activeCollection.currentWeek ?? 1}/${activeCollection.totalWeeks} · `
+    : '';
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-surface-border bg-white dark:bg-surface transition-colors hover:border-gray-400 dark:hover:border-gray-600">
@@ -171,29 +157,13 @@ export default function SubscriptionCard({
             <Users size={14} className="text-gray-400 dark:text-gray-500" />
             <span>{subscription.employeeCount} сотрудников</span>
           </div>
-          {subscription.lastCollection && (
-            <>
-              <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
-                <span>Последний сбор: {formatDate(subscription.lastCollection.completedAt)}</span>
-              </div>
-              {/* Status badge — only when fully idle (no collection, no LLM) */}
-              {!isBusy && (
-                <div className="flex items-center gap-2">
-                  {subscription.lastCollection.status === 'completed' && <CheckCircle size={14} className="text-emerald-500" />}
-                  {subscription.lastCollection.status === 'partial' && <AlertTriangle size={14} className="text-amber-500" />}
-                  {subscription.lastCollection.status === 'stopped' && <Square size={14} className="text-gray-400 dark:text-gray-500" />}
-                  {(subscription.lastCollection.status === 'error' || subscription.lastCollection.status === 'failed') && <XCircle size={14} className="text-red-500" />}
-                  {!['completed', 'partial', 'error', 'failed', 'stopped'].includes(subscription.lastCollection.status) && <Clock size={14} className="text-gray-400 dark:text-gray-500" />}
-                  <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
-                  <span>
-                    {subscription.lastCollection.processedEmployees}/{subscription.lastCollection.totalEmployees} обработано
-                  </span>
-                </div>
-              )}
-            </>
+          {lastCol && !isBusy && (
+            <div className="flex items-center gap-2">
+              <Calendar size={14} className="text-gray-400 dark:text-gray-500" />
+              <span>Последний сбор: {formatDate(lastCol.completedAt)}</span>
+            </div>
           )}
-          {!subscription.lastCollection && !isBusy && (
+          {!lastCol && !isBusy && (
             <div className="flex items-center gap-2">
               <Clock size={14} className="text-gray-400 dark:text-gray-500" />
               <span className="text-gray-400 dark:text-gray-500">Сбор ещё не выполнялся</span>
@@ -201,12 +171,12 @@ export default function SubscriptionCard({
           )}
         </div>
 
-        {/* Queued indicator */}
-        {isQueued && (
+        {/* Pending (queued) indicator */}
+        {isPending && (
           <div className="mb-3">
             <div className="mb-1 flex items-center text-xs text-gray-500 dark:text-gray-400">
               <Loader size={12} className="mr-1 animate-spin text-amber-400" />
-              Ожидание в очереди...
+              В очереди...
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
               <div className="h-full w-1/4 animate-pulse rounded-full bg-amber-400/60" />
@@ -214,30 +184,62 @@ export default function SubscriptionCard({
           </div>
         )}
 
-        {/* Collection progress bar — during collection OR at 100% while LLM processes */}
-        {(isCollecting || showCollectionComplete) && (
+        {/* Stopping indicator */}
+        {isStopping && (
+          <div className="mb-3">
+            <div className="mb-1 flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <Loader size={12} className="mr-1 animate-spin text-gray-400" />
+              Останавливается...
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
+              <div
+                className="h-full rounded-full bg-gray-400 transition-all duration-500"
+                style={{ width: `${collectionProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Collection progress bar — during running OR at 100% while LLM processes */}
+        {(isRunning || showCollectionComplete) && (
           <div className="mb-3">
             <div className="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1">
                 <Database size={12} className="text-brand-500" />
-                {isCollecting
-                  ? (activeCollection?.currentEmployee ?? 'Запуск...')
-                  : 'Сбор завершён'
+                {isRunning
+                  ? (
+                    <>
+                      {weekLabel}
+                      {activeCollection?.currentEmployee ?? 'Запуск...'}
+                      {activeCollection && (
+                        <span className="text-gray-400">
+                          ({activeCollection.processedEmployees}/{activeCollection.totalEmployees})
+                        </span>
+                      )}
+                    </>
+                  )
+                  : 'Данные собраны'
                 }
-                {isCollecting && activeCollection && (
-                  <span className="text-gray-400">
-                    ({activeCollection.processedEmployees}/{activeCollection.totalEmployees})
-                  </span>
-                )}
               </span>
-              <span>{isCollecting ? `${collectionProgress}%` : '100%'}</span>
+              <span>{isRunning ? `${collectionProgress}%` : '100%'}</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
               <div
                 className="h-full rounded-full bg-brand-500 transition-all duration-500"
-                style={{ width: isCollecting ? `${collectionProgress}%` : '100%' }}
+                style={{ width: isRunning ? `${collectionProgress}%` : '100%' }}
               />
             </div>
+          </div>
+        )}
+
+        {/* LLM waiting state — shown during collection when LLM hasn't started */}
+        {(isPending || isRunning || isStopping) && !hasLlm && (
+          <div className="mb-3">
+            <div className="mb-1 flex items-center text-xs text-gray-400 dark:text-gray-500">
+              <Hourglass size={12} className="mr-1 text-gray-400 dark:text-gray-500" />
+              LLM: Ожидание сбора данных
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter" />
           </div>
         )}
 
@@ -248,7 +250,12 @@ export default function SubscriptionCard({
               <span className="flex items-center gap-1">
                 <Bot size={12} className="text-purple-400" />
                 LLM-анализ
-                <span className="text-gray-400">({llmProcessed}/{llmTotal})</span>
+                {llmCurrentEmployee && (
+                  <span className="font-medium text-gray-600 dark:text-gray-300">
+                    · {llmCurrentEmployee}
+                  </span>
+                )}
+                <span className="text-gray-400">({llmDone}/{llmTotal})</span>
               </span>
               <span>{llmProgress}%</span>
             </div>
@@ -261,8 +268,20 @@ export default function SubscriptionCard({
           </div>
         )}
 
-        {/* Actions */}
-        {isBusy ? (
+        {/* Actions — different buttons per state */}
+        {isPending ? (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<X size={14} />}
+              onClick={() => onCancel(subscription.id)}
+              loading={stopLoading}
+            >
+              Отменить
+            </Button>
+          </div>
+        ) : isRunning ? (
           <div className="flex gap-2">
             <Button
               variant="secondary"
@@ -274,6 +293,24 @@ export default function SubscriptionCard({
               Остановить
             </Button>
           </div>
+        ) : isStopping ? (
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" disabled>
+              Останавливается...
+            </Button>
+          </div>
+        ) : hasLlm ? (
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<Square size={14} />}
+              onClick={() => onStop(subscription.id)}
+              loading={stopLoading}
+            >
+              Остановить LLM
+            </Button>
+          </div>
         ) : (
           <div className="flex gap-2">
             <Button
@@ -281,7 +318,6 @@ export default function SubscriptionCard({
               size="sm"
               leftIcon={<Play size={14} />}
               onClick={() => onTrigger(subscription.id)}
-              disabled={!subscription.isActive}
               loading={triggerLoading}
             >
               Запустить сбор

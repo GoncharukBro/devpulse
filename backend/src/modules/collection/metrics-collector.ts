@@ -81,11 +81,7 @@ export class MetricsCollector {
     const startStr = formatYTDate(periodStart);
     const endStr = formatYTDate(periodEnd);
 
-    // A. Задачи сотрудника за период
-    const issues = await this.fetchIssues(projectShortName, employeeLogin, startStr, endStr);
-    this.log.info(`YouTrack: found ${issues.length} issues for ${employeeLogin}`);
-
-    // B. Work items (списания времени) за период
+    // A. Work items (списания времени) за период — единственный надёжный источник
     const workItems = await this.fetchWorkItems(
       projectShortName,
       employeeLogin,
@@ -96,6 +92,16 @@ export class MetricsCollector {
     this.log.info(
       `YouTrack: found ${workItems.length} work items for ${employeeLogin} (total: ${totalWorkMinutes} min)`,
     );
+
+    // B. Собрать задачи из трёх источников (вместо старого updated-фильтра)
+    const issues = await this.fetchIssuesFromAllSources(
+      projectShortName,
+      employeeLogin,
+      startStr,
+      endStr,
+      workItems,
+    );
+    this.log.info(`YouTrack: found ${issues.length} issues for ${employeeLogin} (work items + resolved + created)`);
 
     // Классификация задач
     const issuesByType: Record<string, number> = {};
@@ -133,7 +139,7 @@ export class MetricsCollector {
         issuesWithoutEstimation++;
       }
 
-      // Статус задачи
+      // Статус задачи: завершена В ЭТОМ периоде (resolved date в диапазоне)
       if (issue.resolved && issue.resolved >= periodStartMs && issue.resolved <= periodEndMs) {
         completedIssues++;
         completedIssueIds.push(issue.id);
@@ -141,7 +147,7 @@ export class MetricsCollector {
         inProgressIssues++;
       }
 
-      // Overdue: есть due date и не resolved
+      // Overdue: есть due date до конца периода и не resolved
       const dueDate = this.getDueDate(issue);
       if (dueDate && dueDate < nowMs && !issue.resolved) {
         overdueIssues++;
@@ -164,10 +170,11 @@ export class MetricsCollector {
     // Группировка work items по типам
     const spentByType: Record<string, number> = {};
     let aiSavingMinutes = 0;
+    const issueMap = new Map(issues.map((i) => [i.id, i]));
 
     for (const wi of workItems) {
       // Определяем тип задачи для этого work item
-      const parentIssue = issues.find((i) => i.id === wi.issue.id);
+      const parentIssue = issueMap.get(wi.issue.id);
       const type = parentIssue ? this.resolveIssueType(parentIssue) : 'other';
       spentByType[type] = (spentByType[type] || 0) + wi.duration.minutes;
 
@@ -214,14 +221,49 @@ export class MetricsCollector {
     };
   }
 
-  private async fetchIssues(
+  /**
+   * Собрать задачи из трёх источников и дедуплицировать:
+   * 1. Work items → задачи, на которые реально списано время
+   * 2. Resolved → задачи, закрытые в периоде (могут быть без списания на этой неделе)
+   * 3. Created → задачи, созданные в периоде (могут ещё не иметь списаний)
+   */
+  private async fetchIssuesFromAllSources(
     projectShortName: string,
     login: string,
     startStr: string,
     endStr: string,
+    workItems: YouTrackWorkItem[],
   ): Promise<YouTrackIssue[]> {
-    const query = `project: {${projectShortName}} assignee: ${login} updated: ${startStr} .. ${endStr}`;
-    return this.ytClient.getIssues(query, ISSUE_FIELDS);
+    // 1. Уникальные idReadable из work items
+    const workItemIssueIds = [
+      ...new Set(workItems.map((wi) => wi.issue.idReadable).filter(Boolean)),
+    ];
+
+    // 2. Задачи закрытые за период (YouTrack: "resolved date:", не "resolved:")
+    const resolvedQuery = `project: {${projectShortName}} assignee: ${login} resolved date: ${startStr} .. ${endStr}`;
+    const resolvedIssues = await this.ytClient.getIssues(resolvedQuery, ISSUE_FIELDS);
+
+    // 3. Задачи созданные за период
+    const createdQuery = `project: {${projectShortName}} assignee: ${login} created: ${startStr} .. ${endStr}`;
+    const createdIssues = await this.ytClient.getIssues(createdQuery, ISSUE_FIELDS);
+
+    // 4. Задачи из work items (детали по ID)
+    let workItemIssues: YouTrackIssue[] = [];
+    if (workItemIssueIds.length > 0) {
+      workItemIssues = await this.ytClient.getIssuesByIds(workItemIssueIds, ISSUE_FIELDS);
+    }
+
+    // 5. Дедупликация по id
+    const issueMap = new Map<string, YouTrackIssue>();
+    for (const issue of [...workItemIssues, ...resolvedIssues, ...createdIssues]) {
+      issueMap.set(issue.id, issue);
+    }
+
+    this.log.info(
+      `YouTrack: sources — workItems=${workItemIssueIds.length}, resolved=${resolvedIssues.length}, created=${createdIssues.length} → merged=${issueMap.size}`,
+    );
+
+    return Array.from(issueMap.values());
   }
 
   private async fetchWorkItems(

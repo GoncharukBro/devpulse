@@ -17,6 +17,14 @@ function getInstanceName(instanceId: string): string | undefined {
   return instances.find((i) => i.id === instanceId)?.name;
 }
 
+function getCurrentWeekMonday(): string {
+  const now = new Date();
+  const day = now.getUTCDay(); // 0=Sun … 6=Sat
+  const diff = day === 0 ? -6 : 1 - day; // Monday offset
+  const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diff));
+  return monday.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
 function validateCreateDto(dto: CreateSubscriptionDto): void {
   if (!dto.youtrackInstanceId) throw new ValidationError('youtrackInstanceId is required');
   if (!dto.projectId) throw new ValidationError('projectId is required');
@@ -47,10 +55,69 @@ export async function listSubscriptions(
     orderBy: { createdAt: 'DESC' },
   });
 
+  const subIds = subscriptions.map((s) => s.id);
+
+  // Fetch current-period metric counts per subscription via raw SQL
+  interface PeriodRow {
+    subscription_id: string;
+    period_start: string;
+    data_collected: string;
+    llm_completed: string;
+    llm_pending: string;
+    llm_processing: string;
+    llm_failed: string;
+    llm_skipped: string;
+  }
+
+  let periodMap = new Map<string, PeriodRow>();
+
+  if (subIds.length > 0) {
+    const currentMonday = getCurrentWeekMonday();
+
+    const inPlaceholders = subIds.map(() => '?').join(', ');
+
+    const rows: PeriodRow[] = await em.getConnection().execute(`
+      WITH target_period AS (
+        SELECT
+          subscription_id,
+          CASE
+            WHEN EXISTS (
+              SELECT 1 FROM metric_reports m2
+              WHERE m2.subscription_id = m.subscription_id
+                AND m2.period_start = ?
+            )
+            THEN ?::date
+            ELSE MAX(m.period_start)
+          END AS period_start
+        FROM metric_reports m
+        WHERE m.subscription_id IN (${inPlaceholders})
+        GROUP BY m.subscription_id
+      )
+      SELECT
+        mr.subscription_id,
+        tp.period_start::text AS period_start,
+        COUNT(*)::text AS data_collected,
+        COUNT(*) FILTER (WHERE mr.llm_status = 'completed')::text AS llm_completed,
+        COUNT(*) FILTER (WHERE mr.llm_status = 'pending')::text AS llm_pending,
+        COUNT(*) FILTER (WHERE mr.llm_status = 'processing')::text AS llm_processing,
+        COUNT(*) FILTER (WHERE mr.llm_status = 'failed')::text AS llm_failed,
+        COUNT(*) FILTER (WHERE mr.llm_status = 'skipped')::text AS llm_skipped
+      FROM target_period tp
+      JOIN metric_reports mr
+        ON mr.subscription_id = tp.subscription_id
+       AND mr.period_start = tp.period_start
+      GROUP BY mr.subscription_id, tp.period_start
+    `, [currentMonday, currentMonday, ...subIds]);
+
+    periodMap = new Map(rows.map((r) => [r.subscription_id, r]));
+  }
+
   return subscriptions.map((sub) => {
     const lastLog = sub.collectionLogs
       .getItems()
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+
+    const periodRow = periodMap.get(sub.id);
 
     return {
       id: sub.id,
@@ -67,6 +134,25 @@ export async function listSubscriptions(
             completedAt: lastLog.completedAt?.toISOString() ?? null,
             processedEmployees: lastLog.processedEmployees,
             totalEmployees: lastLog.totalEmployees,
+            skippedEmployees: lastLog.skippedEmployees,
+            failedEmployees: lastLog.failedEmployees,
+            reQueuedEmployees: lastLog.reQueuedEmployees,
+            llmTotal: lastLog.llmTotal,
+            llmCompleted: lastLog.llmCompleted,
+            llmFailed: lastLog.llmFailed,
+            llmSkipped: lastLog.llmSkipped,
+          }
+        : null,
+      currentPeriodStatus: periodRow
+        ? {
+            periodStart: periodRow.period_start,
+            totalEmployees: sub.employees.getItems().filter((e) => e.isActive).length,
+            dataCollected: parseInt(periodRow.data_collected, 10),
+            llmCompleted: parseInt(periodRow.llm_completed, 10),
+            llmPending: parseInt(periodRow.llm_pending, 10),
+            llmProcessing: parseInt(periodRow.llm_processing, 10),
+            llmFailed: parseInt(periodRow.llm_failed, 10),
+            llmSkipped: parseInt(periodRow.llm_skipped, 10),
           }
         : null,
       createdAt: sub.createdAt.toISOString(),

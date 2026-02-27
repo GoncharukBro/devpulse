@@ -12,9 +12,9 @@ interface MetricTooltipData {
 const METRIC_TOOLTIPS: Record<string, MetricTooltipData> = {
   score: {
     title: 'Оценка продуктивности',
-    source: 'LLM-анализ / формульный расчёт',
+    source: 'LLM-анализ',
     description: 'Общая оценка продуктивности сотрудника на основе всех метрик',
-    calculation: 'Взвешенная оценка от LLM или формульный расчёт (fallback)',
+    calculation: 'Взвешенная оценка от LLM на основе KPI и контекста задач',
     interpretation: '80-100 — отлично, 60-79 — хорошо, 40-59 — средне, <40 — требует внимания',
   },
   utilization: {
