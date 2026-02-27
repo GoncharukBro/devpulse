@@ -8,6 +8,8 @@ export interface LlmConfig {
   model: string;
   temperature: number;
   rateLimit: number;
+  requestTimeoutMs: number;
+  maxRetries: number;
 }
 
 export interface LlmAnalysis {

@@ -34,6 +34,8 @@ export class LlmService {
       model: config.llm.model,
       temperature: config.llm.temperature,
       rateLimit: config.llm.rateLimit,
+      requestTimeoutMs: config.llm.requestTimeoutMs,
+      maxRetries: config.llm.maxRetries,
     };
 
     // Rate limit: requests per minute → interval in ms

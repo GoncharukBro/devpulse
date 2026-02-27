@@ -35,6 +35,8 @@ export interface AppConfig {
     model: string;
     temperature: number;
     rateLimit: number;
+    requestTimeoutMs: number;
+    maxRetries: number;
   };
   cron: {
     enabled: boolean;
@@ -99,6 +101,8 @@ export const config: AppConfig = {
     model: optional('LLM_MODEL', 'gemma3:4b'),
     temperature: parseFloat(optional('LLM_TEMPERATURE', '0.3')),
     rateLimit: parseInt(optional('LLM_RATE_LIMIT', '3'), 10),
+    requestTimeoutMs: parseInt(optional('LLM_REQUEST_TIMEOUT_MS', '300000'), 10),
+    maxRetries: parseInt(optional('LLM_MAX_RETRIES', '3'), 10),
   },
   cron: {
     enabled: optional('CRON_ENABLED', 'false') === 'true',

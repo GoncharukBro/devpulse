@@ -21,9 +21,7 @@ interface ChatCompletionResponse {
   }>;
 }
 
-const REQUEST_TIMEOUT = 120_000;
-const MAX_RETRIES = 2;
-const RETRY_BACKOFF = [5000, 15000];
+const RETRY_BACKOFF = [5000, 15000, 30000];
 
 export class LlmClient {
   constructor(
@@ -60,7 +58,7 @@ export class LlmClient {
 
     let lastError: Error | null = null;
 
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
       const start = Date.now();
 
       try {
@@ -75,7 +73,7 @@ export class LlmClient {
         }
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+        const timeout = setTimeout(() => controller.abort(), this.config.requestTimeoutMs);
 
         const response = await fetch(url, {
           method: 'POST',
@@ -102,10 +100,10 @@ export class LlmClient {
         }
 
         // Retry on 5xx
-        if (response.status >= 500 && attempt < MAX_RETRIES) {
+        if (response.status >= 500 && attempt < this.config.maxRetries) {
           const backoff = RETRY_BACKOFF[attempt] ?? 15000;
           this.log.error(
-            `LLM request failed: ${response.status} (${elapsed}ms), retry ${attempt + 1}/${MAX_RETRIES}`,
+            `LLM request failed: ${response.status} (${elapsed}ms), retry ${attempt + 1}/${this.config.maxRetries}`,
           );
           await new Promise((r) => setTimeout(r, backoff));
           lastError = new Error(`LLM responded with ${response.status}`);
@@ -123,15 +121,15 @@ export class LlmClient {
 
         if (error.name === 'AbortError') {
           this.log.error(
-            `LLM request failed: timeout after ${REQUEST_TIMEOUT / 1000}s, retry ${attempt + 1}/${MAX_RETRIES}`,
+            `LLM request failed: timeout after ${this.config.requestTimeoutMs / 1000}s, retry ${attempt + 1}/${this.config.maxRetries}`,
           );
         } else {
           this.log.error(
-            `LLM request failed: ${error.message} (${elapsed}ms), retry ${attempt + 1}/${MAX_RETRIES}`,
+            `LLM request failed: ${error.message} (${elapsed}ms), retry ${attempt + 1}/${this.config.maxRetries}`,
           );
         }
 
-        if (attempt < MAX_RETRIES) {
+        if (attempt < this.config.maxRetries) {
           const backoff = RETRY_BACKOFF[attempt] ?? 15000;
           await new Promise((r) => setTimeout(r, backoff));
           lastError = error;

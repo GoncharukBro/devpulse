@@ -168,7 +168,9 @@ export class LlmWorker {
     const promptData = this.buildPromptData(report, task);
     const messages = buildAnalysisPrompt(promptData);
 
+    const llmStart = Date.now();
     const rawResponse = await this.llmClient.chatCompletion(messages);
+    const llmElapsed = Math.round((Date.now() - llmStart) / 1000);
 
     if (!rawResponse) {
       this.log.warn(
@@ -219,7 +221,7 @@ export class LlmWorker {
     await this.updateCollectionLogLlm(em, task.collectionLogId, 'llmCompleted');
 
     this.log.info(
-      `LLM score для ${task.youtrackLogin}: ${analysis.score}`,
+      `LLM response for ${task.youtrackLogin}: ${llmElapsed}s, score=${analysis.score}`,
     );
 
     // Regenerate achievements with updated LLM score
