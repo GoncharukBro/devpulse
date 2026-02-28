@@ -186,6 +186,9 @@ export interface EmployeeListItem {
   email?: string;
   projects: string[];
   lastScore: number | null;
+  utilization: number | null;
+  estimationAccuracy: number | null;
+  completionRate: number | null;
   scoreTrend: ScoreTrend;
 }
 

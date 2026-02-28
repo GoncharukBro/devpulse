@@ -16,11 +16,11 @@ function SectionTitle({ icon: Icon, title }: { icon: typeof Palette; title: stri
 }
 
 export default function SettingsPage() {
-  usePageTitle('Настройки');
+  usePageTitle('Система');
 
   return (
     <>
-      <PageHeader title="Настройки" description="Конфигурация AI-модели и параметров email-отчётов" />
+      <PageHeader title="Система" description="Интеграции, персонализация и информация о приложении" />
       <div className="space-y-6">
         <Card header={<SectionTitle icon={Palette} title="Персонализация" />}>
           <ThemeSelector />

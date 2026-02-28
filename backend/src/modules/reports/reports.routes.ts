@@ -29,11 +29,25 @@ interface EmailPreviewBody {
   periodStart?: string;
 }
 
+interface EmployeeListQuery {
+  subscriptionId?: string;
+}
+
 interface ProjectHistoryQuery {
   weeks?: string;
 }
 
 export async function reportsRoutes(app: FastifyInstance): Promise<void> {
+  // GET /api/employees
+  app.get<{ Querystring: EmployeeListQuery }>(
+    '/employees',
+    async (request) => {
+      const em = request.orm.em.fork();
+      const service = new ReportsService(em);
+      return service.getEmployeeList(request.user.id, request.query.subscriptionId);
+    },
+  );
+
   // GET /api/reports/overview
   app.get('/reports/overview', async (request) => {
     const em = request.orm.em.fork();
@@ -42,11 +56,14 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
   });
 
   // GET /api/reports/employees
-  app.get('/reports/employees', async (request) => {
-    const em = request.orm.em.fork();
-    const service = new ReportsService(em);
-    return service.getEmployeeList(request.user.id);
-  });
+  app.get<{ Querystring: EmployeeListQuery }>(
+    '/reports/employees',
+    async (request) => {
+      const em = request.orm.em.fork();
+      const service = new ReportsService(em);
+      return service.getEmployeeList(request.user.id, request.query.subscriptionId);
+    },
+  );
 
   // GET /api/reports/projects/:subscriptionId/summary
   app.get<{ Params: { subscriptionId: string } }>(

@@ -3,10 +3,12 @@ import {
   Activity,
   BarChart3,
   FolderKanban,
+  UserRound,
   Users,
   Trophy,
+  BookOpen,
   Database,
-  Settings,
+  Monitor,
   LogOut,
   X,
 } from 'lucide-react';
@@ -18,13 +20,15 @@ import { useIsMobile } from '@/hooks/useMediaQuery';
 const analyticsNav = [
   { label: 'Обзор', to: '/overview', icon: BarChart3 },
   { label: 'Проекты', to: '/projects', icon: FolderKanban },
+  { label: 'Сотрудники', to: '/employees', icon: UserRound },
   { label: 'Команды', to: '/teams', icon: Users },
   { label: 'Ачивки', to: '/achievements', icon: Trophy },
 ];
 
 const managementNav = [
   { label: 'Сбор данных', to: '/collection', icon: Database },
-  { label: 'Настройки', to: '/settings', icon: Settings },
+  { label: 'Методология', to: '/methodology', icon: BookOpen },
+  { label: 'Система', to: '/system', icon: Monitor },
 ];
 
 export const SIDEBAR_WIDTH = 260;

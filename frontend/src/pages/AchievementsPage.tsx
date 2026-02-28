@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import AchievementStats from '@/components/achievements/AchievementStats';
 import AchievementFeed from '@/components/achievements/AchievementFeed';
 import AchievementCatalog from '@/components/achievements/AchievementCatalog';
+import AchievementsHelpModal, { AchievementsHelpButton } from '@/components/achievements/AchievementsHelpModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { achievementsApi } from '@/api/endpoints/achievements';
 import type { CatalogResponse } from '@/types/achievement';
@@ -17,6 +18,7 @@ export default function AchievementsPage() {
   const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const loadCatalog = useCallback(async () => {
     try {
@@ -62,7 +64,12 @@ export default function AchievementsPage() {
 
   return (
     <>
-      <PageHeader title="Достижения" description="Коллекция наград сотрудников за выдающиеся результаты по метрикам" />
+      <PageHeader
+        title="Достижения"
+        description="Коллекция наград сотрудников за выдающиеся результаты по метрикам"
+        actions={<AchievementsHelpButton onClick={() => setHelpOpen(true)} />}
+      />
+      <AchievementsHelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       {/* Stats */}
       <AchievementStats stats={catalog?.stats ?? null} loading={catalogLoading} />

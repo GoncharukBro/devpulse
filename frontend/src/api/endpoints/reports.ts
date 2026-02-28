@@ -16,8 +16,8 @@ export const reportsApi = {
     return response.data;
   },
 
-  async getEmployees(): Promise<EmployeeListItem[]> {
-    const response = await apiClient.get<EmployeeListItem[]>('/reports/employees');
+  async getEmployees(params?: { subscriptionId?: string }): Promise<EmployeeListItem[]> {
+    const response = await apiClient.get<EmployeeListItem[]>('/employees', { params });
     return response.data;
   },
 

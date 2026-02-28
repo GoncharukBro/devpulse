@@ -603,11 +603,19 @@ export class ReportsService {
 
   // ─── Employee List ─────────────────────────────────────────────────
 
-  async getEmployeeList(userId: string): Promise<EmployeeListItem[]> {
+  async getEmployeeList(
+    userId: string,
+    subscriptionId?: string,
+  ): Promise<EmployeeListItem[]> {
     const subscriptions = await this.getUserSubscriptions(userId);
     if (subscriptions.length === 0) return [];
 
-    const subIds = subscriptions.map((s) => s.id);
+    const filteredSubs = subscriptionId
+      ? subscriptions.filter((s) => s.id === subscriptionId)
+      : subscriptions;
+    if (filteredSubs.length === 0) return [];
+
+    const subIds = filteredSubs.map((s) => s.id);
 
     // Get all employees across subscriptions
     const employees = await this.em.find(SubscriptionEmployee, {
@@ -636,7 +644,8 @@ export class ReportsService {
         { orderBy: { periodStart: 'DESC' }, limit: 4 },
       );
 
-      const lastScore = reports.length > 0 ? getEffectiveScore(reports[0]) : null;
+      const lastReport = reports.length > 0 ? reports[0] : null;
+      const lastScore = lastReport ? getEffectiveScore(lastReport) : null;
       const scores = reports.map((r) => getEffectiveScore(r));
       const scoreTrend = calcTrend(scores);
 
@@ -646,6 +655,9 @@ export class ReportsService {
         email: emp.email,
         projects: [...new Set(projects)],
         lastScore,
+        utilization: lastReport?.utilization ?? null,
+        estimationAccuracy: lastReport?.estimationAccuracy ?? null,
+        completionRate: lastReport?.completionRate ?? null,
         scoreTrend,
       });
     }

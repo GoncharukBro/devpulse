@@ -11,6 +11,7 @@ import ConcernsList from '@/components/metrics/ConcernsList';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
 import InfoTooltip from '@/components/metrics/InfoTooltip';
 import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
+import MethodologyLink from '@/components/shared/MethodologyLink';
 import { reportsApi } from '@/api/endpoints/reports';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { OverviewDTO } from '@/types/reports';
@@ -81,7 +82,11 @@ export default function OverviewPage() {
 
   return (
     <>
-      <PageHeader title="Обзор" description="Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания" />
+      <PageHeader
+        title="Обзор"
+        description="Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания"
+        actions={<MethodologyLink />}
+      />
 
       {/* KPI Cards */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

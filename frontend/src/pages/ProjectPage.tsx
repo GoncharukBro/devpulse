@@ -14,6 +14,7 @@ import CopyButton from '@/components/shared/CopyButton';
 import PeriodFilter from '@/components/shared/PeriodFilter';
 import EmailReportModal from '@/components/shared/EmailReportModal';
 import Button from '@/components/ui/Button';
+import MethodologyLink from '@/components/shared/MethodologyLink';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { formatMetric } from '@/utils/format';
 import { reportsApi } from '@/api/endpoints/reports';
@@ -127,19 +128,22 @@ export default function ProjectPage() {
         description="Метрики команды, тренды по неделям и рекомендации по проекту"
         backLink={{ to: '/projects', label: 'Проекты' }}
         actions={
-          summary ? (
-            <div className="flex gap-2">
-              <CopyButton getText={getCopyText} />
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<Mail size={14} />}
-                onClick={() => setEmailModalOpen(true)}
-              >
-                На почту
-              </Button>
-            </div>
-          ) : undefined
+          <div className="flex items-center gap-2">
+            <MethodologyLink />
+            {summary && (
+              <>
+                <CopyButton getText={getCopyText} />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Mail size={14} />}
+                  onClick={() => setEmailModalOpen(true)}
+                >
+                  На почту
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
 

@@ -14,6 +14,7 @@ import LlmSummaryBlock from '@/components/employees/LlmSummaryBlock';
 import AchievementPortfolioCard from '@/components/achievements/AchievementPortfolioCard';
 import AchievementPortfolioDetail from '@/components/achievements/AchievementPortfolioDetail';
 import CopyButton from '@/components/shared/CopyButton';
+import MethodologyLink from '@/components/shared/MethodologyLink';
 import PeriodFilter from '@/components/shared/PeriodFilter';
 import StatusBadge from '@/components/shared/StatusBadge';
 import EmailReportModal from '@/components/shared/EmailReportModal';
@@ -275,7 +276,8 @@ export default function EmployeePage() {
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <MethodologyLink />
           <CopyButton getText={getCopyText} />
           <Button
             variant="secondary"
