@@ -56,13 +56,14 @@ export class TeamsService {
 
     for (const team of teams) {
       const logins = team.members.getItems().map((m) => m.youtrackLogin);
-      const { avgScore, scoreTrend } = await this.getTeamAggregates(logins, subIds);
+      const { avgScore, avgUtilization, scoreTrend } = await this.getTeamAggregates(logins, subIds);
 
       result.push({
         id: team.id,
         name: team.name,
         membersCount: logins.length,
         avgScore,
+        avgUtilization,
         scoreTrend,
         createdAt: team.createdAt.toISOString(),
       });
@@ -90,10 +91,7 @@ export class TeamsService {
       members.push(await this.getMemberDetail(login, subIds));
     }
 
-    const { avgScore, scoreTrend } = await this.getTeamAggregates(logins, subIds);
-    const avgUtilization = avgNullable(
-      members.map((m) => m.lastUtilization),
-    );
+    const { avgScore, avgUtilization, scoreTrend } = await this.getTeamAggregates(logins, subIds);
 
     // Weekly trend (last 8 weeks)
     const weeklyTrend = await this.getTeamWeeklyTrend(logins, subIds, 8);
@@ -276,9 +274,9 @@ export class TeamsService {
   private async getTeamAggregates(
     logins: string[],
     subIds: string[],
-  ): Promise<{ avgScore: number | null; scoreTrend: ScoreTrend }> {
+  ): Promise<{ avgScore: number | null; avgUtilization: number | null; scoreTrend: ScoreTrend }> {
     if (logins.length === 0 || subIds.length === 0) {
-      return { avgScore: null, scoreTrend: null };
+      return { avgScore: null, avgUtilization: null, scoreTrend: null };
     }
 
     // Get latest period
@@ -291,7 +289,7 @@ export class TeamsService {
       { orderBy: { periodStart: 'DESC' } },
     );
 
-    if (!latestReport) return { avgScore: null, scoreTrend: null };
+    if (!latestReport) return { avgScore: null, avgUtilization: null, scoreTrend: null };
 
     const lastPeriod = latestReport.periodStart;
 
@@ -310,11 +308,14 @@ export class TeamsService {
     }
 
     const empScores: Array<number | null> = [];
+    const empUtils: Array<number | null> = [];
     for (const reps of byLogin.values()) {
       empScores.push(avgNullable(reps.map((r) => getEffectiveScore(r))));
+      empUtils.push(avgNullable(reps.map((r) => r.utilization ?? null)));
     }
 
     const avgScore = avgNullable(empScores);
+    const avgUtilization = avgNullable(empUtils);
 
     // Previous period
     const prevReport = await this.em.findOne(
@@ -327,7 +328,7 @@ export class TeamsService {
       { orderBy: { periodStart: 'DESC' } },
     );
 
-    if (!prevReport) return { avgScore, scoreTrend: null };
+    if (!prevReport) return { avgScore, avgUtilization, scoreTrend: null };
 
     const prevReports = await this.em.find(MetricReport, {
       subscription: { $in: subIds },
@@ -349,7 +350,7 @@ export class TeamsService {
 
     const scoreTrend = calcTrend([prevAvgScore, avgScore]);
 
-    return { avgScore, scoreTrend };
+    return { avgScore, avgUtilization, scoreTrend };
   }
 
   private async getTeamWeeklyTrend(

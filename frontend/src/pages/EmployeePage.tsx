@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { Users, Mail, Award, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Card from '@/components/ui/Card';
@@ -36,6 +36,19 @@ import type { PortfolioAchievement, PortfolioResponse } from '@/types/achievemen
 
 export default function EmployeePage() {
   const { login } = useParams<{ login: string }>();
+  const location = useLocation();
+  const navState = location.state as { from?: string; id?: string; name?: string } | null;
+
+  // Dynamic breadcrumb
+  let backTo = '/employees';
+  let backLabel = 'Сотрудники';
+  if (navState?.from === 'project' && navState.id) {
+    backTo = `/projects/${navState.id}`;
+    backLabel = navState.name || 'Проект';
+  } else if (navState?.from === 'team' && navState.id) {
+    backTo = `/teams/${navState.id}`;
+    backLabel = navState.name || 'Команда';
+  }
 
   const [summary, setSummary] = useState<EmployeeSummaryDTO | null>(null);
   const [history, setHistory] = useState<EmployeeHistoryDTO | null>(null);
@@ -149,9 +162,9 @@ export default function EmployeePage() {
     return (
       <>
         <div className="mb-8">
-          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
+          <Link to={backTo} className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
             <ArrowLeft size={14} />
-            Проекты
+            {backLabel}
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{login ?? 'Сотрудник'}</h1>
         </div>
@@ -174,9 +187,9 @@ export default function EmployeePage() {
     return (
       <>
         <div className="mb-8">
-          <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
+          <Link to={backTo} className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
             <ArrowLeft size={14} />
-            Проекты
+            {backLabel}
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{login ?? 'Сотрудник'}</h1>
         </div>
@@ -184,7 +197,7 @@ export default function EmployeePage() {
           icon={Users}
           title="Сотрудник не найден"
           description="Информация о сотруднике ещё не загружена или профиль не существует"
-          action={{ label: 'Вернуться к проектам', to: '/projects' }}
+          action={{ label: `Вернуться: ${backLabel}`, to: backTo }}
         />
       </>
     );
@@ -245,9 +258,9 @@ export default function EmployeePage() {
   return (
     <>
       {/* Back link */}
-      <Link to="/projects" className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
+      <Link to={backTo} className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
         <ArrowLeft size={14} />
-        Проекты
+        {backLabel}
       </Link>
 
       {/* Header with avatar */}

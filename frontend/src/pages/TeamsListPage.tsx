@@ -33,6 +33,19 @@ export default function TeamsListPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const handleDelete = async (id: string, name: string) => {
+    const confirmed = confirm(`Вы уверены что хотите удалить команду \u00AB${name}\u00BB?`);
+    if (!confirmed) return;
+
+    try {
+      await teamsApi.delete(id);
+      toast.success('Команда удалена');
+      setTeams((prev) => prev.filter((t) => t.id !== id));
+    } catch {
+      toast.error('Не удалось удалить команду');
+    }
+  };
+
   if (!loading && !error && teams.length === 0) {
     return (
       <>
@@ -122,7 +135,7 @@ export default function TeamsListPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {teams.map((team) => (
-            <TeamCard key={team.id} team={team} />
+            <TeamCard key={team.id} team={team} onDelete={handleDelete} />
           ))}
         </div>
       )}

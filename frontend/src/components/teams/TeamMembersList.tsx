@@ -8,9 +8,10 @@ import type { TeamMember } from '@/types/team';
 interface TeamMembersListProps {
   members: TeamMember[];
   loading?: boolean;
+  navState?: Record<string, string>;
 }
 
-export default function TeamMembersList({ members, loading }: TeamMembersListProps) {
+export default function TeamMembersList({ members, loading, navState }: TeamMembersListProps) {
   const navigate = useNavigate();
 
   if (loading) {
@@ -54,7 +55,7 @@ export default function TeamMembersList({ members, loading }: TeamMembersListPro
               return (
                 <tr
                   key={m.youtrackLogin}
-                  onClick={() => navigate(`/employees/${m.youtrackLogin}`)}
+                  onClick={() => navigate(`/employees/${m.youtrackLogin}`, { state: navState })}
                   className="cursor-pointer border-b border-gray-200 dark:border-surface-border transition-colors hover:bg-gray-100/50 dark:hover:bg-surface-lighter/50 last:border-b-0"
                 >
                   <td className="px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-200">

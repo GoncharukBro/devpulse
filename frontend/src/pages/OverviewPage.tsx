@@ -133,7 +133,7 @@ export default function OverviewPage() {
               <div className="mt-2 flex items-center gap-2">
                 <TrendIndicator trend={data.scoreTrend} className="text-2xl" />
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {data.scoreTrend === 'up' ? 'Рост' : data.scoreTrend === 'down' ? 'Снижение' : 'Стабильно'}
+                  {data.scoreTrend === 'up' ? 'Рост' : data.scoreTrend === 'down' ? 'Снижение' : data.scoreTrend === 'stable' ? 'Стабильно' : 'Нет данных'}
                 </span>
               </div>
             </Card>

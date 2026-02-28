@@ -239,7 +239,11 @@ export default function ProjectPage() {
             ]}
           />
         </div>
-        <EmployeeTable employees={summary?.employees ?? []} loading={loading} />
+        <EmployeeTable
+          employees={summary?.employees ?? []}
+          loading={loading}
+          navState={{ from: 'project', id: id!, name: summary?.projectName ?? '' }}
+        />
       </div>
 
       {/* LLM Recommendations */}

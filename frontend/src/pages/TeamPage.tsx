@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Users, Pencil, Trash2, Mail } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Users, Pencil, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -18,14 +18,12 @@ import type { TeamDetail } from '@/types/team';
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [team, setTeam] = useState<TeamDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   usePageTitle(team?.name ?? 'Команда');
 
@@ -45,23 +43,6 @@ export default function TeamPage() {
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
-
-  const handleDelete = async () => {
-    if (!id || !team) return;
-    const confirmed = confirm(`Удалить команду \u00AB${team.name}\u00BB? Это действие необратимо.`);
-    if (!confirmed) return;
-
-    setDeleting(true);
-    try {
-      await teamsApi.delete(id);
-      toast.success('Команда удалена');
-      navigate('/teams');
-    } catch {
-      // Error toast shown by interceptor
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   if (!loading && error) {
     return (
@@ -132,15 +113,6 @@ export default function TeamPage() {
                 onClick={() => setEditOpen(true)}
               >
                 Редактировать
-              </Button>
-              <Button
-                variant="danger"
-                size="sm"
-                leftIcon={<Trash2 size={14} />}
-                loading={deleting}
-                onClick={handleDelete}
-              >
-                Удалить
               </Button>
             </div>
           ) : undefined
@@ -231,7 +203,11 @@ export default function TeamPage() {
             ]}
           />
         </div>
-        <TeamMembersList members={team?.members ?? []} loading={loading} />
+        <TeamMembersList
+          members={team?.members ?? []}
+          loading={loading}
+          navState={{ from: 'team', id: id!, name: team?.name ?? '' }}
+        />
       </div>
 
       <EditTeamModal

@@ -267,7 +267,7 @@ export default function EmployeesListPage() {
                   paginated.map((emp) => (
                     <tr
                       key={emp.youtrackLogin}
-                      onClick={() => navigate(`/employees/${emp.youtrackLogin}`)}
+                      onClick={() => navigate(`/employees/${emp.youtrackLogin}`, { state: { from: 'employees' } })}
                       className="cursor-pointer border-b border-gray-200 dark:border-surface-border transition-colors hover:bg-gray-100/50 dark:hover:bg-surface-lighter/50 last:border-b-0"
                     >
                       {/* Сотрудник */}

@@ -7,6 +7,7 @@ import type { ProjectEmployeeRow } from '@/types/reports';
 interface EmployeeTableProps {
   employees: ProjectEmployeeRow[];
   loading?: boolean;
+  navState?: Record<string, string>;
 }
 
 type SortKey = 'displayName' | 'score' | 'utilization';
@@ -22,7 +23,7 @@ const COLUMNS = [
   { key: null, label: '' },
 ];
 
-export default function EmployeeTable({ employees, loading }: EmployeeTableProps) {
+export default function EmployeeTable({ employees, loading, navState }: EmployeeTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
@@ -113,7 +114,7 @@ export default function EmployeeTable({ employees, loading }: EmployeeTableProps
           </thead>
           <tbody>
             {sorted.map((emp) => (
-              <EmployeeRow key={emp.youtrackLogin} employee={emp} />
+              <EmployeeRow key={emp.youtrackLogin} employee={emp} navState={navState} />
             ))}
           </tbody>
         </table>
