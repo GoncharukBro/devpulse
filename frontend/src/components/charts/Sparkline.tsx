@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 interface SparklineProps {
   data: number[];
   width?: number;
@@ -28,7 +30,8 @@ export default function Sparkline({ data, width = 80, height = 24, className }: 
   const last = data[data.length - 1];
   const color = last > first ? '#22c55e' : last < first ? '#ef4444' : '#9ca3af';
 
-  const gradientId = `spark-${color.slice(1)}`;
+  const id = useId();
+  const gradientId = `spark-${id}`;
 
   return (
     <svg width={width} height={height} className={className} aria-hidden="true">

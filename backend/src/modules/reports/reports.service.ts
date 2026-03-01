@@ -395,7 +395,7 @@ export class ReportsService {
     for (const r of allReports) {
       const key = formatYTDate(r.periodStart);
       if (!scoreByPeriod.has(key)) scoreByPeriod.set(key, []);
-      scoreByPeriod.get(key)!.push(r.llmScore!);
+      scoreByPeriod.get(key)!.push(getEffectiveScore(r)!);
     }
 
     const sortedPeriods = [...scoreByPeriod.keys()].sort().slice(-5);

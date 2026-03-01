@@ -425,7 +425,7 @@ export class TeamsService {
       if (!byPeriod.has(key)) byPeriod.set(key, new Map());
       const loginMap = byPeriod.get(key)!;
       if (!loginMap.has(r.youtrackLogin)) loginMap.set(r.youtrackLogin, []);
-      loginMap.get(r.youtrackLogin)!.push(r.llmScore!);
+      loginMap.get(r.youtrackLogin)!.push(getEffectiveScore(r)!);
     }
 
     const sortedPeriods = [...byPeriod.keys()].sort().slice(-5);
