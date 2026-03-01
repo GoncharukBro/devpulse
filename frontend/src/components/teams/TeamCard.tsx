@@ -4,6 +4,7 @@ import { Users, ArrowRight, MoreVertical, Trash2 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ScoreBadge from '@/components/metrics/ScoreBadge';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
+import Sparkline from '@/components/charts/Sparkline';
 import type { Team } from '@/types/team';
 
 interface TeamCardProps {
@@ -24,6 +25,7 @@ export default function TeamCard({ team, onDelete }: TeamCardProps) {
           <div className="flex items-center gap-2">
             {team.avgScore !== null && (
               <>
+                <Sparkline data={team.scoreHistory} />
                 <ScoreBadge score={team.avgScore} size="sm" />
                 <TrendIndicator trend={team.scoreTrend} />
               </>

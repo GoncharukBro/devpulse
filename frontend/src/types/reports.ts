@@ -151,6 +151,7 @@ export interface ProjectSummaryDTO {
   employees: ProjectEmployeeRow[];
   concerns: ProjectConcernItem[];
   aggregatedRecommendations: string[];
+  scoreHistory: number[];
 }
 
 export interface ProjectWeekData {

@@ -8,6 +8,7 @@ export interface Team {
   avgUtilization: number | null;
   avgEstimationAccuracy: number | null;
   scoreTrend: ScoreTrend;
+  scoreHistory: number[];
   createdAt: string;
 }
 

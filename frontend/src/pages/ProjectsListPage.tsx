@@ -7,6 +7,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import Card from '@/components/ui/Card';
 import ScoreBadge from '@/components/metrics/ScoreBadge';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
+import Sparkline from '@/components/charts/Sparkline';
 import { getMetricLevel, LEVEL_COLORS } from '@/hooks/useMetricColor';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
@@ -62,6 +63,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
           </div>
           {summary && (
             <div className="flex items-center gap-2">
+              <Sparkline data={summary.scoreHistory} />
               <ScoreBadge score={summary.avgScore} size="lg" />
               <TrendIndicator trend={summary.scoreTrend} />
             </div>
