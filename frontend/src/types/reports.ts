@@ -156,6 +156,7 @@ export interface ProjectSummaryDTO {
 export interface ProjectWeekData {
   [key: string]: string | number | null | undefined;
   periodStart: string;
+  periodEnd: string;
   avgScore: number | null;
   avgUtilization: number | null;
   avgEstimationAccuracy: number | null;
@@ -178,6 +179,7 @@ export interface OverviewDTO {
   recentAchievements: Achievement[];
   weeklyTrend: Array<{
     periodStart: string;
+    periodEnd: string;
     avgScore: number | null;
     avgUtilization: number | null;
     totalEmployees: number;

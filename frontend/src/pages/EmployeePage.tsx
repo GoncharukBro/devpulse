@@ -15,6 +15,7 @@ import AchievementPortfolioCard from '@/components/achievements/AchievementPortf
 import AchievementPortfolioDetail from '@/components/achievements/AchievementPortfolioDetail';
 import CopyButton from '@/components/shared/CopyButton';
 import MethodologyLink from '@/components/shared/MethodologyLink';
+import PeriodIndicator from '@/components/shared/PeriodIndicator';
 import PeriodFilter from '@/components/shared/PeriodFilter';
 import StatusBadge from '@/components/shared/StatusBadge';
 import EmailReportModal from '@/components/shared/EmailReportModal';
@@ -341,6 +342,11 @@ export default function EmployeePage() {
         <KpiCard title="Закрытие" value={displayCompletion} suffix="%" metric="completionRate" loading={loading} />
         <KpiCard title="Cycle Time" value={displayCycle} suffix="ч" metric="avgCycleTimeHours" loading={loading} />
       </div>
+
+      <PeriodIndicator
+        periodStart={report?.periodStart}
+        periodEnd={report?.periodEnd}
+      />
 
       {/* Chart + LLM Summary */}
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">

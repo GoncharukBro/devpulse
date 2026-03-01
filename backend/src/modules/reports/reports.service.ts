@@ -440,6 +440,7 @@ export class ReportsService {
       const reports = byPeriod.get(periodKey)!;
       return {
         periodStart: periodKey,
+        periodEnd: formatYTDate(reports[0].periodEnd),
         avgScore: avgNullable(reports.map((r) => getEffectiveScore(r))),
         avgUtilization: avgNullable(reports.map((r) => r.utilization)),
         avgEstimationAccuracy: avgNullable(reports.map((r) => r.estimationAccuracy)),
@@ -580,6 +581,7 @@ export class ReportsService {
 
       return {
         periodStart: periodKey,
+        periodEnd: formatYTDate(reports[0].periodEnd),
         avgScore: avgNullable(empScores),
         avgUtilization: avgNullable(empUtils),
         totalEmployees: uniqueEmp.size,

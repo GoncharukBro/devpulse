@@ -150,6 +150,7 @@ export interface ProjectSummaryDTO {
 
 export interface ProjectWeekData {
   periodStart: string;
+  periodEnd: string;
   avgScore: number | null;
   avgUtilization: number | null;
   avgEstimationAccuracy: number | null;
@@ -174,6 +175,7 @@ export interface OverviewDTO {
 
   weeklyTrend: Array<{
     periodStart: string;
+    periodEnd: string;
     avgScore: number | null;
     avgUtilization: number | null;
     totalEmployees: number;

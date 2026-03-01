@@ -15,6 +15,7 @@ import PeriodFilter from '@/components/shared/PeriodFilter';
 import EmailReportModal from '@/components/shared/EmailReportModal';
 import Button from '@/components/ui/Button';
 import MethodologyLink from '@/components/shared/MethodologyLink';
+import PeriodIndicator from '@/components/shared/PeriodIndicator';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { formatMetric } from '@/utils/format';
 import { reportsApi } from '@/api/endpoints/reports';
@@ -193,6 +194,11 @@ export default function ProjectPage() {
           </Card>
         )}
       </div>
+
+      <PeriodIndicator
+        periodStart={history?.weeks?.[history.weeks.length - 1]?.periodStart as string | undefined}
+        periodEnd={history?.weeks?.[history.weeks.length - 1]?.periodEnd as string | undefined}
+      />
 
       {/* Chart */}
       <div className="mb-6">

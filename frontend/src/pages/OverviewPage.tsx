@@ -12,6 +12,7 @@ import TrendIndicator from '@/components/metrics/TrendIndicator';
 import InfoTooltip from '@/components/metrics/InfoTooltip';
 import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
 import MethodologyLink from '@/components/shared/MethodologyLink';
+import PeriodIndicator from '@/components/shared/PeriodIndicator';
 import { reportsApi } from '@/api/endpoints/reports';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { OverviewDTO } from '@/types/reports';
@@ -140,6 +141,11 @@ export default function OverviewPage() {
           </>
         ) : null}
       </div>
+
+      <PeriodIndicator
+        periodStart={data?.weeklyTrend?.[data.weeklyTrend.length - 1]?.periodStart}
+        periodEnd={data?.weeklyTrend?.[data.weeklyTrend.length - 1]?.periodEnd}
+      />
 
       {/* Chart — full width */}
       <div className="mb-6">
