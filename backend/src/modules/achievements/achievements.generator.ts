@@ -51,6 +51,7 @@ export class AchievementsGenerator {
     const subscription = report.subscription;
 
     // Fetch history: previous reports for the same employee + subscription, ordered DESC by periodStart
+    // Без limit — нужна полная история для корректного расчёта streak
     const history = await em.find(
       MetricReport,
       {
@@ -60,7 +61,6 @@ export class AchievementsGenerator {
       },
       {
         orderBy: { periodStart: 'DESC' },
-        limit: 5,
       },
     );
 
@@ -81,8 +81,9 @@ export class AchievementsGenerator {
         const bestExisting = this.getBestRarityAchievement(existing);
 
         if (checkResult) {
-          // Condition met
+          // Condition met — пересчитываем streak с нуля по истории
           const achievedRarity = checkResult.rarity;
+          const streak = this.calculateStreak(definition, history);
 
           if (!bestExisting) {
             // First time earning this achievement type — create new
@@ -98,8 +99,8 @@ export class AchievementsGenerator {
               metricValue: checkResult.metricValue,
               reportId: report.id,
             };
-            achievement.currentStreak = 1;
-            achievement.bestStreak = 1;
+            achievement.currentStreak = streak;
+            achievement.bestStreak = streak;
             achievement.lastConfirmedAt = new Date();
             achievement.isNew = true;
             achievement.createdAt = new Date();
@@ -108,12 +109,10 @@ export class AchievementsGenerator {
             generated.push(achievement);
 
             this.log.info(
-              `Achievement created: ${definition.type} (${achievedRarity}) for ${report.youtrackLogin}`,
+              `Achievement created: ${definition.type} (${achievedRarity}) for ${report.youtrackLogin} streak=${streak}`,
             );
           } else if (isHigherRarity(achievedRarity as AchievementRarity, bestExisting.rarity as AchievementRarity)) {
             // Level up — create new achievement at higher rarity
-            const streak = bestExisting.currentStreak + 1;
-
             const achievement = new Achievement();
             achievement.youtrackLogin = report.youtrackLogin;
             achievement.subscription = subscription;
@@ -143,8 +142,8 @@ export class AchievementsGenerator {
             );
           } else {
             // Same or lower rarity — update streak silently (no new achievement)
-            bestExisting.currentStreak += 1;
-            bestExisting.bestStreak = Math.max(bestExisting.bestStreak, bestExisting.currentStreak);
+            bestExisting.currentStreak = streak;
+            bestExisting.bestStreak = Math.max(bestExisting.bestStreak, streak);
             bestExisting.lastConfirmedAt = new Date();
             // Update best value if higher
             const existingValue = (bestExisting.metadata as Record<string, unknown>).metricValue;
@@ -158,7 +157,7 @@ export class AchievementsGenerator {
             // Do NOT set isNew = true — silent update
 
             this.log.info(
-              `Achievement streak updated: ${definition.type} for ${report.youtrackLogin} streak=${bestExisting.currentStreak}`,
+              `Achievement streak updated: ${definition.type} for ${report.youtrackLogin} streak=${streak}`,
             );
           }
         } else {
@@ -182,6 +181,27 @@ export class AchievementsGenerator {
     await em.flush();
 
     return generated;
+  }
+
+  /**
+   * Пересчитать streak с нуля: 1 (текущая неделя) + количество
+   * последовательных предыдущих недель где условие было выполнено.
+   * Идемпотентно — при пересборке даёт один и тот же результат.
+   */
+  private calculateStreak(
+    definition: typeof ACHIEVEMENT_DEFINITIONS[number],
+    history: MetricReport[],
+  ): number {
+    let streak = 1; // текущая неделя (условие уже проверено)
+    for (const prevReport of history) {
+      const prevResult = definition.check(prevReport, []);
+      if (prevResult) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
   }
 
   /**

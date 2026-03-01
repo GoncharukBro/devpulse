@@ -108,8 +108,6 @@ export class MetricsCollector {
     let issuesOverEstimation = 0;
     let totalEstimationMinutes = 0;
 
-    const periodStartMs = periodStart.getTime();
-    const periodEndMs = periodEnd.getTime();
     const nowMs = Date.now();
     const completedIssueIds: string[] = [];
 
@@ -134,8 +132,11 @@ export class MetricsCollector {
         issuesWithoutEstimation++;
       }
 
-      // Статус задачи: завершена В ЭТОМ периоде (resolved date в диапазоне)
-      if (issue.resolved && issue.resolved >= periodStartMs && issue.resolved <= periodEndMs) {
+      // Статус задачи: завершена, если текущий статус в списке "resolved" статусов.
+      // Раньше проверялся только resolved timestamp, но он ненадёжен
+      // (bulk-операции, миграции — resolved date может не совпадать с периодом).
+      const issueState = this.getIssueState(issue);
+      if (this.isResolvedState(issueState)) {
         completedIssues++;
         completedIssueIds.push(issue.id);
       } else {
@@ -301,6 +302,32 @@ export class MetricsCollector {
     }
     if (typeof value === 'number') return value;
     return 0;
+  }
+
+  private getIssueState(issue: YouTrackIssue): string | null {
+    const stateField = issue.customFields.find((f) => f.name === 'State');
+    if (!stateField || !stateField.value) return null;
+
+    const value = stateField.value;
+    if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+      return (value as YouTrackCustomFieldValue).name || null;
+    }
+    if (typeof value === 'string') return value;
+    return null;
+  }
+
+  /** Дефолтные статусы "завершено" — используются если cycleTimeEndStatuses пуст */
+  private static readonly DEFAULT_RESOLVED_STATES = [
+    'Done', 'Fixed', 'Verified', 'Closed', 'Resolved',
+    'Готово', 'Завершена', 'Закрыта',
+  ];
+
+  private isResolvedState(state: string | null): boolean {
+    if (!state) return false;
+    const resolvedStatuses = this.fieldMapping.cycleTimeEndStatuses.length > 0
+      ? this.fieldMapping.cycleTimeEndStatuses
+      : MetricsCollector.DEFAULT_RESOLVED_STATES;
+    return resolvedStatuses.includes(state);
   }
 
   private getDueDate(issue: YouTrackIssue): number | null {

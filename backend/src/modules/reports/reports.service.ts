@@ -384,6 +384,26 @@ export class ReportsService {
     }
     const uniqueRecs = [...new Set(recommendations)];
 
+    // Score history (last 5 weeks)
+    const allReports = await this.em.find(MetricReport, {
+      subscription: sub,
+      llmStatus: 'completed',
+      llmScore: { $ne: null },
+    }, { orderBy: { periodStart: 'ASC' } });
+
+    const scoreByPeriod = new Map<string, number[]>();
+    for (const r of allReports) {
+      const key = formatYTDate(r.periodStart);
+      if (!scoreByPeriod.has(key)) scoreByPeriod.set(key, []);
+      scoreByPeriod.get(key)!.push(r.llmScore!);
+    }
+
+    const sortedPeriods = [...scoreByPeriod.keys()].sort().slice(-5);
+    const scoreHistory = sortedPeriods.map((key) => {
+      const scores = scoreByPeriod.get(key)!;
+      return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+    });
+
     return {
       subscriptionId: sub.id,
       projectName: sub.projectName,
@@ -401,6 +421,7 @@ export class ReportsService {
       employees,
       concerns,
       aggregatedRecommendations: uniqueRecs,
+      scoreHistory,
     };
   }
 
