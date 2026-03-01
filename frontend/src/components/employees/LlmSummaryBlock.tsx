@@ -1,4 +1,5 @@
-import { CheckCircle, AlertTriangle, Lightbulb } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { CheckCircle, AlertTriangle, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
 import Card from '@/components/ui/Card';
 
 interface LlmSummaryBlockProps {
@@ -22,6 +23,16 @@ export default function LlmSummaryBlock({
   llmStatus,
   hasNoData,
 }: LlmSummaryBlockProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setIsOverflowing(contentRef.current.scrollHeight > 400);
+    }
+  }, [summary, achievements, concerns, recommendations]);
+
   if (loading) {
     return (
       <Card>
@@ -66,41 +77,74 @@ export default function LlmSummaryBlock({
     <Card>
       <h4 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">LLM-сводка</h4>
 
-      {summary && (
-        <p className="mb-4 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{summary}</p>
-      )}
+      <div className="relative">
+        <div
+          ref={contentRef}
+          className={
+            !expanded && isOverflowing ? 'max-h-[350px] overflow-hidden' : undefined
+          }
+        >
+          {summary && (
+            <p className="mb-4 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{summary}</p>
+          )}
 
-      {achievements && achievements.length > 0 && (
-        <div className="mb-3">
-          {achievements.map((item, i) => (
-            <div key={i} className="flex items-start gap-2 py-1">
-              <CheckCircle size={14} className="mt-0.5 shrink-0 text-emerald-400" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">{item}</span>
+          {achievements && achievements.length > 0 && (
+            <div className="mb-3">
+              {achievements.map((item, i) => (
+                <div key={i} className="flex items-start gap-2 py-1">
+                  <CheckCircle size={14} className="mt-0.5 shrink-0 text-emerald-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-300">{item}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {concerns && concerns.length > 0 && (
-        <div className="mb-3">
-          {concerns.map((item, i) => (
-            <div key={i} className="flex items-start gap-2 py-1">
-              <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber-400" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">{item}</span>
+          {concerns && concerns.length > 0 && (
+            <div className="mb-3">
+              {concerns.map((item, i) => (
+                <div key={i} className="flex items-start gap-2 py-1">
+                  <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-300">{item}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
 
-      {recommendations && recommendations.length > 0 && (
-        <div>
-          {recommendations.map((item, i) => (
-            <div key={i} className="flex items-start gap-2 py-1">
-              <Lightbulb size={14} className="mt-0.5 shrink-0 text-blue-400" />
-              <span className="text-sm text-gray-600 dark:text-gray-300">{item}</span>
+          {recommendations && recommendations.length > 0 && (
+            <div>
+              {recommendations.map((item, i) => (
+                <div key={i} className="flex items-start gap-2 py-1">
+                  <Lightbulb size={14} className="mt-0.5 shrink-0 text-blue-400" />
+                  <span className="text-sm text-gray-600 dark:text-gray-300">{item}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
+
+        {!expanded && isOverflowing && (
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent dark:from-surface" />
+        )}
+      </div>
+
+      {isOverflowing && (
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="mt-2 flex items-center gap-1 text-sm font-medium text-brand-400 transition-colors hover:text-brand-300"
+        >
+          {expanded ? (
+            <>
+              Свернуть
+              <ChevronUp size={14} />
+            </>
+          ) : (
+            <>
+              Читать полностью
+              <ChevronDown size={14} />
+            </>
+          )}
+        </button>
       )}
     </Card>
   );
