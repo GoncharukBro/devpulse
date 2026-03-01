@@ -141,40 +141,40 @@ export default function OverviewPage() {
         ) : null}
       </div>
 
-      {/* Charts + Concerns */}
-      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          {loading ? (
-            <Card>
-              <div className="animate-pulse">
-                <div className="mb-3 h-5 w-40 rounded bg-gray-200 dark:bg-gray-700/50" />
-                <div className="h-[280px] rounded bg-gray-200/70 dark:bg-gray-700/30" />
-              </div>
-            </Card>
-          ) : data ? (
-            <Card>
-              <div className="mb-4 flex items-center gap-2">
-                <TrendingUp size={16} className="text-gray-500 dark:text-gray-400" />
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
-                <InfoTooltip
-                  title="Динамика по неделям"
-                  lines={[
-                    'График изменения среднего Score по всем сотрудникам за каждую неделю.',
-                    'Фиолетовая линия — средний Score за неделю (LLM-оценка).\nЗелёная линия — средняя загрузка.',
-                    'Позволяет отследить общий тренд продуктивности команды.',
-                  ]}
-                />
-              </div>
-              <WeeklyChart data={data.weeklyTrend} metrics={chartMetrics} />
-            </Card>
-          ) : null}
-        </div>
-        <div>
-          <ConcernsList
-            concerns={data?.concerns ?? []}
-            loading={loading}
-          />
-        </div>
+      {/* Chart — full width */}
+      <div className="mb-6">
+        {loading ? (
+          <Card>
+            <div className="animate-pulse">
+              <div className="mb-3 h-5 w-40 rounded bg-gray-200 dark:bg-gray-700/50" />
+              <div className="h-[280px] rounded bg-gray-200/70 dark:bg-gray-700/30" />
+            </div>
+          </Card>
+        ) : data ? (
+          <Card>
+            <div className="mb-4 flex items-center gap-2">
+              <TrendingUp size={16} className="text-gray-500 dark:text-gray-400" />
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+              <InfoTooltip
+                title="Динамика по неделям"
+                lines={[
+                  'График изменения среднего Score по всем сотрудникам за каждую неделю.',
+                  'Фиолетовая линия — средний Score за неделю (LLM-оценка).\nЗелёная линия — средняя загрузка.',
+                  'Позволяет отследить общий тренд продуктивности команды.',
+                ]}
+              />
+            </div>
+            <WeeklyChart data={data.weeklyTrend} metrics={chartMetrics} />
+          </Card>
+        ) : null}
+      </div>
+
+      {/* Concerns — full width */}
+      <div className="mb-6">
+        <ConcernsList
+          concerns={data?.concerns ?? []}
+          loading={loading}
+        />
       </div>
 
       {/* Recent Achievements */}
