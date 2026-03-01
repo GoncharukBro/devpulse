@@ -10,6 +10,7 @@ import WeeklyChart from '@/components/metrics/WeeklyChart';
 import InfoTooltip from '@/components/metrics/InfoTooltip';
 import Button from '@/components/ui/Button';
 import TeamMembersList from '@/components/teams/TeamMembersList';
+import ConcernsList from '@/components/metrics/ConcernsList';
 import EditTeamModal from '@/components/teams/EditTeamModal';
 import EmailReportModal from '@/components/shared/EmailReportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -120,7 +121,7 @@ export default function TeamPage() {
       />
 
       {/* KPI Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-5">
         <KpiCard
           title="Средний Score"
           value={team?.avgScore ?? null}
@@ -133,6 +134,20 @@ export default function TeamPage() {
           value={team?.avgUtilization ?? null}
           suffix="%"
           metric="utilization"
+          loading={loading}
+        />
+        <KpiCard
+          title="Точность"
+          value={team?.avgEstimationAccuracy ?? null}
+          suffix="%"
+          metric="estimationAccuracy"
+          loading={loading}
+        />
+        <KpiCard
+          title="Закрытие"
+          value={team?.avgCompletionRate ?? null}
+          suffix="%"
+          metric="completionRate"
           loading={loading}
         />
         {loading ? (
@@ -190,6 +205,13 @@ export default function TeamPage() {
           </Card>
         )}
       </div>
+
+      {/* Concerns */}
+      {team && team.concerns && team.concerns.length > 0 && (
+        <div className="mb-6">
+          <ConcernsList concerns={team.concerns} />
+        </div>
+      )}
 
       {/* Members Table */}
       <div className="mb-6">

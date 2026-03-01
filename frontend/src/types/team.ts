@@ -1,4 +1,4 @@
-import type { ScoreTrend } from './reports';
+import type { ScoreTrend, ConcernItem } from './reports';
 
 export interface Team {
   id: string;
@@ -17,8 +17,11 @@ export interface TeamDetail {
   members: TeamMember[];
   avgScore: number | null;
   avgUtilization: number | null;
+  avgEstimationAccuracy: number | null;
+  avgCompletionRate: number | null;
   scoreTrend: ScoreTrend;
   weeklyTrend: Array<{ periodStart: string; avgScore: number | null }>;
+  concerns: ConcernItem[];
 }
 
 export interface TeamMember {
