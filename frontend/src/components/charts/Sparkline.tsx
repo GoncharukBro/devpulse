@@ -2,12 +2,13 @@ import { useId } from 'react';
 
 interface SparklineProps {
   data: number[];
-  width?: number;
   height?: number;
   className?: string;
 }
 
-export default function Sparkline({ data, width = 80, height = 24, className }: SparklineProps) {
+const VB_W = 200;
+
+export default function Sparkline({ data, height = 24, className }: SparklineProps) {
   if (data.length < 2) return null;
 
   const min = Math.min(...data);
@@ -15,7 +16,7 @@ export default function Sparkline({ data, width = 80, height = 24, className }: 
   const range = max - min || 1;
 
   const padding = 2;
-  const chartW = width - padding * 2;
+  const chartW = VB_W - padding * 2;
   const chartH = height - padding * 2;
 
   const points = data.map((v, i) => ({
@@ -34,7 +35,13 @@ export default function Sparkline({ data, width = 80, height = 24, className }: 
   const gradientId = `spark-${id}`;
 
   return (
-    <svg width={width} height={height} className={className} aria-hidden="true">
+    <svg
+      viewBox={`0 0 ${VB_W} ${height}`}
+      preserveAspectRatio="none"
+      className={className}
+      style={{ height }}
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity={0.3} />
@@ -42,7 +49,7 @@ export default function Sparkline({ data, width = 80, height = 24, className }: 
         </linearGradient>
       </defs>
       <path d={areaPath} fill={`url(#${gradientId})`} />
-      <path d={linePath} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <path d={linePath} fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }

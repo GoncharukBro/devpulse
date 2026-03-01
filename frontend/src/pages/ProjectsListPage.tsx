@@ -56,19 +56,24 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
   return (
     <Card className="cursor-pointer transition-all hover:border-gray-400 dark:hover:border-gray-600">
       <div onClick={() => navigate(`/projects/${subscription.id}`)}>
-        <div className="mb-4 flex items-start justify-between">
+        <div className="mb-3 flex items-start justify-between">
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">{subscription.projectName}</h3>
             <span className="text-xs text-gray-400 dark:text-gray-500">{subscription.projectShortName}</span>
           </div>
           {summary && (
             <div className="flex items-center gap-2">
-              <Sparkline data={summary.scoreHistory} />
               <ScoreBadge score={summary.avgScore} size="lg" />
               <TrendIndicator trend={summary.scoreTrend} />
             </div>
           )}
         </div>
+
+        {summary && summary.scoreHistory.length >= 2 && (
+          <div className="mb-3">
+            <Sparkline data={summary.scoreHistory} className="w-full" />
+          </div>
+        )}
 
         {summary ? (
           <>

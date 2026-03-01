@@ -20,12 +20,11 @@ export default function TeamCard({ team, onDelete }: TeamCardProps) {
   return (
     <Card className="cursor-pointer transition-all hover:border-gray-400 dark:hover:border-gray-600">
       <div onClick={() => navigate(`/teams/${team.id}`)}>
-        <div className="mb-4 flex items-start justify-between">
+        <div className="mb-3 flex items-start justify-between">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100">{team.name}</h3>
           <div className="flex items-center gap-2">
             {team.avgScore !== null && (
               <>
-                <Sparkline data={team.scoreHistory} />
                 <ScoreBadge score={team.avgScore} size="sm" />
                 <TrendIndicator trend={team.scoreTrend} />
               </>
@@ -64,6 +63,12 @@ export default function TeamCard({ team, onDelete }: TeamCardProps) {
             )}
           </div>
         </div>
+
+        {team.avgScore !== null && team.scoreHistory.length >= 2 && (
+          <div className="mb-3">
+            <Sparkline data={team.scoreHistory} className="w-full" />
+          </div>
+        )}
 
         <div className="mb-4 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
           <Users size={14} />
