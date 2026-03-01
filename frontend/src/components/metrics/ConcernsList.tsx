@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import Card from '@/components/ui/Card';
@@ -53,6 +53,9 @@ function getInitial(name: string): string {
 export default function ConcernsList({ concerns, loading }: ConcernsListProps) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
+
+  // Reset expanded when concerns change (e.g. project/period switch)
+  useEffect(() => { setExpanded(false); }, [concerns]);
 
   const grouped = useMemo(() => {
     const items = groupConcerns(concerns);
