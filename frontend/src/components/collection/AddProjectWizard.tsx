@@ -8,12 +8,13 @@ import FieldMappingEditor from './FieldMappingEditor';
 import { youtrackApi } from '@/api/endpoints/youtrack';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
 import type { YouTrackInstance, YouTrackProject, YouTrackUser } from '@/types/youtrack';
-import type { FieldMapping, CreateSubscriptionDto } from '@/types/subscription';
+import type { FieldMapping, CreateSubscriptionDto, Subscription } from '@/types/subscription';
 
 interface AddProjectWizardProps {
   open: boolean;
   onClose: () => void;
   onCreated: () => void;
+  existingSubscriptions?: Subscription[];
 }
 
 const STEPS = [
@@ -41,7 +42,7 @@ const DEFAULT_FIELD_MAPPING: FieldMapping = {
   releaseStatuses: [],
 };
 
-export default function AddProjectWizard({ open, onClose, onCreated }: AddProjectWizardProps) {
+export default function AddProjectWizard({ open, onClose, onCreated, existingSubscriptions = [] }: AddProjectWizardProps) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -149,10 +150,17 @@ export default function AddProjectWizard({ open, onClose, onCreated }: AddProjec
     setSelectedMembers(new Set());
   };
 
+  const existingProjectIds = new Set(
+    existingSubscriptions
+      .filter((s) => s.youtrackInstanceId === selectedInstance?.id)
+      .map((s) => s.projectId),
+  );
+
   const filteredProjects = projects.filter(
     (p) =>
-      p.name.toLowerCase().includes(projectSearch.toLowerCase()) ||
-      p.shortName.toLowerCase().includes(projectSearch.toLowerCase()),
+      !existingProjectIds.has(p.id) &&
+      (p.name.toLowerCase().includes(projectSearch.toLowerCase()) ||
+        p.shortName.toLowerCase().includes(projectSearch.toLowerCase())),
   );
 
   const canNext = (): boolean => {

@@ -25,11 +25,6 @@ export interface AppConfig {
       clientSecret: string;
     };
   };
-  youtrack: {
-    mainUrl: string;
-    mainToken: string;
-    mainName: string;
-  };
   llm: {
     baseUrl: string;
     model: string;
@@ -90,11 +85,6 @@ export const config: AppConfig = {
       clientId: optional('KEYCLOAK_INTERNAL_CLIENT_ID', 'api2api'),
       clientSecret: warnIfEmpty('KEYCLOAK_INTERNAL_CLIENT_SECRET', optional('KEYCLOAK_INTERNAL_CLIENT_SECRET', '')),
     },
-  },
-  youtrack: {
-    mainUrl: required('YOUTRACK_MAIN_URL'),
-    mainToken: required('YOUTRACK_MAIN_TOKEN'),
-    mainName: optional('YOUTRACK_MAIN_NAME', 'YouTrack'),
   },
   llm: {
     baseUrl: optional('LLM_BASE_URL', 'http://localhost:11434/v1'),

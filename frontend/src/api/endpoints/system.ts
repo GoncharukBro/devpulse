@@ -13,7 +13,7 @@ export interface ServiceInfo {
 export interface SystemStatusResponse {
   version: string;
   services: {
-    youtrack: ServiceInfo;
+    youtrack: ServiceInfo[];
     ollama: ServiceInfo;
     keycloak: ServiceInfo;
     database: ServiceInfo;

@@ -28,6 +28,7 @@ export class YouTrackClient {
   private token: string;
   private instanceName: string;
   private log: Logger;
+  private majorVersion: number | null = null;
 
   constructor(
     private instance: YouTrackInstance,
@@ -38,6 +39,25 @@ export class YouTrackClient {
     this.token = instance.token;
     this.instanceName = instance.name;
     this.log = logger ?? defaultLogger;
+  }
+
+  private async detectVersion(): Promise<number> {
+    if (this.majorVersion !== null) return this.majorVersion;
+
+    try {
+      const data = await this.request<{ version: string }>('GET', '/api/config', {
+        fields: 'version',
+      });
+      this.majorVersion = parseInt(data.version.split('.')[0], 10);
+      this.log.info(
+        `[${this.instanceName}] Detected YouTrack version: ${data.version} (major: ${this.majorVersion})`,
+      );
+    } catch {
+      this.log.warn(`[${this.instanceName}] Failed to detect version, assuming 2025+`);
+      this.majorVersion = 2025;
+    }
+
+    return this.majorVersion;
   }
 
   async request<T>(method: string, path: string, params?: Record<string, string>): Promise<T> {
@@ -163,13 +183,25 @@ export class YouTrackClient {
   }
 
   async getProjectMembers(projectId: string): Promise<YouTrackUser[]> {
-    return this.requestAll<YouTrackUser>(
-      'GET',
-      `/api/admin/projects/${encodeURIComponent(projectId)}/team/users`,
-      {
-        fields: 'id,login,name,email,avatarUrl,banned',
-      },
-    );
+    const version = await this.detectVersion();
+    const encodedId = encodeURIComponent(projectId);
+
+    if (version >= 2025) {
+      return this.requestAll<YouTrackUser>(
+        'GET',
+        `/api/admin/projects/${encodedId}/team/users`,
+        { fields: 'id,login,name,email,avatarUrl,banned' },
+      );
+    }
+
+    // YouTrack < 2025: team members embedded in project response
+    const project = await this.request<{
+      team?: { users?: YouTrackUser[] };
+    }>('GET', `/api/admin/projects/${encodedId}`, {
+      fields: 'id,team(users(id,login,name,email,avatarUrl,banned))',
+    });
+
+    return project.team?.users ?? [];
   }
 
   async getIssues(query: string, fields: string): Promise<YouTrackIssue[]> {

@@ -20,7 +20,7 @@ interface ServiceInfo {
 export interface SystemStatusResponse {
   version: string;
   services: {
-    youtrack: ServiceInfo;
+    youtrack: ServiceInfo[];
     ollama: ServiceInfo;
     keycloak: ServiceInfo;
     database: ServiceInfo;
@@ -31,37 +31,65 @@ export interface SystemStatusResponse {
 const APP_VERSION = '0.1.0';
 const CHECK_TIMEOUT = 3000;
 
-async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  timeoutMs: number,
+  init?: RequestInit,
+): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(url, { signal: controller.signal });
+    return await fetch(url, { ...init, signal: controller.signal });
   } finally {
     clearTimeout(timer);
   }
 }
 
-async function checkYouTrack(): Promise<ServiceInfo> {
+async function checkYouTrack(): Promise<ServiceInfo[]> {
   const instances = getYouTrackInstances();
   if (instances.length === 0) {
-    return { status: 'not_configured', details: 'Не настроен' };
+    return [{ status: 'not_configured', details: 'Не настроен', name: 'YouTrack' }];
   }
 
-  const instance = instances[0];
-  try {
-    const response = await fetchWithTimeout(`${instance.url}/api/admin/serverInfo`, CHECK_TIMEOUT);
-    if (response.ok || response.status === 401 || response.status === 403) {
-      return {
-        status: 'connected',
-        url: instance.url,
-        name: instance.name,
-        details: `${instances.length} инстанс${instances.length > 1 ? 'а/ов' : ''}`,
-      };
-    }
-    return { status: 'error', url: instance.url, name: instance.name, details: 'Ошибка подключения' };
-  } catch {
-    return { status: 'error', url: instance.url, name: instance.name, details: 'Недоступен' };
-  }
+  return Promise.all(
+    instances.map(async (inst) => {
+      try {
+        const response = await fetchWithTimeout(
+          `${inst.url}/api/config?fields=version`,
+          CHECK_TIMEOUT,
+          {
+            headers: {
+              Authorization: `Bearer ${inst.token}`,
+              Accept: 'application/json',
+            },
+          },
+        );
+        if (response.ok) {
+          const data = (await response.json()) as { version?: string };
+          const version = data.version ? `v${data.version}` : '';
+          return {
+            status: 'connected' as ServiceStatus,
+            url: inst.url,
+            name: inst.name,
+            details: version,
+          };
+        }
+        return {
+          status: 'error' as ServiceStatus,
+          url: inst.url,
+          name: inst.name,
+          details: 'Ошибка подключения',
+        };
+      } catch {
+        return {
+          status: 'error' as ServiceStatus,
+          url: inst.url,
+          name: inst.name,
+          details: 'Недоступен',
+        };
+      }
+    }),
+  );
 }
 
 async function checkOllama(): Promise<ServiceInfo> {

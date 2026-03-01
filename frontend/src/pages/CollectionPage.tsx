@@ -389,6 +389,7 @@ export default function CollectionPage() {
         open={wizardOpen}
         onClose={() => setWizardOpen(false)}
         onCreated={loadSubscriptions}
+        existingSubscriptions={subscriptions}
       />
 
       <EditSubscriptionModal
