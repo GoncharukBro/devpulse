@@ -29,12 +29,19 @@ const COLUMNS: Array<{ key: SortKey | null; label: string }> = [
 ];
 
 function MetricCell({ metric, value }: { metric: string; value: number | null }) {
+  if (value === null) {
+    return (
+      <td className="px-3 py-3 text-sm">
+        <span className="text-gray-400 dark:text-gray-500">—</span>
+      </td>
+    );
+  }
   const level = getMetricLevel(metric, value);
   const colors = LEVEL_COLORS[level];
   return (
     <td className="px-3 py-3 text-sm">
       <span className={colors.text}>
-        {value !== null ? `${value.toFixed(1)}%` : 'Н/Д'}
+        {value.toFixed(1)}%
       </span>
     </td>
   );
