@@ -57,6 +57,7 @@ export class TeamsService {
     for (const team of teams) {
       const logins = team.members.getItems().map((m) => m.youtrackLogin);
       const { avgScore, avgUtilization, scoreTrend } = await this.getTeamAggregates(logins, subIds);
+      const scoreHistory = await this.getTeamScoreHistory(logins, subIds);
 
       result.push({
         id: team.id,
@@ -65,6 +66,7 @@ export class TeamsService {
         avgScore,
         avgUtilization,
         scoreTrend,
+        scoreHistory,
         createdAt: team.createdAt.toISOString(),
       });
     }
@@ -396,6 +398,45 @@ export class TeamsService {
         periodStart: periodKey,
         avgScore: avgNullable(empScores),
       };
+    });
+  }
+
+  private async getTeamScoreHistory(
+    logins: string[],
+    subIds: string[],
+  ): Promise<number[]> {
+    if (logins.length === 0 || subIds.length === 0) return [];
+
+    const reports = await this.em.find(
+      MetricReport,
+      {
+        subscription: { $in: subIds },
+        youtrackLogin: { $in: logins },
+        llmStatus: 'completed',
+        llmScore: { $ne: null },
+      },
+      { orderBy: { periodStart: 'ASC' } },
+    );
+
+    // Group by period, then deduplicate by login (avg across projects)
+    const byPeriod = new Map<string, Map<string, number[]>>();
+    for (const r of reports) {
+      const key = formatYTDate(r.periodStart);
+      if (!byPeriod.has(key)) byPeriod.set(key, new Map());
+      const loginMap = byPeriod.get(key)!;
+      if (!loginMap.has(r.youtrackLogin)) loginMap.set(r.youtrackLogin, []);
+      loginMap.get(r.youtrackLogin)!.push(r.llmScore!);
+    }
+
+    const sortedPeriods = [...byPeriod.keys()].sort().slice(-5);
+
+    return sortedPeriods.map((periodKey) => {
+      const loginMap = byPeriod.get(periodKey)!;
+      const empAvgs: number[] = [];
+      for (const scores of loginMap.values()) {
+        empAvgs.push(scores.reduce((a, b) => a + b, 0) / scores.length);
+      }
+      return Math.round(empAvgs.reduce((a, b) => a + b, 0) / empAvgs.length);
     });
   }
 }

@@ -24,6 +24,7 @@ export interface TeamListItem {
   avgScore: number | null;
   avgUtilization: number | null;
   scoreTrend: ScoreTrend;
+  scoreHistory: number[];
   createdAt: string;
 }
 
