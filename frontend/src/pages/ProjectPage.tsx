@@ -194,36 +194,36 @@ export default function ProjectPage() {
         )}
       </div>
 
-      {/* Chart + Concerns */}
-      <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <Card>
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
-                <InfoTooltip
-                  title="Динамика по неделям"
-                  lines={[
-                    'График изменения среднего Score и загрузки по проекту за каждую неделю.',
-                    'Фиолетовая линия — средний Score за неделю.\nЗелёная линия — средняя загрузка.',
-                    'Позволяет отследить тренд продуктивности команды проекта.',
-                  ]}
-                />
-              </div>
-              <PeriodFilter value={weeks} onChange={setWeeks} />
+      {/* Chart */}
+      <div className="mb-6">
+        <Card>
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Динамика по неделям</h3>
+              <InfoTooltip
+                title="Динамика по неделям"
+                lines={[
+                  'График изменения среднего Score и загрузки по проекту за каждую неделю.',
+                  'Фиолетовая линия — средний Score за неделю.\nЗелёная линия — средняя загрузка.',
+                  'Позволяет отследить тренд продуктивности команды проекта.',
+                ]}
+              />
             </div>
-            {history ? (
-              <WeeklyChart data={history.weeks} metrics={chartMetrics} />
-            ) : (
-              <div className="flex h-[280px] items-center justify-center">
-                <div className="h-full w-full animate-pulse rounded bg-gray-200/70 dark:bg-gray-700/30" />
-              </div>
-            )}
-          </Card>
-        </div>
-        <div>
-          <ConcernsList concerns={summary?.concerns ?? []} loading={loading} />
-        </div>
+            <PeriodFilter value={weeks} onChange={setWeeks} />
+          </div>
+          {history ? (
+            <WeeklyChart data={history.weeks} metrics={chartMetrics} />
+          ) : (
+            <div className="flex h-[280px] items-center justify-center">
+              <div className="h-full w-full animate-pulse rounded bg-gray-200/70 dark:bg-gray-700/30" />
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Concerns */}
+      <div className="mb-6">
+        <ConcernsList concerns={summary?.concerns ?? []} loading={loading} />
       </div>
 
       {/* Employee Table */}
