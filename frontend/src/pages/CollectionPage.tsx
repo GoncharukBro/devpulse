@@ -352,6 +352,33 @@ export default function CollectionPage() {
             ))}
           </div>
 
+          {/* Duplicate action buttons below cards when many subscriptions */}
+          {subscriptions.length > 2 && (
+            <div className="mb-6 flex justify-end gap-2">
+              {isGlobalBusy ? (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Square size={14} />}
+                  loading={stopAllLoading}
+                  onClick={handleStopAll}
+                >
+                  Остановить всё
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Play size={14} />}
+                  onClick={() => setCollectAllModalOpen(true)}
+                  disabled={subscriptions.filter((s) => s.isActive).length === 0}
+                >
+                  Запустить всё
+                </Button>
+              )}
+            </div>
+          )}
+
           {/* Collection logs */}
           <CollectionLogs subscriptions={subscriptions} refreshKey={logsRefreshKey} />
         </>
