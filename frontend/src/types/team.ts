@@ -6,6 +6,7 @@ export interface Team {
   membersCount: number;
   avgScore: number | null;
   avgUtilization: number | null;
+  avgEstimationAccuracy: number | null;
   scoreTrend: ScoreTrend;
   createdAt: string;
 }

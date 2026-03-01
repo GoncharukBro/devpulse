@@ -87,6 +87,12 @@ export default function TeamCard({ team, onDelete }: TeamCardProps) {
                 <span className="font-medium text-gray-600 dark:text-gray-300">{team.avgUtilization.toFixed(1)}%</span>
               </div>
             )}
+            {team.avgEstimationAccuracy !== null && team.avgEstimationAccuracy !== undefined && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400 dark:text-gray-500">Точность</span>
+                <span className="font-medium text-gray-600 dark:text-gray-300">{team.avgEstimationAccuracy.toFixed(1)}%</span>
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-sm text-gray-400 dark:text-gray-500">Данные ещё не собраны</p>
