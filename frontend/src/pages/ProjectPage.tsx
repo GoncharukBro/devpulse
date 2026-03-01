@@ -21,6 +21,32 @@ import { formatMetric } from '@/utils/format';
 import { reportsApi } from '@/api/endpoints/reports';
 import type { ProjectSummaryDTO, ProjectHistoryDTO } from '@/types/reports';
 
+function deduplicateRecommendations(recs: string[]): string[] {
+  const normalized = recs.map((r) => ({
+    original: r,
+    clean: r.toLowerCase().replace(/[.,;:!?()«»"'\u2014\u2013-]/g, '').trim(),
+  }));
+
+  const result: typeof normalized = [];
+  for (const item of normalized) {
+    const isDuplicate = result.some(
+      (existing) =>
+        existing.clean.includes(item.clean) || item.clean.includes(existing.clean),
+    );
+    if (isDuplicate) {
+      // If current is longer — replace the shorter one
+      const shorterIndex = result.findIndex((existing) => item.clean.includes(existing.clean));
+      if (shorterIndex !== -1 && item.original.length > result[shorterIndex].original.length) {
+        result[shorterIndex] = item;
+      }
+    } else {
+      result.push(item);
+    }
+  }
+
+  return result.map((r) => r.original);
+}
+
 export default function ProjectPage() {
   const { id } = useParams<{ id: string }>();
   const [summary, setSummary] = useState<ProjectSummaryDTO | null>(null);
@@ -112,7 +138,7 @@ export default function ProjectPage() {
     ];
     if (summary.aggregatedRecommendations.length) {
       lines.push('', 'Рекомендации:');
-      summary.aggregatedRecommendations.forEach((r) => lines.push(`- ${r}`));
+      deduplicateRecommendations(summary.aggregatedRecommendations).forEach((r) => lines.push(`- ${r}`));
     }
     return lines.join('\n');
   }
@@ -255,20 +281,29 @@ export default function ProjectPage() {
       {/* LLM Recommendations */}
       {summary && summary.aggregatedRecommendations.length > 0 && (
         <Card>
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-            <Lightbulb size={16} className="text-blue-400" />
-            <h3 className="text-sm font-medium">LLM-рекомендации по проекту</h3>
-            <InfoTooltip
-              title="LLM-рекомендации"
-              lines={[
-                'Агрегированные рекомендации от LLM-анализа по всем сотрудникам проекта.',
-                'Формируются автоматически на основе метрик и выявленных паттернов.',
-                'Помогают руководителю обратить внимание на ключевые зоны роста команды.',
-              ]}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <Lightbulb size={16} className="text-blue-400" />
+              <h3 className="text-sm font-medium">LLM-рекомендации по проекту</h3>
+              <InfoTooltip
+                title="LLM-рекомендации"
+                lines={[
+                  'Агрегированные рекомендации от LLM-анализа по всем сотрудникам проекта.',
+                  'Формируются автоматически на основе метрик и выявленных паттернов.',
+                  'Помогают руководителю обратить внимание на ключевые зоны роста команды.',
+                ]}
+              />
+            </div>
+            <CopyButton
+              getText={() =>
+                deduplicateRecommendations(summary.aggregatedRecommendations)
+                  .map((r, i) => `${i + 1}. ${r}`)
+                  .join('\n')
+              }
             />
           </div>
           <ul className="mt-3 space-y-1.5">
-            {summary.aggregatedRecommendations.map((rec, i) => (
+            {deduplicateRecommendations(summary.aggregatedRecommendations).map((rec, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <span className="mt-1 text-gray-400 dark:text-gray-500">&bull;</span>
                 {rec}
