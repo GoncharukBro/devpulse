@@ -33,6 +33,16 @@ export default function TeamsListPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  const handleRename = async (id: string, newName: string) => {
+    try {
+      await teamsApi.update(id, { name: newName });
+      setTeams((prev) => prev.map((t) => (t.id === id ? { ...t, name: newName } : t)));
+      toast.success('Команда переименована');
+    } catch {
+      toast.error('Не удалось переименовать команду');
+    }
+  };
+
   const handleDelete = async (id: string, name: string) => {
     const confirmed = confirm(`Вы уверены что хотите удалить команду \u00AB${name}\u00BB?`);
     if (!confirmed) return;
@@ -135,7 +145,7 @@ export default function TeamsListPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {teams.map((team) => (
-            <TeamCard key={team.id} team={team} onDelete={handleDelete} />
+            <TeamCard key={team.id} team={team} onDelete={handleDelete} onRename={handleRename} />
           ))}
         </div>
       )}

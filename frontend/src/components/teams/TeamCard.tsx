@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, ArrowRight, MoreVertical, Trash2 } from 'lucide-react';
+import { Users, ArrowRight, MoreVertical, Trash2, Pencil } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import ScoreBadge from '@/components/metrics/ScoreBadge';
 import TrendIndicator from '@/components/metrics/TrendIndicator';
@@ -10,18 +10,42 @@ import type { Team } from '@/types/team';
 interface TeamCardProps {
   team: Team;
   onDelete?: (id: string, name: string) => void;
+  onRename?: (id: string, newName: string) => void;
 }
 
-export default function TeamCard({ team, onDelete }: TeamCardProps) {
+export default function TeamCard({ team, onDelete, onRename }: TeamCardProps) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(team.name);
   const menuRef = useRef<HTMLDivElement>(null);
 
   return (
     <Card className="cursor-pointer transition-all hover:border-gray-400 dark:hover:border-gray-600">
       <div onClick={() => navigate(`/teams/${team.id}`)}>
         <div className="mb-3 flex items-start justify-between">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{team.name}</h3>
+          {editing ? (
+            <input
+              autoFocus
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onKeyDown={(e) => {
+                e.stopPropagation();
+                if (e.key === 'Enter') {
+                  const trimmed = editName.trim();
+                  if (trimmed && trimmed !== team.name) onRename?.(team.id, trimmed);
+                  setEditing(false);
+                } else if (e.key === 'Escape') {
+                  setEditName(team.name);
+                  setEditing(false);
+                }
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full border-none bg-transparent p-0 font-semibold text-gray-900 outline-none focus:outline-none focus:ring-0 dark:text-gray-100"
+            />
+          ) : (
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{team.name}</h3>
+          )}
           <div className="flex items-center gap-2">
             {team.avgScore !== null && (
               <>
@@ -45,6 +69,20 @@ export default function TeamCard({ team, onDelete }: TeamCardProps) {
                   <>
                     <div className="fixed inset-0 z-10" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); }} />
                     <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-surface-border dark:bg-surface">
+                      {onRename && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMenuOpen(false);
+                            setEditName(team.name);
+                            setEditing(true);
+                          }}
+                          className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-surface-lighter"
+                        >
+                          <Pencil size={14} />
+                          Переименовать
+                        </button>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();

@@ -4,7 +4,8 @@
   "description": "DevPulse — сбор и анализ метрик разработчиков",
   "private": true,
   "scripts": {
-    "dev": "nodemon",
+    "kill:port": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$port = if ($env:PORT) { [int]$env:PORT } else { 3101 }; $connections = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue; if ($connections) { $connections | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } }; Write-Output \\\"Port $port is ready\\\"\"",
+    "dev": "npm run kill:port && nodemon",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
