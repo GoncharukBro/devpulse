@@ -5,6 +5,10 @@ import {
   Cell,
   Tooltip as RechartsTooltip,
   Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
 } from 'recharts';
 
 const TYPE_LABELS: Record<string, string> = {
@@ -62,6 +66,31 @@ export default function IssuesByTypeChart({ data, height = 240 }: IssuesByTypeCh
       >
         Нет данных
       </div>
+    );
+  }
+
+  if (chartData.length < 3) {
+    const barHeight = Math.max(100, chartData.length * 50 + 40);
+    return (
+      <ResponsiveContainer width="100%" height={barHeight}>
+        <BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 24, bottom: 4, left: 8 }}>
+          <XAxis type="number" hide />
+          <YAxis
+            type="category"
+            dataKey="name"
+            width={100}
+            tick={{ fontSize: 12 }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <RechartsTooltip content={<CustomTooltip />} />
+          <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={20}>
+            {chartData.map((_, index) => (
+              <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     );
   }
 
