@@ -48,6 +48,9 @@ export interface TeamDetailDTO {
   members: TeamMemberDetail[];
   avgScore: number | null;
   avgUtilization: number | null;
+  totalSpentHours: number | null;
+  lastPeriodStart: string | null;
+  lastPeriodEnd: string | null;
   scoreTrend: ScoreTrend;
   weeklyTrend: TeamWeekTrend[];
 }

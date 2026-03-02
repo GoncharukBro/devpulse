@@ -58,18 +58,18 @@ export default function SpentByTypeChart({ data, height }: SpentByTypeChartProps
   if (!chartData.length) {
     return (
       <div
-        className="flex items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500"
-        style={{ height: height ?? 120 }}
+        className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-gray-200 dark:border-surface-border text-sm text-gray-400 dark:text-gray-500"
+        style={{ minHeight: height ?? 120 }}
       >
         Нет данных
       </div>
     );
   }
 
-  const computedHeight = height ?? Math.max(100, chartData.length * 40 + 40);
+  const minHeight = height ?? Math.max(100, chartData.length * 40 + 40);
 
   return (
-    <ResponsiveContainer width="100%" height={computedHeight}>
+    <ResponsiveContainer width="100%" height="100%" minHeight={minHeight}>
       <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
         <CartesianGrid stroke="#2a2a3a" strokeDasharray="3 3" horizontal={false} />
         <XAxis

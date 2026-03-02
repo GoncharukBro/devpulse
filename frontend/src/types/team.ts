@@ -20,6 +20,9 @@ export interface TeamDetail {
   avgUtilization: number | null;
   avgEstimationAccuracy: number | null;
   avgCompletionRate: number | null;
+  totalSpentHours: number | null;
+  lastPeriodStart: string | null;
+  lastPeriodEnd: string | null;
   scoreTrend: ScoreTrend;
   weeklyTrend: Array<{ periodStart: string; avgScore: number | null }>;
   concerns: ConcernItem[];

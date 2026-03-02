@@ -144,6 +144,7 @@ export interface ProjectSummaryDTO {
   avgEstimationAccuracy: number | null;
   avgCompletionRate: number | null;
   avgCycleTimeHours: number | null;
+  totalSpentHours: number | null;
   totalEmployees: number;
 
   scoreTrend: ScoreTrend;

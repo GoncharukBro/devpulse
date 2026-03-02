@@ -15,7 +15,17 @@ import EditTeamModal from '@/components/teams/EditTeamModal';
 import EmailReportModal from '@/components/shared/EmailReportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { teamsApi } from '@/api/endpoints/teams';
+import { formatPeriod } from '@/utils/format';
 import type { TeamDetail } from '@/types/team';
+
+function pluralMembers(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return `${n} участников`;
+  if (mod10 === 1) return `${n} участник`;
+  if (mod10 >= 2 && mod10 <= 4) return `${n} участника`;
+  return `${n} участников`;
+}
 
 export default function TeamPage() {
   const { id } = useParams<{ id: string }>();
@@ -90,11 +100,29 @@ export default function TeamPage() {
     { key: 'avgScore', label: 'Score', color: '#6366f1' },
   ];
 
+  const metaLine = team
+    ? [
+        pluralMembers(team.members.length),
+        team.lastPeriodStart && team.lastPeriodEnd
+          ? `Показатели за неделю: ${formatPeriod(team.lastPeriodStart, team.lastPeriodEnd)}`
+          : null,
+      ].filter(Boolean).join(' · ')
+    : null;
+
+  const pageDescription = (
+    <>
+      Сводные показатели и динамика участников команды
+      {metaLine && (
+        <span className="mt-0.5 block text-xs text-gray-400 dark:text-gray-500">{metaLine}</span>
+      )}
+    </>
+  );
+
   return (
     <>
       <PageHeader
         title={team?.name ?? 'Загрузка...'}
-        description="Сводные показатели и динамика участников команды"
+        description={pageDescription}
         backLink={{ to: '/teams', label: 'Команды' }}
         actions={
           team ? (
@@ -150,16 +178,13 @@ export default function TeamPage() {
           metric="completionRate"
           loading={loading}
         />
-        {loading ? (
-          <KpiCard title="" value={null} metric="score" loading />
-        ) : (
-          <Card className="animate-slide-up">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Участников</div>
-            <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {team?.members.length ?? 0}
-            </div>
-          </Card>
-        )}
+        <KpiCard
+          title="Списано часов"
+          value={team?.totalSpentHours ?? null}
+          suffix="ч"
+          metric="totalSpentHours"
+          loading={loading}
+        />
       </div>
 
       {/* Chart */}

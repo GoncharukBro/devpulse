@@ -368,6 +368,10 @@ export class ReportsService {
     const avgCompletionRate = avgNullable(lastPeriodReports.map((r) => r.completionRate));
     const avgCycleTimeHours = avgNullable(lastPeriodReports.map((r) => r.avgCycleTimeHours));
 
+    const totalSpentHours = lastPeriodReports.length > 0
+      ? minutesToHours(lastPeriodReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
+      : null;
+
     // Trend
     const prevAvgScore = avgNullable(prevPeriodReports.map((r) => getEffectiveScore(r)));
     const scoreTrend = calcTrend([prevAvgScore, avgScore]);
@@ -416,6 +420,7 @@ export class ReportsService {
       avgEstimationAccuracy,
       avgCompletionRate,
       avgCycleTimeHours,
+      totalSpentHours,
       totalEmployees: activeEmployees.length,
       scoreTrend,
       employees,

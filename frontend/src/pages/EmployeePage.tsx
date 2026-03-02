@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Users, Mail, Award, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Card from '@/components/ui/Card';
 import KpiCard from '@/components/metrics/KpiCard';
-import ScoreBadge from '@/components/metrics/ScoreBadge';
-import TrendIndicator from '@/components/metrics/TrendIndicator';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
 import IssuesByTypeChart from '@/components/metrics/IssuesByTypeChart';
 import SpentByTypeChart from '@/components/metrics/SpentByTypeChart';
@@ -15,7 +13,6 @@ import AchievementPortfolioCard from '@/components/achievements/AchievementPortf
 import AchievementPortfolioDetail from '@/components/achievements/AchievementPortfolioDetail';
 import CopyButton from '@/components/shared/CopyButton';
 import MethodologyLink from '@/components/shared/MethodologyLink';
-import PeriodIndicator from '@/components/shared/PeriodIndicator';
 import PeriodFilter from '@/components/shared/PeriodFilter';
 import StatusBadge from '@/components/shared/StatusBadge';
 import EmailReportModal from '@/components/shared/EmailReportModal';
@@ -25,7 +22,7 @@ import { getMetricLevel, LEVEL_COLORS } from '@/hooks/useMetricColor';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { reportsApi } from '@/api/endpoints/reports';
 import { achievementsApi } from '@/api/endpoints/achievements';
-import { formatDateShort, formatMetric } from '@/utils/format';
+import { formatDateShort, formatMetric, formatPeriod } from '@/utils/format';
 import type {
   EmployeeSummaryDTO,
   EmployeeHistoryDTO,
@@ -38,7 +35,12 @@ import type { PortfolioAchievement, PortfolioResponse } from '@/types/achievemen
 export default function EmployeePage() {
   const { login } = useParams<{ login: string }>();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navState = location.state as { from?: string; id?: string; name?: string } | null;
+
+  // Read report selection from URL query params
+  const urlPeriod = searchParams.get('period');
+  const urlSubscription = searchParams.get('subscription');
 
   // Dynamic breadcrumb
   let backTo = '/employees';
@@ -140,23 +142,34 @@ export default function EmployeePage() {
   useEffect(() => { loadReportsList(); }, [loadReportsList]);
   useEffect(() => { loadPortfolio(); }, [loadPortfolio]);
 
-  // Auto-load the latest report when summary and project are available
+  // Auto-load report: from URL params or fallback to latest
   useEffect(() => {
     if (!summary || !summary.projects.length) return;
+
+    // If URL has report params — load that specific report
+    if (urlPeriod && urlSubscription) {
+      loadReport(urlSubscription, urlPeriod);
+      return;
+    }
+
+    // Fallback: load the latest report
     const project = selectedProject
       ? summary.projects.find((p) => p.subscriptionId === selectedProject)
       : summary.projects[0];
     if (!project) return;
 
-    // Find the latest period from history
     if (history && history.weeks.length > 0) {
       const latestWeek = history.weeks[history.weeks.length - 1];
       loadReport(project.subscriptionId, latestWeek.periodStart);
     }
-  }, [summary, selectedProject, history, loadReport]);
+  }, [summary, selectedProject, history, loadReport, urlPeriod, urlSubscription]);
 
   function handleReportRowClick(item: EmployeeReportListItem) {
     loadReport(item.subscriptionId, item.periodStart);
+    setSearchParams(
+      { period: item.periodStart, subscription: item.subscriptionId },
+      { replace: true },
+    );
   }
 
   if (!loading && error) {
@@ -276,16 +289,17 @@ export default function EmployeePage() {
               {login}
               {summary?.email && <span> &bull; {summary.email}</span>}
             </div>
+            <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+              Цифровой профиль — загрузка, качество, динамика и AI-анализ
+            </div>
             {summary && summary.projects.length > 0 && (
               <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 Проекты: {summary.projects.map((p) => p.projectName).join(', ')}
               </div>
             )}
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Цифровой профиль — загрузка, качество, динамика и AI-анализ</p>
-            {summary && (
-              <div className="mt-2 flex items-center gap-2">
-                <ScoreBadge score={summary.avgScore} size="sm" />
-                <TrendIndicator trend={summary.scoreTrend} />
+            {report?.periodStart && report?.periodEnd && (
+              <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                Показатели за неделю: {formatPeriod(report.periodStart, report.periodEnd)}
               </div>
             )}
           </div>
@@ -308,7 +322,7 @@ export default function EmployeePage() {
       {summary && summary.projects.length > 1 && (
         <div className="mb-6 flex flex-wrap gap-2">
           <button
-            onClick={() => { setSelectedProject(null); setReportsPage(1); }}
+            onClick={() => { setSelectedProject(null); setReportsPage(1); setSearchParams({}, { replace: true }); }}
             className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
               !selectedProject
                 ? 'bg-brand-500/20 text-brand-400'
@@ -320,33 +334,29 @@ export default function EmployeePage() {
           {summary.projects.map((p) => (
             <button
               key={p.subscriptionId}
-              onClick={() => { setSelectedProject(p.subscriptionId); setReportsPage(1); }}
+              onClick={() => { setSelectedProject(p.subscriptionId); setReportsPage(1); setSearchParams({}, { replace: true }); }}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 selectedProject === p.subscriptionId
                   ? 'bg-brand-500/20 text-brand-400'
                   : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
-              {p.projectShortName}
+              {p.projectName}
             </button>
           ))}
         </div>
       )}
 
       {/* KPI Cards */}
-      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4 xl:grid-cols-7">
         <KpiCard title="Score" value={displayScore} metric="score" trend={displayTrend} loading={loading} />
         <KpiCard title="Загрузка" value={displayUtilization} suffix="%" metric="utilization" loading={loading} />
         <KpiCard title="Точность" value={displayEstimation} suffix="%" metric="estimationAccuracy" loading={loading} />
         <KpiCard title="Фокус" value={displayFocus} suffix="%" metric="focus" loading={loading} />
         <KpiCard title="Закрытие" value={displayCompletion} suffix="%" metric="completionRate" loading={loading} />
         <KpiCard title="Cycle Time" value={displayCycle} suffix="ч" metric="avgCycleTimeHours" loading={loading} />
+        <KpiCard title="Списано часов" value={report?.totalSpentHours ?? null} suffix="ч" metric="totalSpentHours" loading={loading} />
       </div>
-
-      <PeriodIndicator
-        periodStart={report?.periodStart}
-        periodEnd={report?.periodEnd}
-      />
 
       {/* Chart + LLM Summary */}
       <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">

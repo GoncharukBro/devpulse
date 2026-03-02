@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 
 interface PageHeaderProps {
   title: string;
-  description?: string;
+  description?: ReactNode;
   actions?: ReactNode;
   backLink?: { to: string; label: string };
 }

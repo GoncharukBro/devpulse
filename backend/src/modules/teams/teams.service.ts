@@ -93,7 +93,7 @@ export class TeamsService {
       members.push(await this.getMemberDetail(login, subIds));
     }
 
-    const { avgScore, avgUtilization, scoreTrend } = await this.getTeamAggregates(logins, subIds);
+    const { avgScore, avgUtilization, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend } = await this.getTeamAggregates(logins, subIds);
 
     // Weekly trend (last 8 weeks)
     const weeklyTrend = await this.getTeamWeeklyTrend(logins, subIds, 8);
@@ -104,6 +104,9 @@ export class TeamsService {
       members,
       avgScore,
       avgUtilization,
+      totalSpentHours,
+      lastPeriodStart,
+      lastPeriodEnd,
       scoreTrend,
       weeklyTrend,
     };
@@ -276,9 +279,16 @@ export class TeamsService {
   private async getTeamAggregates(
     logins: string[],
     subIds: string[],
-  ): Promise<{ avgScore: number | null; avgUtilization: number | null; scoreTrend: ScoreTrend }> {
+  ): Promise<{
+    avgScore: number | null;
+    avgUtilization: number | null;
+    totalSpentHours: number | null;
+    lastPeriodStart: string | null;
+    lastPeriodEnd: string | null;
+    scoreTrend: ScoreTrend;
+  }> {
     if (logins.length === 0 || subIds.length === 0) {
-      return { avgScore: null, avgUtilization: null, scoreTrend: null };
+      return { avgScore: null, avgUtilization: null, totalSpentHours: null, lastPeriodStart: null, lastPeriodEnd: null, scoreTrend: null };
     }
 
     // Get latest period
@@ -291,7 +301,7 @@ export class TeamsService {
       { orderBy: { periodStart: 'DESC' } },
     );
 
-    if (!latestReport) return { avgScore: null, avgUtilization: null, scoreTrend: null };
+    if (!latestReport) return { avgScore: null, avgUtilization: null, totalSpentHours: null, lastPeriodStart: null, lastPeriodEnd: null, scoreTrend: null };
 
     const lastPeriod = latestReport.periodStart;
 
@@ -318,6 +328,11 @@ export class TeamsService {
 
     const avgScore = avgNullable(empScores);
     const avgUtilization = avgNullable(empUtils);
+    const totalSpentHours = Math.round(
+      (currentReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0) / 60) * 100,
+    ) / 100;
+    const lastPeriodStart = formatYTDate(lastPeriod);
+    const lastPeriodEnd = formatYTDate(latestReport.periodEnd);
 
     // Previous period
     const prevReport = await this.em.findOne(
@@ -330,7 +345,7 @@ export class TeamsService {
       { orderBy: { periodStart: 'DESC' } },
     );
 
-    if (!prevReport) return { avgScore, avgUtilization, scoreTrend: null };
+    if (!prevReport) return { avgScore, avgUtilization, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend: null };
 
     const prevReports = await this.em.find(MetricReport, {
       subscription: { $in: subIds },
@@ -352,7 +367,7 @@ export class TeamsService {
 
     const scoreTrend = calcTrend([prevAvgScore, avgScore]);
 
-    return { avgScore, avgUtilization, scoreTrend };
+    return { avgScore, avgUtilization, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend };
   }
 
   private async getTeamWeeklyTrend(

@@ -52,6 +52,13 @@ const METRIC_TOOLTIPS: Record<string, MetricTooltipData> = {
     calculation: 'Среднее время от статуса "В работе" до статуса "Готово"',
     interpretation: '<48ч — быстро, 48-96ч — нормально, >96ч — медленно',
   },
+  totalSpentHours: {
+    title: 'Списано часов',
+    source: 'YouTrack (work items)',
+    description: 'Общее количество часов, списанных сотрудниками за период',
+    calculation: 'Сумма списанного времени всех сотрудников проекта',
+    interpretation: 'Информационная метрика без оценки «хорошо/плохо»',
+  },
 };
 
 interface MetricTooltipProps {

@@ -15,11 +15,19 @@ import PeriodFilter from '@/components/shared/PeriodFilter';
 import EmailReportModal from '@/components/shared/EmailReportModal';
 import Button from '@/components/ui/Button';
 import MethodologyLink from '@/components/shared/MethodologyLink';
-import PeriodIndicator from '@/components/shared/PeriodIndicator';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { formatMetric } from '@/utils/format';
+import { formatMetric, formatPeriod } from '@/utils/format';
 import { reportsApi } from '@/api/endpoints/reports';
 import type { ProjectSummaryDTO, ProjectHistoryDTO } from '@/types/reports';
+
+function pluralEmployees(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return `${n} сотрудников`;
+  if (mod10 === 1) return `${n} сотрудник`;
+  if (mod10 >= 2 && mod10 <= 4) return `${n} сотрудника`;
+  return `${n} сотрудников`;
+}
 
 function deduplicateRecommendations(recs: string[]): string[] {
   const normalized = recs.map((r) => ({
@@ -134,7 +142,7 @@ export default function ProjectPage() {
       `Точность оценок: ${formatMetric(summary.avgEstimationAccuracy, '%')}`,
       `Закрытие: ${formatMetric(summary.avgCompletionRate, '%')}`,
       `Cycle Time: ${formatMetric(summary.avgCycleTimeHours, 'ч')}`,
-      `Сотрудников: ${summary.totalEmployees}`,
+      `Списано часов: ${formatMetric(summary.totalSpentHours, 'ч')}`,
     ];
     if (summary.aggregatedRecommendations.length) {
       lines.push('', 'Рекомендации:');
@@ -148,11 +156,29 @@ export default function ProjectPage() {
     { key: 'avgUtilization', label: 'Загрузка', color: '#10b981' },
   ];
 
+  const metaLine = summary
+    ? [
+        pluralEmployees(summary.totalEmployees),
+        summary.lastPeriodStart && summary.lastPeriodEnd
+          ? `Показатели за неделю: ${formatPeriod(summary.lastPeriodStart, summary.lastPeriodEnd)}`
+          : null,
+      ].filter(Boolean).join(' · ')
+    : null;
+
+  const pageDescription = (
+    <>
+      Метрики команды, тренды по неделям и рекомендации по проекту
+      {metaLine && (
+        <span className="mt-0.5 block text-xs text-gray-400 dark:text-gray-500">{metaLine}</span>
+      )}
+    </>
+  );
+
   return (
     <>
       <PageHeader
         title={summary?.projectName ?? 'Загрузка...'}
-        description="Метрики команды, тренды по неделям и рекомендации по проекту"
+        description={pageDescription}
         backLink={{ to: '/projects', label: 'Проекты' }}
         actions={
           <div className="flex items-center gap-2">
@@ -211,20 +237,14 @@ export default function ProjectPage() {
           metric="avgCycleTimeHours"
           loading={loading}
         />
-        {loading ? (
-          <KpiCard title="" value={null} metric="score" loading />
-        ) : (
-          <Card className="animate-slide-up">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Сотрудников</div>
-            <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{summary?.totalEmployees ?? 0}</div>
-          </Card>
-        )}
+        <KpiCard
+          title="Списано часов"
+          value={summary?.totalSpentHours ?? null}
+          suffix="ч"
+          metric="totalSpentHours"
+          loading={loading}
+        />
       </div>
-
-      <PeriodIndicator
-        periodStart={history?.weeks?.[history.weeks.length - 1]?.periodStart as string | undefined}
-        periodEnd={history?.weeks?.[history.weeks.length - 1]?.periodEnd as string | undefined}
-      />
 
       {/* Chart */}
       <div className="mb-6">
@@ -258,29 +278,9 @@ export default function ProjectPage() {
         <ConcernsList concerns={summary?.concerns ?? []} loading={loading} />
       </div>
 
-      {/* Employee Table */}
-      <div className="mb-6">
-        <div className="mb-3 flex items-center gap-2">
-          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</h3>
-          <InfoTooltip
-            title="Сотрудники проекта"
-            lines={[
-              'Таблица с текущими метриками каждого сотрудника проекта.',
-              'Score — оценка продуктивности, Загрузка — процент от 40-часовой недели.',
-              'Нажмите на строку для перехода к детальному профилю.',
-            ]}
-          />
-        </div>
-        <EmployeeTable
-          employees={summary?.employees ?? []}
-          loading={loading}
-          navState={{ from: 'project', id: id!, name: summary?.projectName ?? '' }}
-        />
-      </div>
-
       {/* LLM Recommendations */}
       {summary && summary.aggregatedRecommendations.length > 0 && (
-        <Card>
+        <Card className="mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
               <Lightbulb size={16} className="text-blue-400" />
@@ -312,6 +312,26 @@ export default function ProjectPage() {
           </ul>
         </Card>
       )}
+
+      {/* Employee Table */}
+      <div className="mb-6">
+        <div className="mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</h3>
+          <InfoTooltip
+            title="Сотрудники проекта"
+            lines={[
+              'Таблица с текущими метриками каждого сотрудника проекта.',
+              'Score — оценка продуктивности, Загрузка — процент от 40-часовой недели.',
+              'Нажмите на строку для перехода к детальному профилю.',
+            ]}
+          />
+        </div>
+        <EmployeeTable
+          employees={summary?.employees ?? []}
+          loading={loading}
+          navState={{ from: 'project', id: id!, name: summary?.projectName ?? '' }}
+        />
+      </div>
 
       <EmailReportModal
         open={emailModalOpen}
