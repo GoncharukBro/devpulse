@@ -26,12 +26,12 @@ export default function MethodologyPage() {
         {/* 1. Как работает система */}
         <section id="how-it-works">
           <Card header={<SectionHeader emoji="⚙️" title="Как работает система" />}>
-            <p className="text-sm leading-relaxed text-gray-300">
+            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
               DevPulse автоматически собирает данные из YouTrack раз в неделю:
               задачи, списания времени, статусы. На основе этих данных рассчитываются
               ключевые показатели по каждому сотруднику и проекту.
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-gray-300">
+            <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
               AI-модель анализирует метрики и формирует текстовую сводку
               с оценкой, достижениями и рекомендациями.
             </p>
@@ -41,21 +41,21 @@ export default function MethodologyPage() {
         {/* 2. Источники данных */}
         <section id="data-sources">
           <Card header={<SectionHeader emoji="🔌" title="Источники данных" />}>
-            <p className="mb-3 text-sm text-gray-300">
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
               Все данные берутся из YouTrack через API:
             </p>
-            <ul className="space-y-1.5 text-sm text-gray-300">
+            <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Задачи</strong> — тип, статус, исполнитель, оценка, даты создания и закрытия</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Задачи</strong> — тип, статус, исполнитель, оценка, даты создания и закрытия</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Списания времени</strong> (work items) — кто, сколько, когда, тип работы</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Списания времени</strong> (work items) — кто, сколько, когда, тип работы</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Участники проекта</strong> — для определения состава команды</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Участники проекта</strong> — для определения состава команды</span>
               </li>
             </ul>
             <p className="mt-3 text-xs text-gray-400">
@@ -117,32 +117,32 @@ export default function MethodologyPage() {
         {/* 4. AI-анализ */}
         <section id="ai-analysis">
           <Card header={<SectionHeader emoji="🤖" title="AI-анализ" />}>
-            <p className="mb-3 text-sm text-gray-300">
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
               После сбора метрик AI-модель получает агрегированные показатели и формирует:
             </p>
-            <ul className="space-y-1.5 text-sm text-gray-300">
+            <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Score (0–100)</strong> — общая оценка продуктивности</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Score (0–100)</strong> — общая оценка продуктивности</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Сводка</strong> — краткое описание результатов за период</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Сводка</strong> — краткое описание результатов за период</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Достижения</strong> — что сделано хорошо</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Достижения</strong> — что сделано хорошо</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Внимание</strong> — проблемы и риски</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Внимание</strong> — проблемы и риски</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-200">Рекомендации</strong> — что можно улучшить</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Рекомендации</strong> — что можно улучшить</span>
               </li>
             </ul>
-            <p className="mt-3 text-sm text-gray-300">
+            <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
               AI анализирует названия задач и определяет их бизнес-значимость.
               Оценка учитывает не только цифры, но и характер работы.
             </p>
@@ -152,13 +152,13 @@ export default function MethodologyPage() {
         {/* 5. Система достижений */}
         <section id="achievements">
           <Card header={<SectionHeader emoji="🏆" title="Система достижений" />}>
-            <p className="mb-3 text-sm text-gray-300">
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
               Достижения присваиваются автоматически по результатам метрик.
             </p>
             <div className="mb-3 space-y-1 font-mono text-xs">
               <div className="flex items-center gap-3">
-                <span className="w-20 text-slate-400">Common</span>
-                <span className="text-slate-400">★☆☆☆</span>
+                <span className="w-20 text-gray-500 dark:text-slate-400">Common</span>
+                <span className="text-gray-500 dark:text-slate-400">★☆☆☆</span>
                 <span className="text-gray-400">— базовый результат</span>
               </div>
               <div className="flex items-center gap-3">
@@ -172,12 +172,12 @@ export default function MethodologyPage() {
                 <span className="text-gray-400">— отличный результат</span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="w-20 text-amber-400">Legendary</span>
-                <span className="text-amber-400">★★★★</span>
+                <span className="w-20 text-amber-600 dark:text-amber-400">Legendary</span>
+                <span className="text-amber-600 dark:text-amber-400">★★★★</span>
                 <span className="text-gray-400">— выдающийся результат</span>
               </div>
             </div>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Серии: повторное получение увеличивает стрик, показывая стабильность.
             </p>
             <p className="mt-2 text-sm text-gray-400">
@@ -192,10 +192,10 @@ export default function MethodologyPage() {
         {/* 6. Что означает "Нет данных" */}
         <section id="no-data">
           <Card header={<SectionHeader emoji="❓" title='Что означает "Нет данных"' />}>
-            <p className="mb-3 text-sm text-gray-300">
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
               Метрика показывает «Н/Д» если:
             </p>
-            <ul className="space-y-1.5 text-sm text-gray-300">
+            <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
                 <span>За период нет задач в YouTrack → все метрики = Н/Д</span>
@@ -225,7 +225,7 @@ export default function MethodologyPage() {
 
 function SectionHeader({ emoji, title }: { emoji: string; title: string }) {
   return (
-    <h2 className="flex items-center gap-2 text-base font-semibold text-gray-100">
+    <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-gray-100">
       <span>{emoji}</span>
       {title}
     </h2>
@@ -242,16 +242,16 @@ interface MetricBlockProps {
 
 function MetricBlock({ title, description, formula, thresholds, na }: MetricBlockProps) {
   return (
-    <div className="rounded-lg border border-surface-border bg-surface-lighter/50 p-4">
-      <h3 className="mb-1 text-sm font-semibold text-gray-100">{title}</h3>
+    <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-lighter/50 p-4">
+      <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
       <p className="mb-2 text-sm text-gray-400">{description}</p>
-      <p className="mb-2 text-xs text-gray-300">
+      <p className="mb-2 text-xs text-gray-600 dark:text-gray-300">
         <span className="text-gray-500">Формула:</span> {formula}
       </p>
       <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-        <span className="text-emerald-400">🟢 {thresholds.good}</span>
-        <span className="text-amber-400">🟡 {thresholds.warning}</span>
-        <span className="text-red-400">🔴 {thresholds.danger}</span>
+        <span className="text-emerald-600 dark:text-emerald-400">🟢 {thresholds.good}</span>
+        <span className="text-amber-600 dark:text-amber-400">🟡 {thresholds.warning}</span>
+        <span className="text-red-600 dark:text-red-400">🔴 {thresholds.danger}</span>
       </div>
       <p className="text-xs text-gray-500">Н/Д: {na}</p>
     </div>

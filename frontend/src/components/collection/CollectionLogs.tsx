@@ -684,7 +684,7 @@ export default function CollectionLogs({ subscriptions, refreshKey }: Collection
       {/* Диалог подтверждения удаления */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="mx-4 w-full max-w-sm rounded-xl bg-white dark:bg-surface-darker p-6 shadow-xl">
+          <div className="mx-4 w-full max-w-sm rounded-xl bg-white dark:bg-surface p-6 shadow-xl">
             <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
               {deleteTarget === 'all' ? 'Очистить все логи?' : 'Удалить запись?'}
             </h4>
