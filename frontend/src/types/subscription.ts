@@ -7,6 +7,7 @@ export interface CurrentPeriodStatus {
   llmProcessing: number;
   llmFailed: number;
   llmSkipped: number;
+  llmNoData: number;
 }
 
 export interface Subscription {

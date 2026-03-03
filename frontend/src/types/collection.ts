@@ -123,7 +123,7 @@ export interface EmployeeDetail {
   login: string;
   displayName: string;
   dataStatus: 'collected' | 'failed' | 'stopped' | 'skipped';
-  llmStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
+  llmStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped' | 'no_data';
   error: string | null;
 }
 
