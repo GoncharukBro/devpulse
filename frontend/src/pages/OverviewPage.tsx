@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, Users, TrendingUp, Trophy } from 'lucide-react';
+import { BarChart3, TrendingUp, Trophy } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -8,15 +8,23 @@ import Card from '@/components/ui/Card';
 import KpiCard from '@/components/metrics/KpiCard';
 import WeeklyChart from '@/components/metrics/WeeklyChart';
 import ConcernsList from '@/components/metrics/ConcernsList';
-import TrendIndicator from '@/components/metrics/TrendIndicator';
 import InfoTooltip from '@/components/metrics/InfoTooltip';
 import AchievementCardCompact from '@/components/achievements/AchievementCardCompact';
 import MethodologyLink from '@/components/shared/MethodologyLink';
-import PeriodIndicator from '@/components/shared/PeriodIndicator';
 import { reportsApi } from '@/api/endpoints/reports';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { formatPeriod } from '@/utils/format';
 import type { OverviewDTO } from '@/types/reports';
 import type { Achievement } from '@/types/achievement';
+
+function pluralEmployees(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return `${n} сотрудников`;
+  if (mod10 === 1) return `${n} сотрудник`;
+  if (mod10 >= 2 && mod10 <= 4) return `${n} сотрудника`;
+  return `${n} сотрудников`;
+}
 
 export default function OverviewPage() {
   usePageTitle('Обзор');
@@ -81,71 +89,70 @@ export default function OverviewPage() {
 
   const achievements = (data?.recentAchievements ?? []) as Achievement[];
 
+  const metaLine = data
+    ? [
+        pluralEmployees(data.totalEmployees),
+        data.lastPeriodStart && data.lastPeriodEnd
+          ? `Показатели за неделю: ${formatPeriod(data.lastPeriodStart, data.lastPeriodEnd)}`
+          : null,
+      ].filter(Boolean).join(' · ')
+    : null;
+
+  const pageDescription = (
+    <>
+      Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания
+      {metaLine && (
+        <span className="mt-0.5 block text-xs text-gray-400 dark:text-gray-500">{metaLine}</span>
+      )}
+    </>
+  );
+
   return (
     <>
       <PageHeader
         title="Обзор"
-        description="Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания"
+        description={pageDescription}
         actions={<MethodologyLink />}
       />
 
       {/* KPI Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {loading ? (
-          <>
-            <KpiCard title="" value={null} metric="score" loading />
-            <KpiCard title="" value={null} metric="score" loading />
-            <KpiCard title="" value={null} metric="score" loading />
-            <KpiCard title="" value={null} metric="score" loading />
-          </>
-        ) : data ? (
-          <>
-            <Card className="animate-slide-up">
-              <div className="flex items-start justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Всего сотрудников</span>
-                <Users size={16} className="text-gray-400 dark:text-gray-500" />
-              </div>
-              <div className="mt-2 text-2xl font-bold text-gray-900 dark:text-gray-100">{data.totalEmployees}</div>
-            </Card>
-            <KpiCard
-              title="Средний Score"
-              value={data.avgScore}
-              metric="score"
-              trend={data.scoreTrend}
-            />
-            <KpiCard
-              title="Средняя загрузка"
-              value={data.avgUtilization}
-              suffix="%"
-              metric="utilization"
-            />
-            <Card className="animate-slide-up">
-              <div className="flex items-start justify-between">
-                <span className="text-sm text-gray-500 dark:text-gray-400">Тренд Score</span>
-                <InfoTooltip
-                  title="Тренд Score"
-                  lines={[
-                    'Направление изменения средней оценки продуктивности.',
-                    'Сравнивается средний Score текущей недели с предыдущей.',
-                    '↑ Рост — средний Score вырос\n→ Стабильно — изменение менее 5 пунктов\n↓ Падение — средний Score снизился',
-                  ]}
-                />
-              </div>
-              <div className="mt-2 flex items-center gap-2">
-                <TrendIndicator trend={data.scoreTrend} className="text-2xl" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {data.scoreTrend === 'up' ? 'Рост' : data.scoreTrend === 'down' ? 'Снижение' : data.scoreTrend === 'stable' ? 'Стабильно' : 'Нет данных'}
-                </span>
-              </div>
-            </Card>
-          </>
-        ) : null}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-5">
+        <KpiCard
+          title="Средний Score"
+          value={data?.avgScore ?? null}
+          metric="score"
+          trend={data?.scoreTrend}
+          loading={loading}
+        />
+        <KpiCard
+          title="Средняя загрузка"
+          value={data?.avgUtilization ?? null}
+          suffix="%"
+          metric="utilization"
+          loading={loading}
+        />
+        <KpiCard
+          title="Точность"
+          value={data?.avgEstimationAccuracy ?? null}
+          suffix="%"
+          metric="estimationAccuracy"
+          loading={loading}
+        />
+        <KpiCard
+          title="Закрытие"
+          value={data?.avgCompletionRate ?? null}
+          suffix="%"
+          metric="completionRate"
+          loading={loading}
+        />
+        <KpiCard
+          title="Списано часов"
+          value={data?.totalSpentHours ?? null}
+          suffix="ч"
+          metric="totalSpentHours"
+          loading={loading}
+        />
       </div>
-
-      <PeriodIndicator
-        periodStart={data?.weeklyTrend?.[data.weeklyTrend.length - 1]?.periodStart}
-        periodEnd={data?.weeklyTrend?.[data.weeklyTrend.length - 1]?.periodEnd}
-      />
 
       {/* Chart — full width */}
       <div className="mb-6">

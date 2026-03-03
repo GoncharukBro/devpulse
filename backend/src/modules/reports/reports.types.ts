@@ -170,7 +170,12 @@ export interface OverviewDTO {
   totalEmployees: number;
   avgScore: number | null;
   avgUtilization: number | null;
+  avgEstimationAccuracy: number | null;
+  avgCompletionRate: number | null;
+  totalSpentHours: number | null;
   scoreTrend: ScoreTrend;
+  lastPeriodStart: string | null;
+  lastPeriodEnd: string | null;
 
   concerns: OverviewConcernItem[];
   recentAchievements: AchievementDTO[];

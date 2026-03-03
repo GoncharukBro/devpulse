@@ -485,17 +485,22 @@ export class ReportsService {
   async getOverview(userId: string): Promise<OverviewDTO> {
     const subscriptions = await this.getUserSubscriptions(userId);
 
-    if (subscriptions.length === 0) {
-      return {
-        totalEmployees: 0,
-        avgScore: null,
-        avgUtilization: null,
-        scoreTrend: null,
-        concerns: [],
-        recentAchievements: [],
-        weeklyTrend: [],
-      };
-    }
+    const emptyResult: OverviewDTO = {
+      totalEmployees: 0,
+      avgScore: null,
+      avgUtilization: null,
+      avgEstimationAccuracy: null,
+      avgCompletionRate: null,
+      totalSpentHours: null,
+      scoreTrend: null,
+      lastPeriodStart: null,
+      lastPeriodEnd: null,
+      concerns: [],
+      recentAchievements: [],
+      weeklyTrend: [],
+    };
+
+    if (subscriptions.length === 0) return emptyResult;
 
     const subIds = subscriptions.map((s) => s.id);
 
@@ -509,17 +514,7 @@ export class ReportsService {
       },
     );
 
-    if (allReports.length === 0) {
-      return {
-        totalEmployees: 0,
-        avgScore: null,
-        avgUtilization: null,
-        scoreTrend: null,
-        concerns: [],
-        recentAchievements: [],
-        weeklyTrend: [],
-      };
-    }
+    if (allReports.length === 0) return emptyResult;
 
     // Unique employees
     const uniqueLogins = new Set<string>();
@@ -549,6 +544,23 @@ export class ReportsService {
 
     const avgScore = avgNullable(employeeScores);
     const avgUtilization = avgNullable(employeeUtils);
+
+    // New aggregate metrics
+    const employeeEstAcc: Array<number | null> = [];
+    const employeeCompRate: Array<number | null> = [];
+    for (const reports of byEmployee.values()) {
+      employeeEstAcc.push(avgNullable(reports.map((r) => r.estimationAccuracy)));
+      employeeCompRate.push(avgNullable(reports.map((r) => r.completionRate)));
+    }
+    const avgEstimationAccuracy = avgNullable(employeeEstAcc);
+    const avgCompletionRate = avgNullable(employeeCompRate);
+
+    const totalSpentHours = lastPeriodReports.length > 0
+      ? minutesToHours(lastPeriodReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
+      : null;
+
+    const lastPeriodStart = formatYTDate(lastPeriod);
+    const lastPeriodEnd = formatYTDate(lastPeriodReports[0].periodEnd);
 
     // Previous period for trend
     const prevPeriodReports = allReports.filter(
@@ -622,7 +634,12 @@ export class ReportsService {
       totalEmployees: uniqueLogins.size,
       avgScore,
       avgUtilization,
+      avgEstimationAccuracy,
+      avgCompletionRate,
+      totalSpentHours,
       scoreTrend,
+      lastPeriodStart,
+      lastPeriodEnd,
       concerns,
       recentAchievements,
       weeklyTrend,
