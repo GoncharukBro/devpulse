@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, Trash2,
+  CheckCircle, AlertTriangle, XCircle, Info, Clock, StopCircle, Minus, ArrowRight,
+} from 'lucide-react';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { collectionApi } from '@/api/endpoints/collection';
@@ -166,7 +169,7 @@ function groupLogs(logs: CollectionLogEntry[], groupBy: LogGroupBy): Map<string,
 /* ─────────────────── Детализация: YouTrack ─────────────────── */
 
 interface SectionInfo {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   description: string;
   subtext: string;
@@ -192,11 +195,11 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
 
   // Основной текст — реальное состояние данных
   if (total === 0) {
-    return { icon: '\u2139\uFE0F', label: 'Нет сотрудников', description: '', subtext };
+    return { icon: <Info size={13} className="text-gray-400 shrink-0" />, label: 'Нет сотрудников', description: '', subtext };
   }
 
   if (collected === total) {
-    return { icon: '\u2705', label: 'Данные собраны', description: '', subtext };
+    return { icon: <CheckCircle size={13} className="text-emerald-500 shrink-0" />, label: 'Данные собраны', description: '', subtext };
   }
 
   if (collected > 0 && failed > 0) {
@@ -205,7 +208,7 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
       .map((e) => `${e.displayName}: ${e.error ?? 'ошибка'}`)
       .join('. ');
     return {
-      icon: '\u26A0\uFE0F',
+      icon: <AlertTriangle size={13} className="text-amber-500 shrink-0" />,
       label: 'Данные собраны частично',
       description: failedNames,
       subtext,
@@ -214,7 +217,7 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
 
   if (collected > 0 && stopped > 0) {
     return {
-      icon: '\u26A0\uFE0F',
+      icon: <AlertTriangle size={13} className="text-amber-500 shrink-0" />,
       label: 'Данные собраны частично',
       description: `${collected}/${total} обработаны, остальные остановлены`,
       subtext,
@@ -223,7 +226,7 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
 
   if (collected > 0) {
     return {
-      icon: '\u26A0\uFE0F',
+      icon: <AlertTriangle size={13} className="text-amber-500 shrink-0" />,
       label: 'Данные собраны частично',
       description: `${collected}/${total}`,
       subtext,
@@ -232,7 +235,7 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
 
   if (failed === total) {
     return {
-      icon: '\u274C',
+      icon: <XCircle size={13} className="text-red-500 shrink-0" />,
       label: 'Ошибка сбора',
       description: `Не удалось собрать данные (${total} сотр.)`,
       subtext,
@@ -241,7 +244,7 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
 
   if (stopped > 0) {
     return {
-      icon: '\u23F9',
+      icon: <StopCircle size={13} className="text-gray-400 shrink-0" />,
       label: 'Остановлен',
       description: `0/${total} обработано`,
       subtext,
@@ -249,7 +252,7 @@ function getYouTrackSection(log: CollectionLogEntry, employees: EmployeeDetail[]
   }
 
   // Все skipped — нет MetricReport
-  return { icon: '\u2139\uFE0F', label: 'Нет данных', description: '', subtext };
+  return { icon: <Info size={13} className="text-gray-400 shrink-0" />, label: 'Нет данных', description: '', subtext };
 }
 
 /* ─────────────────── Детализация: LLM ─────────────────── */
@@ -277,18 +280,18 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
 
   // Основной текст — реальное состояние LLM из MetricReport
   if (withData === 0) {
-    return { icon: '\u2139\uFE0F', label: 'Нет данных для анализа', description: '', subtext };
+    return { icon: <Info size={13} className="text-gray-400 shrink-0" />, label: 'Нет данных для анализа', description: '', subtext };
   }
 
   // Все с данными — completed
   if (completed + noData === withData && failed === 0 && skipped === 0) {
-    return { icon: '\u2705', label: 'Анализ завершён', description: '', subtext };
+    return { icon: <CheckCircle size={13} className="text-emerald-500 shrink-0" />, label: 'Анализ завершён', description: '', subtext };
   }
 
   // Есть pending/processing
   if (pending > 0 || processing > 0) {
     return {
-      icon: '\u23F3',
+      icon: <Clock size={13} className="text-blue-400 shrink-0" />,
       label: 'В процессе',
       description: `${pending + processing} ожидают анализа`,
       subtext,
@@ -298,9 +301,9 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
   // Все failed
   if (failed > 0 && completed === 0) {
     return {
-      icon: '\uD83D\uDCD0',
-      label: 'Формульный расчёт',
-      description: 'LLM недоступен',
+      icon: <XCircle size={13} className="text-red-500 shrink-0" />,
+      label: 'LLM ошибка',
+      description: 'анализ недоступен',
       subtext,
     };
   }
@@ -308,11 +311,11 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
   // Частично (completed + failed/skipped)
   if (completed > 0 && (failed > 0 || skipped > 0)) {
     const extras: string[] = [];
-    if (failed > 0) extras.push(`${failed} на формулах`);
+    if (failed > 0) extras.push(`${failed} ошибка LLM`);
     if (skipped > 0) extras.push(`${skipped} отменены`);
     if (noData > 0) extras.push(`${noData} без задач`);
     return {
-      icon: '\u26A0\uFE0F',
+      icon: <AlertTriangle size={13} className="text-amber-500 shrink-0" />,
       label: 'Частично',
       description: `${completed}/${withData} проанализированы, ${extras.join(', ')}`,
       subtext,
@@ -321,48 +324,48 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
 
   // Все no_data (у всех сотрудников нет задач за период)
   if (noData === withData) {
-    return { icon: 'ℹ️', label: 'Нет задач за период', description: '', subtext };
+    return { icon: <Info size={13} className="text-blue-400 shrink-0" />, label: 'Нет задач за период', description: '', subtext };
   }
 
   // Все skipped (например, остановлено)
   if (skipped === withData) {
-    return { icon: '\u23F9', label: 'Отменён', description: '', subtext };
+    return { icon: <StopCircle size={13} className="text-gray-400 shrink-0" />, label: 'Отменён', description: '', subtext };
   }
 
-  return { icon: '\u2139\uFE0F', label: 'Ожидание', description: '', subtext };
+  return { icon: <Info size={13} className="text-gray-400 shrink-0" />, label: 'Ожидание', description: '', subtext };
 }
 
 /* ─────────────────── Строка сотрудника ─────────────────── */
 
-function getEmployeeRowInfo(emp: EmployeeDetail): { icon: string; text: string } {
+function getEmployeeRowInfo(emp: EmployeeDetail): { icon: React.ReactNode; text: string } {
   // Ошибка сбора данных
   if (emp.dataStatus === 'failed') {
-    return { icon: '\u274C', text: `ошибка: ${emp.error ?? 'неизвестно'}` };
+    return { icon: <XCircle size={13} className="text-red-500 shrink-0" />, text: `ошибка: ${emp.error ?? 'неизвестно'}` };
   }
   // Нет данных (нет MetricReport)
   if (emp.dataStatus === 'skipped' || emp.dataStatus === 'stopped') {
-    return { icon: '\u2014', text: 'нет данных' };
+    return { icon: <Minus size={13} className="text-gray-400 shrink-0" />, text: 'нет данных' };
   }
   // Данные собраны — смотрим на LLM
   if (emp.dataStatus === 'collected') {
     if (emp.llmStatus === 'completed') {
-      return { icon: '\u2705', text: 'данные \u2705  LLM \u2705' };
+      return { icon: <CheckCircle size={13} className="text-emerald-500 shrink-0" />, text: 'данные ✓  LLM ✓' };
     }
     if (emp.llmStatus === 'pending' || emp.llmStatus === 'processing') {
-      return { icon: '\u23F3', text: 'данные \u2705  LLM \u23F3 в очереди' };
+      return { icon: <Clock size={13} className="text-blue-400 shrink-0" />, text: 'данные ✓  LLM в очереди' };
     }
     if (emp.llmStatus === 'no_data') {
-      return { icon: 'ℹ️', text: 'данные ✅  LLM — нет задач' };
+      return { icon: <Info size={13} className="text-blue-400 shrink-0" />, text: 'данные ✓  нет задач' };
     }
     if (emp.llmStatus === 'skipped') {
-      return { icon: '\u26A0\uFE0F', text: 'данные \u2705  LLM \u23F9 отменён' };
+      return { icon: <AlertTriangle size={13} className="text-amber-500 shrink-0" />, text: 'данные ✓  LLM отменён' };
     }
     if (emp.llmStatus === 'failed') {
-      return { icon: '\u26A0\uFE0F', text: 'данные \u2705  LLM \uD83D\uDCD0 формула' };
+      return { icon: <AlertTriangle size={13} className="text-amber-500 shrink-0" />, text: 'данные ✓  LLM ошибка' };
     }
   }
 
-  return { icon: '\u2139\uFE0F', text: `${emp.dataStatus} / ${emp.llmStatus}` };
+  return { icon: <Info size={13} className="text-gray-400 shrink-0" />, text: `${emp.dataStatus} / ${emp.llmStatus}` };
 }
 
 /* ─────────────────── Опции фильтров / группировки ─────────────────── */
@@ -832,82 +835,73 @@ function DetailPanel({ log, details }: { log: CollectionLogEntry; details: LogDe
 
   return (
     <div className="space-y-3">
-      {/* YouTrack секция */}
-      <div className="rounded-md border border-gray-200 dark:border-surface-border bg-white/50 dark:bg-surface-lighter/30 p-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-            {'\uD83D\uDCCA'} YouTrack
-          </span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">
-            {formatDuration(details.youtrackDuration)}
-          </span>
-        </div>
-        <div className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-300">
-          <span className="leading-none mt-px shrink-0">{ytSection.icon}</span>
-          <span>
-            {ytSection.label}
-            {ytSection.description && (
-              <span className="text-gray-400 dark:text-gray-500"> — {ytSection.description}</span>
-            )}
-          </span>
-        </div>
-        {ytSection.subtext && (
-          <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500 italic">{ytSection.subtext}</p>
-        )}
-      </div>
-
-      {/* LLM секция — всегда */}
-      <div className="rounded-md border border-gray-200 dark:border-surface-border bg-white/50 dark:bg-surface-lighter/30 p-3">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-            {'\uD83E\uDD16'} LLM-анализ
-          </span>
-          <span className="text-xs text-gray-400 dark:text-gray-500">
-            {formatDuration(details.llmDuration)}
-          </span>
-        </div>
-        <div className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-300">
-          <span className="leading-none mt-px shrink-0">{llmSection.icon}</span>
-          <span>
-            {llmSection.label}
-            {llmSection.description && (
-              <span className="text-gray-400 dark:text-gray-500"> — {llmSection.description}</span>
-            )}
-          </span>
-        </div>
-        {llmSection.subtext && (
-          <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500 italic">{llmSection.subtext}</p>
-        )}
-      </div>
-
-      {/* Сотрудники — всегда */}
-      {details.employees.length > 0 && (
-        <div>
-          <h4 className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-            Сотрудники ({details.employees.length})
-          </h4>
-          <div className="space-y-1">
-            {details.employees.map((emp) => {
-              const info = getEmployeeRowInfo(emp);
-              return (
-                <div
-                  key={emp.login}
-                  className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs hover:bg-gray-100/50 dark:hover:bg-surface-light/30"
-                >
-                  <span className="text-sm leading-none">{info.icon}</span>
-                  <span className="font-medium text-gray-700 dark:text-gray-200 min-w-[140px]">
-                    {emp.displayName}
-                  </span>
-                  <span className="text-gray-500 dark:text-gray-400">{info.text}</span>
-                </div>
-              );
-            })}
+      {/* Pipeline: YouTrack → LLM */}
+      <div className="flex items-stretch gap-0 rounded-md border border-gray-200 dark:border-surface-border overflow-hidden">
+        {/* YouTrack */}
+        <div className="flex-1 bg-white/50 dark:bg-surface-lighter/30 px-3 py-2.5">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">YouTrack</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{formatDuration(details.youtrackDuration)}</span>
           </div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-200">
+            <span className="leading-none shrink-0">{ytSection.icon}</span>
+            <span className="font-medium">{ytSection.label}</span>
+            {ytSection.description && (
+              <span className="text-gray-400 dark:text-gray-500 truncate">— {ytSection.description}</span>
+            )}
+          </div>
+          {ytSection.subtext && (
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500 italic">{ytSection.subtext}</p>
+          )}
+        </div>
+
+        {/* Стрелка-разделитель */}
+        <div className="flex items-center px-2 bg-gray-100/60 dark:bg-surface-light/40 select-none">
+          <ArrowRight size={14} className="text-gray-300 dark:text-gray-600" />
+        </div>
+
+        {/* LLM */}
+        <div className="flex-1 bg-white/50 dark:bg-surface-lighter/30 px-3 py-2.5">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">LLM-анализ</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{formatDuration(details.llmDuration)}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-200">
+            <span className="leading-none shrink-0">{llmSection.icon}</span>
+            <span className="font-medium">{llmSection.label}</span>
+            {llmSection.description && (
+              <span className="text-gray-400 dark:text-gray-500 truncate">— {llmSection.description}</span>
+            )}
+          </div>
+          {llmSection.subtext && (
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500 italic">{llmSection.subtext}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Сотрудники */}
+      {details.employees.length > 0 && (
+        <div className="divide-y divide-gray-100 dark:divide-surface-border rounded-md border border-gray-200 dark:border-surface-border overflow-hidden">
+          {details.employees.map((emp) => {
+            const info = getEmployeeRowInfo(emp);
+            return (
+              <div
+                key={emp.login}
+                className="flex items-center gap-3 px-3 py-2 text-xs bg-white/50 dark:bg-surface-lighter/30 hover:bg-gray-50/80 dark:hover:bg-surface-light/40 transition-colors"
+              >
+                <span className="flex items-center">{info.icon}</span>
+                <span className="font-medium text-gray-700 dark:text-gray-200 w-36 shrink-0 truncate">
+                  {emp.displayName}
+                </span>
+                <span className="text-gray-400 dark:text-gray-500">{info.text}</span>
+              </div>
+            );
+          })}
         </div>
       )}
 
-      {/* Мета-информация — мелким текстом внизу */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500 pt-1">
+      {/* Мета */}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
         <span>Запущен: {formatDateTime(details.startedAt)}</span>
         {details.completedAt && (
           <span>
