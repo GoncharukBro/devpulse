@@ -335,7 +335,7 @@ export class CollectionWorker {
               periodStart: week.start,
             });
             if (existingReport) {
-              if (existingReport.llmStatus === 'completed') {
+              if (existingReport.llmStatus === 'completed' || existingReport.llmStatus === 'no_data') {
                 // Full report — skip entirely
                 this.log.info(
                   `Skipping ${employee.youtrackLogin}: report complete (overwrite=false)`,
@@ -434,7 +434,7 @@ export class CollectionWorker {
 
           // Status
           report.status = 'collected';
-          report.llmStatus = hasNoData ? 'skipped' : 'pending';
+          report.llmStatus = hasNoData ? 'no_data' : 'pending';
           report.collectedAt = new Date();
           report.errorMessage = undefined;
           report.llmProcessedAt = undefined;
