@@ -127,7 +127,7 @@ export class LlmWorker {
     }
 
     // Cancelled by user (stop during LLM phase)
-    if (report.llmStatus === 'skipped') {
+    if (report.llmStatus === 'skipped' || report.llmStatus === 'no_data') {
       this.log.info(`LLM: report ${task.reportId} was cancelled, skipping`);
       this.processing = null;
       collectionState.removeLlmQueueItem(task.reportId);
@@ -142,7 +142,7 @@ export class LlmWorker {
       report.llmConcerns = undefined;
       report.llmRecommendations = undefined;
       report.llmTaskClassification = undefined;
-      report.llmStatus = 'skipped';
+      report.llmStatus = 'no_data';
       await em.flush();
       await this.updateCollectionLogLlm(em, task.collectionLogId, 'llmSkipped');
       this.log.info(`Пропущен LLM — нет данных за период для ${task.youtrackLogin}`);
