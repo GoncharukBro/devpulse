@@ -63,7 +63,7 @@ export default function LlmSummaryBlock({
       message = 'Нет данных для анализа за этот период. Проверьте настройки маппинга полей проекта.';
     } else if (llmStatus === 'failed') {
       message = 'LLM-анализ не выполнен. Метрики доступны в карточках выше.';
-    } else if (llmStatus === 'skipped') {
+    } else if (llmStatus === 'no_data' || llmStatus === 'skipped') {
       message = 'Нет данных для анализа за этот период.';
     }
     return (
