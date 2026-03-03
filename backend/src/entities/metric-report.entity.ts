@@ -122,7 +122,7 @@ export class MetricReport {
   @Property({ default: 'collected' })
   status: string = 'collected';
 
-  // LLM status: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped'
+  // LLM status: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped' | 'no_data'
   @Property({ default: 'pending' })
   llmStatus: string = 'pending';
 

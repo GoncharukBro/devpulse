@@ -601,7 +601,7 @@ export class CollectionService {
       login: string;
       displayName: string;
       dataStatus: 'collected' | 'failed' | 'stopped' | 'skipped';
-      llmStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
+      llmStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped' | 'no_data';
       error: string | null;
     }>;
   }> {
@@ -670,7 +670,7 @@ export class CollectionService {
         dataStatus = 'skipped';
       }
 
-      let llmStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped';
+      let llmStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'skipped' | 'no_data';
       if (report) {
         llmStatus = report.llmStatus as typeof llmStatus;
       } else if (isStopped) {
