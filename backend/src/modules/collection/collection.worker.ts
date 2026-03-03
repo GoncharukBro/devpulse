@@ -327,7 +327,9 @@ export class CollectionWorker {
         });
 
         try {
-          // Skip if report already exists and overwrite is false
+          // Skip if report already exists and overwrite is false.
+          // When overwrite=true, this block is skipped entirely — all employees
+          // get fresh YouTrack collection and new llmStatus (pending or no_data).
           if (!overwrite) {
             const existingReport = await em.findOne(MetricReport, {
               subscription,
