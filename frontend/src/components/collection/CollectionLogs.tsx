@@ -260,6 +260,7 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
   const pending = employees.filter((e) => e.llmStatus === 'pending').length;
   const processing = employees.filter((e) => e.llmStatus === 'processing').length;
   const skipped = employees.filter((e) => e.llmStatus === 'skipped').length;
+  const noData = employees.filter((e) => e.llmStatus === 'no_data').length;
   const withData = employees.filter((e) => e.dataStatus === 'collected').length;
 
   // Подтекст — что было в ЭТОМ запуске
@@ -280,7 +281,7 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
   }
 
   // Все с данными — completed
-  if (completed === withData && failed === 0) {
+  if (completed + noData === withData && failed === 0 && skipped === 0) {
     return { icon: '\u2705', label: 'Анализ завершён', description: '', subtext };
   }
 
@@ -309,12 +310,18 @@ function getLlmSection(log: CollectionLogEntry, employees: EmployeeDetail[]): Se
     const extras: string[] = [];
     if (failed > 0) extras.push(`${failed} на формулах`);
     if (skipped > 0) extras.push(`${skipped} отменены`);
+    if (noData > 0) extras.push(`${noData} без задач`);
     return {
       icon: '\u26A0\uFE0F',
       label: 'Частично',
       description: `${completed}/${withData} проанализированы, ${extras.join(', ')}`,
       subtext,
     };
+  }
+
+  // Все no_data (у всех сотрудников нет задач за период)
+  if (noData === withData) {
+    return { icon: 'ℹ️', label: 'Нет задач за период', description: '', subtext };
   }
 
   // Все skipped (например, остановлено)
@@ -343,6 +350,9 @@ function getEmployeeRowInfo(emp: EmployeeDetail): { icon: string; text: string }
     }
     if (emp.llmStatus === 'pending' || emp.llmStatus === 'processing') {
       return { icon: '\u23F3', text: 'данные \u2705  LLM \u23F3 в очереди' };
+    }
+    if (emp.llmStatus === 'no_data') {
+      return { icon: 'ℹ️', text: 'данные ✅  LLM — нет задач' };
     }
     if (emp.llmStatus === 'skipped') {
       return { icon: '\u26A0\uFE0F', text: 'данные \u2705  LLM \u23F9 отменён' };
