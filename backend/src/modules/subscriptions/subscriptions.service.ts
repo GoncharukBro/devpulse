@@ -67,6 +67,7 @@ export async function listSubscriptions(
     llm_processing: string;
     llm_failed: string;
     llm_skipped: string;
+    llm_no_data: string;
   }
 
   let periodMap = new Map<string, PeriodRow>();
@@ -101,7 +102,8 @@ export async function listSubscriptions(
         COUNT(*) FILTER (WHERE mr.llm_status = 'pending')::text AS llm_pending,
         COUNT(*) FILTER (WHERE mr.llm_status = 'processing')::text AS llm_processing,
         COUNT(*) FILTER (WHERE mr.llm_status = 'failed')::text AS llm_failed,
-        COUNT(*) FILTER (WHERE mr.llm_status = 'skipped')::text AS llm_skipped
+        COUNT(*) FILTER (WHERE mr.llm_status = 'skipped')::text AS llm_skipped,
+        COUNT(*) FILTER (WHERE mr.llm_status = 'no_data')::text AS llm_no_data
       FROM target_period tp
       JOIN metric_reports mr
         ON mr.subscription_id = tp.subscription_id
@@ -153,6 +155,7 @@ export async function listSubscriptions(
             llmProcessing: parseInt(periodRow.llm_processing, 10),
             llmFailed: parseInt(periodRow.llm_failed, 10),
             llmSkipped: parseInt(periodRow.llm_skipped, 10),
+            llmNoData: parseInt(periodRow.llm_no_data, 10),
           }
         : null,
       createdAt: sub.createdAt.toISOString(),
