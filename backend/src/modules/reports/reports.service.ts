@@ -21,6 +21,7 @@ import {
   EmployeeListItem,
   PaginatedEmployeeReports,
   ScoreTrend,
+  MetricTrendDTO,
   ProjectConcernItem,
   OverviewConcernItem,
   ProjectWeekData,
@@ -57,15 +58,25 @@ function minutesByTypeToHours(byType: Record<string, number>): Record<string, nu
   return result;
 }
 
-function calcTrend(scores: Array<number | null>): ScoreTrend {
+function calcTrend(scores: Array<number | null>, threshold = 5): ScoreTrend {
   const valid = scores.filter((s): s is number => s !== null);
   if (valid.length < 2) return null;
   const last = valid[valid.length - 1];
   const prev = valid[valid.length - 2];
   const diff = last - prev;
-  if (diff > 5) return 'up';
-  if (diff < -5) return 'down';
+  if (diff > threshold) return 'up';
+  if (diff < -threshold) return 'down';
   return 'stable';
+}
+
+function calcMetricTrend(current: number | null, prev: number | null, threshold = 5): MetricTrendDTO {
+  if (current == null || prev == null) return { direction: null, delta: null };
+  const delta = Math.round((current - prev) * 10) / 10;
+  let direction: ScoreTrend;
+  if (delta > threshold) direction = 'up';
+  else if (delta < -threshold) direction = 'down';
+  else direction = 'stable';
+  return { direction, delta };
 }
 
 function avgNullable(values: Array<number | null | undefined>): number | null {
@@ -270,6 +281,40 @@ export class ReportsService {
     const allScores = allReports.slice(0, 4).map((r) => getEffectiveScore(r));
     const scoreTrend = calcTrend(allScores);
 
+    // Previous period for trends
+    const prevPeriod = latestPeriod
+      ? allReports.find((r) => r.periodStart.getTime() !== latestPeriod.getTime())?.periodStart ?? null
+      : null;
+    const prevPeriodReports = prevPeriod
+      ? allReports.filter((r) => r.periodStart.getTime() === prevPeriod.getTime())
+      : [];
+
+    const prevAvgScore = avgNullable(prevPeriodReports.map((r) => getEffectiveScore(r)));
+    const prevAvgUtilization = avgNullable(prevPeriodReports.map((r) => r.utilization));
+    const prevAvgEstAcc = avgNullable(prevPeriodReports.map((r) => r.estimationAccuracy));
+    const prevAvgFocus = avgNullable(prevPeriodReports.map((r) => r.focus));
+    const prevAvgCompRate = avgNullable(prevPeriodReports.map((r) => r.completionRate));
+    const prevAvgCycleTime = avgNullable(prevPeriodReports.map((r) => r.avgCycleTimeHours));
+    const prevTotalSpent = prevPeriodReports.length > 0
+      ? minutesToHours(prevPeriodReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
+      : null;
+
+    const avgCompletionRate = avgNullable(latestReports.map((r) => r.completionRate));
+    const avgCycleTimeHours = avgNullable(latestReports.map((r) => r.avgCycleTimeHours));
+    const totalSpentHours = latestReports.length > 0
+      ? minutesToHours(latestReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
+      : null;
+
+    const employeeTrends = {
+      score: calcMetricTrend(avgScore, prevAvgScore, 5),
+      utilization: calcMetricTrend(avgUtilization, prevAvgUtilization, 5),
+      estimationAccuracy: calcMetricTrend(avgEstimationAccuracy, prevAvgEstAcc, 5),
+      focus: calcMetricTrend(avgFocus, prevAvgFocus, 5),
+      completionRate: calcMetricTrend(avgCompletionRate, prevAvgCompRate, 5),
+      cycleTime: calcMetricTrend(avgCycleTimeHours, prevAvgCycleTime, 2),
+      spentHours: calcMetricTrend(totalSpentHours, prevTotalSpent, 10),
+    };
+
     // Latest LLM data
     const withLlm = allReports.find((r) => r.llmSummary);
     const lastLlmSummary = withLlm?.llmSummary ?? null;
@@ -290,6 +335,7 @@ export class ReportsService {
       avgFocus,
       totalCompletedIssues,
       scoreTrend,
+      trends: employeeTrends,
       lastLlmSummary,
       lastLlmConcerns,
       achievements,
@@ -372,9 +418,26 @@ export class ReportsService {
       ? minutesToHours(lastPeriodReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
       : null;
 
-    // Trend
+    // Trends
     const prevAvgScore = avgNullable(prevPeriodReports.map((r) => getEffectiveScore(r)));
     const scoreTrend = calcTrend([prevAvgScore, avgScore]);
+
+    const prevAvgUtilization = avgNullable(prevPeriodReports.map((r) => r.utilization));
+    const prevAvgAccuracy = avgNullable(prevPeriodReports.map((r) => r.estimationAccuracy));
+    const prevAvgCompletion = avgNullable(prevPeriodReports.map((r) => r.completionRate));
+    const prevAvgCycleTime = avgNullable(prevPeriodReports.map((r) => r.avgCycleTimeHours));
+    const prevTotalSpent = prevPeriodReports.length > 0
+      ? minutesToHours(prevPeriodReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
+      : null;
+
+    const trends = {
+      score: calcMetricTrend(avgScore, prevAvgScore, 5),
+      utilization: calcMetricTrend(avgUtilization, prevAvgUtilization, 5),
+      estimationAccuracy: calcMetricTrend(avgEstimationAccuracy, prevAvgAccuracy, 5),
+      completionRate: calcMetricTrend(avgCompletionRate, prevAvgCompletion, 5),
+      cycleTime: calcMetricTrend(avgCycleTimeHours, prevAvgCycleTime, 2),
+      spentHours: calcMetricTrend(totalSpentHours, prevTotalSpent, 10),
+    };
 
     // Concerns
     const concerns = this.buildProjectConcerns(lastPeriodReports, prevPeriodReports, employeeMap);
@@ -423,6 +486,7 @@ export class ReportsService {
       totalSpentHours,
       totalEmployees: activeEmployees.length,
       scoreTrend,
+      trends,
       employees,
       concerns,
       aggregatedRecommendations: uniqueRecs,
@@ -493,6 +557,13 @@ export class ReportsService {
       avgCompletionRate: null,
       totalSpentHours: null,
       scoreTrend: null,
+      trends: {
+        score: { direction: null, delta: null },
+        utilization: { direction: null, delta: null },
+        estimationAccuracy: { direction: null, delta: null },
+        completionRate: { direction: null, delta: null },
+        spentHours: { direction: null, delta: null },
+      },
       lastPeriodStart: null,
       lastPeriodEnd: null,
       concerns: [],
@@ -577,11 +648,31 @@ export class ReportsService {
       prevByEmployee.get(r.youtrackLogin)!.push(r);
     }
     const prevEmployeeScores: Array<number | null> = [];
+    const prevEmployeeUtils: Array<number | null> = [];
+    const prevEmployeeEstAcc: Array<number | null> = [];
+    const prevEmployeeCompRate: Array<number | null> = [];
     for (const reports of prevByEmployee.values()) {
       prevEmployeeScores.push(avgNullable(reports.map((r) => getEffectiveScore(r))));
+      prevEmployeeUtils.push(avgNullable(reports.map((r) => r.utilization)));
+      prevEmployeeEstAcc.push(avgNullable(reports.map((r) => r.estimationAccuracy)));
+      prevEmployeeCompRate.push(avgNullable(reports.map((r) => r.completionRate)));
     }
     const prevAvgScore = avgNullable(prevEmployeeScores);
+    const prevAvgUtilization = avgNullable(prevEmployeeUtils);
+    const prevAvgEstAcc = avgNullable(prevEmployeeEstAcc);
+    const prevAvgCompRate = avgNullable(prevEmployeeCompRate);
+    const prevTotalSpentHours = prevReports.length > 0
+      ? minutesToHours(prevReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0))
+      : null;
     const scoreTrend = calcTrend([prevAvgScore, avgScore]);
+
+    const overviewTrends = {
+      score: calcMetricTrend(avgScore, prevAvgScore, 5),
+      utilization: calcMetricTrend(avgUtilization, prevAvgUtilization, 5),
+      estimationAccuracy: calcMetricTrend(avgEstimationAccuracy, prevAvgEstAcc, 5),
+      completionRate: calcMetricTrend(avgCompletionRate, prevAvgCompRate, 5),
+      spentHours: calcMetricTrend(totalSpentHours, prevTotalSpentHours, 10),
+    };
 
     // Concerns
     const employeeMap = await this.buildEmployeeMap(subscriptions);
@@ -638,6 +729,7 @@ export class ReportsService {
       avgCompletionRate,
       totalSpentHours,
       scoreTrend,
+      trends: overviewTrends,
       lastPeriodStart,
       lastPeriodEnd,
       concerns,

@@ -6,6 +6,11 @@ import type { Achievement } from '@/types/achievement';
 
 export type ScoreTrend = 'up' | 'down' | 'stable' | null;
 
+export interface MetricTrendDTO {
+  direction: ScoreTrend;
+  delta: number | null;
+}
+
 export interface LlmTaskClassification {
   businessCritical: string[];
   technicallySignificant: string[];
@@ -97,6 +102,15 @@ export interface EmployeeSummaryDTO {
   avgFocus: number | null;
   totalCompletedIssues: number;
   scoreTrend: ScoreTrend;
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    focus: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    cycleTime: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
   lastLlmSummary: string | null;
   lastLlmConcerns: string[] | null;
   achievements?: Achievement[];
@@ -149,6 +163,15 @@ export interface ProjectSummaryDTO {
 
   scoreTrend: ScoreTrend;
 
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    cycleTime: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
+
   employees: ProjectEmployeeRow[];
   concerns: ProjectConcernItem[];
   aggregatedRecommendations: string[];
@@ -180,6 +203,15 @@ export interface OverviewDTO {
   avgCompletionRate: number | null;
   totalSpentHours: number | null;
   scoreTrend: ScoreTrend;
+
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
+
   lastPeriodStart: string | null;
   lastPeriodEnd: string | null;
   concerns: OverviewConcernItem[];

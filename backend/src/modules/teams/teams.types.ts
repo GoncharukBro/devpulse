@@ -2,7 +2,7 @@
  * DTO и типы для модуля команд.
  */
 
-import { ScoreTrend } from '../reports/reports.types';
+import { ScoreTrend, MetricTrendDTO } from '../reports/reports.types';
 
 export interface CreateTeamDto {
   name: string;
@@ -48,9 +48,18 @@ export interface TeamDetailDTO {
   members: TeamMemberDetail[];
   avgScore: number | null;
   avgUtilization: number | null;
+  avgEstimationAccuracy: number | null;
+  avgCompletionRate: number | null;
   totalSpentHours: number | null;
   lastPeriodStart: string | null;
   lastPeriodEnd: string | null;
   scoreTrend: ScoreTrend;
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
   weeklyTrend: TeamWeekTrend[];
 }

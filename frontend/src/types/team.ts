@@ -1,4 +1,4 @@
-import type { ScoreTrend, ConcernItem } from './reports';
+import type { ScoreTrend, MetricTrendDTO, ConcernItem } from './reports';
 
 export interface Team {
   id: string;
@@ -24,6 +24,13 @@ export interface TeamDetail {
   lastPeriodStart: string | null;
   lastPeriodEnd: string | null;
   scoreTrend: ScoreTrend;
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
   weeklyTrend: Array<{ periodStart: string; avgScore: number | null }>;
   concerns: ConcernItem[];
 }

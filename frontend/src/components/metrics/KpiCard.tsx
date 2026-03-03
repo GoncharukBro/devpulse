@@ -10,9 +10,16 @@ interface KpiCardProps {
   value: number | null;
   suffix?: string;
   trend?: ScoreTrend;
+  delta?: number | null;
   trendValue?: string | null;
   metric: string;
   loading?: boolean;
+}
+
+function formatDelta(delta: number, suffix?: string): string {
+  const sign = delta > 0 ? '+' : '';
+  const num = Number.isInteger(delta) ? delta : delta.toFixed(1);
+  return `${sign}${num}${suffix ?? ''}`;
 }
 
 function AnimatedNumber({ value, suffix }: { value: number; suffix?: string }) {
@@ -57,6 +64,7 @@ export default function KpiCard({
   value,
   suffix,
   trend,
+  delta,
   trendValue,
   metric,
   loading,
@@ -85,7 +93,10 @@ export default function KpiCard({
         <span className={`text-2xl font-bold ${value !== null ? colors.text : 'text-gray-400 dark:text-gray-500'}`}>
           {value !== null ? <AnimatedNumber value={value} suffix={suffix} /> : 'Н/Д'}
         </span>
-        <TrendIndicator trend={trend ?? null} />
+        <TrendIndicator
+          trend={trend ?? null}
+          value={delta != null ? formatDelta(delta, suffix) : null}
+        />
       </div>
       {trendValue && (
         <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">{trendValue}</div>

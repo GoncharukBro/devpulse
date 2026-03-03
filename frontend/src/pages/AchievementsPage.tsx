@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { HelpCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import Card from '@/components/ui/Card';
 import AchievementStats from '@/components/achievements/AchievementStats';
 import AchievementFeed from '@/components/achievements/AchievementFeed';
 import AchievementCatalog from '@/components/achievements/AchievementCatalog';
-import AchievementsHelpModal, { AchievementsHelpButton } from '@/components/achievements/AchievementsHelpModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { achievementsApi } from '@/api/endpoints/achievements';
 import type { CatalogResponse } from '@/types/achievement';
@@ -18,7 +19,6 @@ export default function AchievementsPage() {
   const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
 
   const loadCatalog = useCallback(async () => {
     try {
@@ -67,9 +67,16 @@ export default function AchievementsPage() {
       <PageHeader
         title="Достижения"
         description="Коллекция наград сотрудников за выдающиеся результаты по метрикам"
-        actions={<AchievementsHelpButton onClick={() => setHelpOpen(true)} />}
+        actions={
+          <Link
+            to="/methodology#achievements"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Как это работает?
+          </Link>
+        }
       />
-      <AchievementsHelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       {/* Stats */}
       <AchievementStats stats={catalog?.stats ?? null} loading={catalogLoading} />

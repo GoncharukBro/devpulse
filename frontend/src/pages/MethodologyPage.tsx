@@ -104,6 +104,13 @@ export default function MethodologyPage() {
                 na="если нет закрытых задач с историей статусов"
               />
               <MetricBlock
+                title="Списано часов"
+                description="Суммарное время, списанное сотрудником за неделю (work items из YouTrack)."
+                formula="сумма всех списаний за период"
+                thresholds={{ good: '30–45 ч', warning: '20–29 ч или 46–55 ч', danger: '< 20 ч или > 55 ч' }}
+                na="если нет списаний времени"
+              />
+              <MetricBlock
                 title="Score (AI-оценка)"
                 description="Общая оценка продуктивности от AI-модели (0–100). Рассчитывается на основе всех метрик с учётом контекста."
                 formula="LLM-оценка (0–100)"
@@ -114,7 +121,56 @@ export default function MethodologyPage() {
           </Card>
         </section>
 
-        {/* 4. AI-анализ */}
+        {/* 4. Тренды */}
+        <section id="trends">
+          <Card header={<SectionHeader emoji="📈" title="Тренды метрик" />}>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+              Рядом с каждой метрикой отображается индикатор тренда — стрелка и числовая дельта.
+              Тренд показывает, как изменилась метрика по сравнению с предыдущей неделей.
+            </p>
+            <div className="mb-3 space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-emerald-400">↑ +5.2%</span>
+                <span>— значение выросло (выше порога чувствительности)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-red-400">↓ -3.1%</span>
+                <span>— значение снизилось (ниже порога)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-gray-400">→ 0.8%</span>
+                <span>— значение стабильно (изменение в пределах порога)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">—</span>
+                <span>— нет данных за предыдущий период для сравнения</span>
+              </div>
+            </div>
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Пороги чувствительности</p>
+            <p className="mb-2 text-sm text-gray-600 dark:text-gray-300">
+              Чтобы стрелка не реагировала на незначительные колебания, для каждого типа метрики задан свой порог:
+            </p>
+            <div className="space-y-1 text-xs text-gray-600 dark:text-gray-300">
+              <div className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Score, Загрузка, Точность, Фокус, Закрытие</strong> — ±5 пунктов</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Cycle Time</strong> — ±2 часа</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Списано часов</strong> — ±10 часов</span>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-gray-400">
+              Числовая дельта показывается всегда (включая стабильный тренд), чтобы видеть точное изменение.
+            </p>
+          </Card>
+        </section>
+
+        {/* 5. AI-анализ */}
         <section id="ai-analysis">
           <Card header={<SectionHeader emoji="🤖" title="AI-анализ" />}>
             <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
@@ -149,13 +205,25 @@ export default function MethodologyPage() {
           </Card>
         </section>
 
-        {/* 5. Система достижений */}
+        {/* 6. Система достижений */}
         <section id="achievements">
           <Card header={<SectionHeader emoji="🏆" title="Система достижений" />}>
-            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-              Достижения присваиваются автоматически по результатам метрик.
+            <p className="mb-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              Достижения — это автоматические награды, которые сотрудники получают
+              за результаты работы. Система анализирует еженедельные метрики из YouTrack
+              и присваивает награды тем, кто достиг определённых показателей.
             </p>
-            <div className="mb-3 space-y-1 font-mono text-xs">
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Как это работает</p>
+            <ol className="mb-4 list-decimal space-y-1 pl-5 text-sm text-gray-600 dark:text-gray-300 marker:text-gray-500">
+              <li>Каждую неделю система собирает метрики по задачам и списаниям времени</li>
+              <li>По результатам автоматически проверяются условия каждого достижения</li>
+              <li>Если сотрудник выполнил условие — он получает награду соответствующего уровня</li>
+              <li>Лучшие результаты фиксируются как рекорды</li>
+            </ol>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Уровни наград</p>
+            <div className="mb-1 space-y-1 font-mono text-xs">
               <div className="flex items-center gap-3">
                 <span className="w-20 text-gray-500 dark:text-slate-400">Common</span>
                 <span className="text-gray-500 dark:text-slate-400">★☆☆☆</span>
@@ -177,11 +245,37 @@ export default function MethodologyPage() {
                 <span className="text-gray-400">— выдающийся результат</span>
               </div>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Серии: повторное получение увеличивает стрик, показывая стабильность.
+            <p className="mb-4 text-xs text-gray-400">
+              Чем выше показатель — тем выше уровень награды. Пороги индивидуальны для каждого типа достижения.
             </p>
-            <p className="mt-2 text-sm text-gray-400">
-              Подробнее — на странице{' '}
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Серии (стрики)</p>
+            <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
+              Если сотрудник получает одно и то же достижение несколько недель подряд —
+              формируется серия. Длинные серии показывают стабильность результатов.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Категории</p>
+            <ul className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+              <li className="flex gap-2">
+                <span>⚡</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Продуктивность</strong> — объём и скорость выполнения задач</span>
+              </li>
+              <li className="flex gap-2">
+                <span>🎯</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Качество</strong> — точность оценок, отсутствие багов, скорость закрытия</span>
+              </li>
+              <li className="flex gap-2">
+                <span>⚖️</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Баланс</strong> — оптимальная загрузка, фокус на продуктовых задачах</span>
+              </li>
+              <li className="flex gap-2">
+                <span>📈</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Рост</strong> — положительная динамика показателей</span>
+              </li>
+            </ul>
+            <p className="mt-3 text-sm text-gray-400">
+              Все достижения — на странице{' '}
               <Link to="/achievements" className="text-brand-400 hover:text-brand-300 transition-colors">
                 Достижений
               </Link>.
@@ -189,7 +283,7 @@ export default function MethodologyPage() {
           </Card>
         </section>
 
-        {/* 6. Что означает "Нет данных" */}
+        {/* 7. Что означает "Нет данных" */}
         <section id="no-data">
           <Card header={<SectionHeader emoji="❓" title='Что означает "Нет данных"' />}>
             <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">

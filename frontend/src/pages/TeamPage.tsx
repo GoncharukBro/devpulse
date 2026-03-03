@@ -154,7 +154,8 @@ export default function TeamPage() {
           title="Средний Score"
           value={team?.avgScore ?? null}
           metric="score"
-          trend={team?.scoreTrend}
+          trend={team?.trends?.score.direction}
+          delta={team?.trends?.score.delta}
           loading={loading}
         />
         <KpiCard
@@ -162,6 +163,8 @@ export default function TeamPage() {
           value={team?.avgUtilization ?? null}
           suffix="%"
           metric="utilization"
+          trend={team?.trends?.utilization.direction}
+          delta={team?.trends?.utilization.delta}
           loading={loading}
         />
         <KpiCard
@@ -169,6 +172,8 @@ export default function TeamPage() {
           value={team?.avgEstimationAccuracy ?? null}
           suffix="%"
           metric="estimationAccuracy"
+          trend={team?.trends?.estimationAccuracy.direction}
+          delta={team?.trends?.estimationAccuracy.delta}
           loading={loading}
         />
         <KpiCard
@@ -176,6 +181,8 @@ export default function TeamPage() {
           value={team?.avgCompletionRate ?? null}
           suffix="%"
           metric="completionRate"
+          trend={team?.trends?.completionRate.direction}
+          delta={team?.trends?.completionRate.delta}
           loading={loading}
         />
         <KpiCard
@@ -183,6 +190,8 @@ export default function TeamPage() {
           value={team?.totalSpentHours ?? null}
           suffix="ч"
           metric="totalSpentHours"
+          trend={team?.trends?.spentHours.direction}
+          delta={team?.trends?.spentHours.delta}
           loading={loading}
         />
       </div>

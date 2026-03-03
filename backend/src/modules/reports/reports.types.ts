@@ -67,6 +67,11 @@ export interface EmployeeWeekData {
 
 export type ScoreTrend = 'up' | 'down' | 'stable' | null;
 
+export interface MetricTrendDTO {
+  direction: ScoreTrend;
+  delta: number | null;
+}
+
 export interface EmployeeHistoryDTO {
   youtrackLogin: string;
   displayName: string;
@@ -92,6 +97,15 @@ export interface EmployeeSummaryDTO {
   avgFocus: number | null;
   totalCompletedIssues: number;
   scoreTrend: ScoreTrend;
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    focus: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    cycleTime: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
   lastLlmSummary: string | null;
   lastLlmConcerns: string[] | null;
   achievements?: AchievementDTO[];
@@ -144,6 +158,15 @@ export interface ProjectSummaryDTO {
 
   scoreTrend: ScoreTrend;
 
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    cycleTime: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
+
   employees: ProjectEmployeeRow[];
   concerns: ProjectConcernItem[];
   aggregatedRecommendations: string[];
@@ -174,6 +197,15 @@ export interface OverviewDTO {
   avgCompletionRate: number | null;
   totalSpentHours: number | null;
   scoreTrend: ScoreTrend;
+
+  trends: {
+    score: MetricTrendDTO;
+    utilization: MetricTrendDTO;
+    estimationAccuracy: MetricTrendDTO;
+    completionRate: MetricTrendDTO;
+    spentHours: MetricTrendDTO;
+  };
+
   lastPeriodStart: string | null;
   lastPeriodEnd: string | null;
 

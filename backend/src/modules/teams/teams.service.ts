@@ -10,7 +10,7 @@ import { SubscriptionEmployee } from '../../entities/subscription-employee.entit
 import { MetricReport } from '../../entities/metric-report.entity';
 import { NotFoundError, ValidationError } from '../../common/errors';
 import { formatYTDate } from '../../common/utils/week-utils';
-import { ScoreTrend } from '../reports/reports.types';
+import { ScoreTrend, MetricTrendDTO } from '../reports/reports.types';
 import {
   TeamListItem,
   TeamDetailDTO,
@@ -28,15 +28,25 @@ function avgNullable(values: Array<number | null | undefined>): number | null {
   return Math.round((nums.reduce((s, v) => s + v, 0) / nums.length) * 100) / 100;
 }
 
-function calcTrend(scores: Array<number | null>): ScoreTrend {
+function calcTrend(scores: Array<number | null>, threshold = 5): ScoreTrend {
   const valid = scores.filter((s): s is number => s !== null);
   if (valid.length < 2) return null;
   const last = valid[valid.length - 1];
   const prev = valid[valid.length - 2];
   const diff = last - prev;
-  if (diff > 5) return 'up';
-  if (diff < -5) return 'down';
+  if (diff > threshold) return 'up';
+  if (diff < -threshold) return 'down';
   return 'stable';
+}
+
+function calcMetricTrend(current: number | null, prev: number | null, threshold = 5): MetricTrendDTO {
+  if (current == null || prev == null) return { direction: null, delta: null };
+  const delta = Math.round((current - prev) * 10) / 10;
+  let direction: ScoreTrend;
+  if (delta > threshold) direction = 'up';
+  else if (delta < -threshold) direction = 'down';
+  else direction = 'stable';
+  return { direction, delta };
 }
 
 export class TeamsService {
@@ -93,7 +103,7 @@ export class TeamsService {
       members.push(await this.getMemberDetail(login, subIds));
     }
 
-    const { avgScore, avgUtilization, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend } = await this.getTeamAggregates(logins, subIds);
+    const { avgScore, avgUtilization, avgEstimationAccuracy, avgCompletionRate, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend, trends } = await this.getTeamAggregates(logins, subIds);
 
     // Weekly trend (last 8 weeks)
     const weeklyTrend = await this.getTeamWeeklyTrend(logins, subIds, 8);
@@ -104,10 +114,13 @@ export class TeamsService {
       members,
       avgScore,
       avgUtilization,
+      avgEstimationAccuracy,
+      avgCompletionRate,
       totalSpentHours,
       lastPeriodStart,
       lastPeriodEnd,
       scoreTrend,
+      trends,
       weeklyTrend,
     };
   }
@@ -282,13 +295,24 @@ export class TeamsService {
   ): Promise<{
     avgScore: number | null;
     avgUtilization: number | null;
+    avgEstimationAccuracy: number | null;
+    avgCompletionRate: number | null;
     totalSpentHours: number | null;
     lastPeriodStart: string | null;
     lastPeriodEnd: string | null;
     scoreTrend: ScoreTrend;
+    trends: TeamDetailDTO['trends'];
   }> {
+    const emptyTrends: TeamDetailDTO['trends'] = {
+      score: { direction: null, delta: null },
+      utilization: { direction: null, delta: null },
+      estimationAccuracy: { direction: null, delta: null },
+      completionRate: { direction: null, delta: null },
+      spentHours: { direction: null, delta: null },
+    };
+
     if (logins.length === 0 || subIds.length === 0) {
-      return { avgScore: null, avgUtilization: null, totalSpentHours: null, lastPeriodStart: null, lastPeriodEnd: null, scoreTrend: null };
+      return { avgScore: null, avgUtilization: null, avgEstimationAccuracy: null, avgCompletionRate: null, totalSpentHours: null, lastPeriodStart: null, lastPeriodEnd: null, scoreTrend: null, trends: emptyTrends };
     }
 
     // Get latest period
@@ -301,7 +325,7 @@ export class TeamsService {
       { orderBy: { periodStart: 'DESC' } },
     );
 
-    if (!latestReport) return { avgScore: null, avgUtilization: null, totalSpentHours: null, lastPeriodStart: null, lastPeriodEnd: null, scoreTrend: null };
+    if (!latestReport) return { avgScore: null, avgUtilization: null, avgEstimationAccuracy: null, avgCompletionRate: null, totalSpentHours: null, lastPeriodStart: null, lastPeriodEnd: null, scoreTrend: null, trends: emptyTrends };
 
     const lastPeriod = latestReport.periodStart;
 
@@ -321,13 +345,19 @@ export class TeamsService {
 
     const empScores: Array<number | null> = [];
     const empUtils: Array<number | null> = [];
+    const empEstAcc: Array<number | null> = [];
+    const empCompRate: Array<number | null> = [];
     for (const reps of byLogin.values()) {
       empScores.push(avgNullable(reps.map((r) => getEffectiveScore(r))));
       empUtils.push(avgNullable(reps.map((r) => r.utilization ?? null)));
+      empEstAcc.push(avgNullable(reps.map((r) => r.estimationAccuracy)));
+      empCompRate.push(avgNullable(reps.map((r) => r.completionRate)));
     }
 
     const avgScore = avgNullable(empScores);
     const avgUtilization = avgNullable(empUtils);
+    const avgEstimationAccuracy = avgNullable(empEstAcc);
+    const avgCompletionRate = avgNullable(empCompRate);
     const totalSpentHours = Math.round(
       (currentReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0) / 60) * 100,
     ) / 100;
@@ -345,7 +375,7 @@ export class TeamsService {
       { orderBy: { periodStart: 'DESC' } },
     );
 
-    if (!prevReport) return { avgScore, avgUtilization, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend: null };
+    if (!prevReport) return { avgScore, avgUtilization, avgEstimationAccuracy, avgCompletionRate, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend: null, trends: emptyTrends };
 
     const prevReports = await this.em.find(MetricReport, {
       subscription: { $in: subIds },
@@ -360,14 +390,34 @@ export class TeamsService {
     }
 
     const prevEmpScores: Array<number | null> = [];
+    const prevEmpUtils: Array<number | null> = [];
+    const prevEmpEstAcc: Array<number | null> = [];
+    const prevEmpCompRate: Array<number | null> = [];
     for (const reps of prevByLogin.values()) {
       prevEmpScores.push(avgNullable(reps.map((r) => getEffectiveScore(r))));
+      prevEmpUtils.push(avgNullable(reps.map((r) => r.utilization ?? null)));
+      prevEmpEstAcc.push(avgNullable(reps.map((r) => r.estimationAccuracy)));
+      prevEmpCompRate.push(avgNullable(reps.map((r) => r.completionRate)));
     }
     const prevAvgScore = avgNullable(prevEmpScores);
+    const prevAvgUtilization = avgNullable(prevEmpUtils);
+    const prevAvgEstAcc = avgNullable(prevEmpEstAcc);
+    const prevAvgCompRate = avgNullable(prevEmpCompRate);
+    const prevTotalSpent = prevReports.length > 0
+      ? Math.round((prevReports.reduce((sum, r) => sum + (r.totalSpentMinutes ?? 0), 0) / 60) * 100) / 100
+      : null;
 
     const scoreTrend = calcTrend([prevAvgScore, avgScore]);
 
-    return { avgScore, avgUtilization, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend };
+    const trends: TeamDetailDTO['trends'] = {
+      score: calcMetricTrend(avgScore, prevAvgScore, 5),
+      utilization: calcMetricTrend(avgUtilization, prevAvgUtilization, 5),
+      estimationAccuracy: calcMetricTrend(avgEstimationAccuracy, prevAvgEstAcc, 5),
+      completionRate: calcMetricTrend(avgCompletionRate, prevAvgCompRate, 5),
+      spentHours: calcMetricTrend(totalSpentHours, prevTotalSpent, 10),
+    };
+
+    return { avgScore, avgUtilization, avgEstimationAccuracy, avgCompletionRate, totalSpentHours, lastPeriodStart, lastPeriodEnd, scoreTrend, trends };
   }
 
   private async getTeamWeeklyTrend(

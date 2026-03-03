@@ -206,7 +206,8 @@ export default function ProjectPage() {
           title="Score"
           value={summary?.avgScore ?? null}
           metric="score"
-          trend={summary?.scoreTrend}
+          trend={summary?.trends?.score.direction}
+          delta={summary?.trends?.score.delta}
           loading={loading}
         />
         <KpiCard
@@ -214,6 +215,8 @@ export default function ProjectPage() {
           value={summary?.avgUtilization ?? null}
           suffix="%"
           metric="utilization"
+          trend={summary?.trends?.utilization.direction}
+          delta={summary?.trends?.utilization.delta}
           loading={loading}
         />
         <KpiCard
@@ -221,6 +224,8 @@ export default function ProjectPage() {
           value={summary?.avgEstimationAccuracy ?? null}
           suffix="%"
           metric="estimationAccuracy"
+          trend={summary?.trends?.estimationAccuracy.direction}
+          delta={summary?.trends?.estimationAccuracy.delta}
           loading={loading}
         />
         <KpiCard
@@ -228,6 +233,8 @@ export default function ProjectPage() {
           value={summary?.avgCompletionRate ?? null}
           suffix="%"
           metric="completionRate"
+          trend={summary?.trends?.completionRate.direction}
+          delta={summary?.trends?.completionRate.delta}
           loading={loading}
         />
         <KpiCard
@@ -235,6 +242,8 @@ export default function ProjectPage() {
           value={summary?.avgCycleTimeHours ?? null}
           suffix="ч"
           metric="avgCycleTimeHours"
+          trend={summary?.trends?.cycleTime.direction}
+          delta={summary?.trends?.cycleTime.delta}
           loading={loading}
         />
         <KpiCard
@@ -242,6 +251,8 @@ export default function ProjectPage() {
           value={summary?.totalSpentHours ?? null}
           suffix="ч"
           metric="totalSpentHours"
+          trend={summary?.trends?.spentHours.direction}
+          delta={summary?.trends?.spentHours.delta}
           loading={loading}
         />
       </div>

@@ -121,7 +121,8 @@ export default function OverviewPage() {
           title="Средний Score"
           value={data?.avgScore ?? null}
           metric="score"
-          trend={data?.scoreTrend}
+          trend={data?.trends?.score.direction}
+          delta={data?.trends?.score.delta}
           loading={loading}
         />
         <KpiCard
@@ -129,6 +130,8 @@ export default function OverviewPage() {
           value={data?.avgUtilization ?? null}
           suffix="%"
           metric="utilization"
+          trend={data?.trends?.utilization.direction}
+          delta={data?.trends?.utilization.delta}
           loading={loading}
         />
         <KpiCard
@@ -136,6 +139,8 @@ export default function OverviewPage() {
           value={data?.avgEstimationAccuracy ?? null}
           suffix="%"
           metric="estimationAccuracy"
+          trend={data?.trends?.estimationAccuracy.direction}
+          delta={data?.trends?.estimationAccuracy.delta}
           loading={loading}
         />
         <KpiCard
@@ -143,6 +148,8 @@ export default function OverviewPage() {
           value={data?.avgCompletionRate ?? null}
           suffix="%"
           metric="completionRate"
+          trend={data?.trends?.completionRate.direction}
+          delta={data?.trends?.completionRate.delta}
           loading={loading}
         />
         <KpiCard
@@ -150,6 +157,8 @@ export default function OverviewPage() {
           value={data?.totalSpentHours ?? null}
           suffix="ч"
           metric="totalSpentHours"
+          trend={data?.trends?.spentHours.direction}
+          delta={data?.trends?.spentHours.delta}
           loading={loading}
         />
       </div>

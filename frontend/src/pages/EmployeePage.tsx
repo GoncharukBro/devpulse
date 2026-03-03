@@ -349,13 +349,13 @@ export default function EmployeePage() {
 
       {/* KPI Cards */}
       <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4 xl:grid-cols-7">
-        <KpiCard title="Score" value={displayScore} metric="score" trend={displayTrend} loading={loading} />
-        <KpiCard title="Загрузка" value={displayUtilization} suffix="%" metric="utilization" loading={loading} />
-        <KpiCard title="Точность" value={displayEstimation} suffix="%" metric="estimationAccuracy" loading={loading} />
-        <KpiCard title="Фокус" value={displayFocus} suffix="%" metric="focus" loading={loading} />
-        <KpiCard title="Закрытие" value={displayCompletion} suffix="%" metric="completionRate" loading={loading} />
-        <KpiCard title="Cycle Time" value={displayCycle} suffix="ч" metric="avgCycleTimeHours" loading={loading} />
-        <KpiCard title="Списано часов" value={report?.totalSpentHours ?? null} suffix="ч" metric="totalSpentHours" loading={loading} />
+        <KpiCard title="Score" value={displayScore} metric="score" trend={summary?.trends?.score.direction} delta={summary?.trends?.score.delta} loading={loading} />
+        <KpiCard title="Загрузка" value={displayUtilization} suffix="%" metric="utilization" trend={summary?.trends?.utilization.direction} delta={summary?.trends?.utilization.delta} loading={loading} />
+        <KpiCard title="Точность" value={displayEstimation} suffix="%" metric="estimationAccuracy" trend={summary?.trends?.estimationAccuracy.direction} delta={summary?.trends?.estimationAccuracy.delta} loading={loading} />
+        <KpiCard title="Фокус" value={displayFocus} suffix="%" metric="focus" trend={summary?.trends?.focus.direction} delta={summary?.trends?.focus.delta} loading={loading} />
+        <KpiCard title="Закрытие" value={displayCompletion} suffix="%" metric="completionRate" trend={summary?.trends?.completionRate.direction} delta={summary?.trends?.completionRate.delta} loading={loading} />
+        <KpiCard title="Cycle Time" value={displayCycle} suffix="ч" metric="avgCycleTimeHours" trend={summary?.trends?.cycleTime.direction} delta={summary?.trends?.cycleTime.delta} loading={loading} />
+        <KpiCard title="Списано часов" value={report?.totalSpentHours ?? null} suffix="ч" metric="totalSpentHours" trend={summary?.trends?.spentHours.direction} delta={summary?.trends?.spentHours.delta} loading={loading} />
       </div>
 
       {/* Chart + LLM Summary */}
