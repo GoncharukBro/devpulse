@@ -1,6 +1,9 @@
 /**
  * Фоновый воркер LLM-очереди.
  * Обрабатывает метрик-отчёты асинхронно, не блокируя основной сбор.
+ *
+ * Единый источник правды для очереди — collectionState.llmQueue.
+ * Воркер не хранит собственную копию очереди.
  */
 
 import { MikroORM } from '@mikro-orm/core';
@@ -9,7 +12,7 @@ import { MetricReport } from '../../entities/metric-report.entity';
 import { CollectionLog } from '../../entities/collection-log.entity';
 import { SubscriptionEmployee } from '../../entities/subscription-employee.entity';
 import { Subscription } from '../../entities/subscription.entity';
-import { collectionState } from '../collection/collection.state';
+import { collectionState, LlmQueueItem } from '../collection/collection.state';
 import { LlmClient } from './llm.client';
 import { buildAnalysisPrompt } from './llm.prompt';
 import { parseLlmResponse } from './llm.parser';
@@ -21,7 +24,6 @@ import { Logger } from '../../common/types/logger';
 const POLL_INTERVAL = 3000;
 
 export class LlmWorker {
-  private queue: LlmTask[] = [];
   private isRunning = false;
   private shouldStop = false;
   private processing: string | null = null;
@@ -39,18 +41,27 @@ export class LlmWorker {
   }
 
   enqueue(task: LlmTask): void {
-    this.queue.push(task);
-    collectionState.addToLlmQueue(task.reportId, 'pending', task.subscriptionId, task.employeeName);
+    collectionState.enqueueLlmTask({
+      reportId: task.reportId,
+      status: 'pending',
+      subscriptionId: task.subscriptionId,
+      employeeName: task.employeeName,
+      collectionLogId: task.collectionLogId,
+      youtrackLogin: task.youtrackLogin,
+      projectName: task.projectName,
+      taskSummaries: task.taskSummaries,
+    });
   }
 
   async start(): Promise<void> {
     if (this.isRunning) return;
     this.isRunning = true;
     this.shouldStop = false;
+    collectionState.updateWorkerHeartbeat('llm');
 
     await this.recoverPending();
 
-    this.log.info(`LLM worker started, queue size: ${this.queue.length}`);
+    this.log.info(`LLM worker started, queue size: ${collectionState.getLlmQueueSize()}`);
     this.poll();
   }
 
@@ -67,16 +78,17 @@ export class LlmWorker {
       waitCount++;
     }
     this.isRunning = false;
+    collectionState.clearWorkerHeartbeat('llm');
     this.log.info('LLM worker stopped');
   }
 
   getQueueSize(): number {
-    return this.queue.length;
+    return collectionState.getLlmQueueSize();
   }
 
   getState(): LlmWorkerState {
     return {
-      queueSize: this.queue.length,
+      queueSize: collectionState.getLlmQueueSize(),
       processing: this.processing,
       isRunning: this.isRunning,
     };
@@ -88,9 +100,11 @@ export class LlmWorker {
       return;
     }
 
-    const task = this.queue.shift();
-    if (task) {
-      this.processTask(task)
+    collectionState.updateWorkerHeartbeat('llm');
+
+    const item = collectionState.dequeueLlmTask();
+    if (item) {
+      this.processTask(item)
         .catch((err) => {
           this.log.error(`LLM worker task failed: ${(err as Error).message}`);
         })
@@ -106,7 +120,7 @@ export class LlmWorker {
     }
   }
 
-  private async processTask(task: LlmTask): Promise<void> {
+  private async processTask(task: LlmQueueItem): Promise<void> {
     const em = this.orm.em.fork();
 
     const report = await em.findOne(MetricReport, { id: task.reportId }, {
@@ -152,7 +166,7 @@ export class LlmWorker {
     }
 
     this.processing = task.reportId;
-    collectionState.updateLlmQueueItem(task.reportId, 'processing');
+    // Status already set to 'processing' by dequeueLlmTask()
 
     const periodStr = `${formatYTDate(report.periodStart)}..${formatYTDate(report.periodEnd)}`;
     this.log.info(
@@ -262,9 +276,9 @@ export class LlmWorker {
     }
   }
 
-  private buildPromptData(report: MetricReport, task: LlmTask): PromptData {
+  private buildPromptData(report: MetricReport, task: LlmQueueItem): PromptData {
     return {
-      employeeName: task.employeeName,
+      employeeName: task.employeeName ?? task.youtrackLogin,
       projectName: task.projectName,
       periodStart: formatYTDate(report.periodStart),
       periodEnd: formatYTDate(report.periodEnd),

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Database, Plus, Play, Square } from 'lucide-react';
+import { Database, Plus, Play, Square, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
 import EmptyState from '@/components/ui/EmptyState';
@@ -330,6 +330,27 @@ export default function CollectionPage() {
         />
       ) : (
         <>
+          {/* Worker health warnings */}
+          {collectionState?.workersHealth && (
+            !collectionState.workersHealth.collection.alive ||
+            !collectionState.workersHealth.llm.alive
+          ) && (
+            <div className="mb-4 flex flex-col gap-2">
+              {!collectionState.workersHealth.collection.alive && (
+                <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                  <AlertTriangle size={16} className="shrink-0" />
+                  <span>Воркер сбора данных не отвечает. Новые сборы не будут обрабатываться.</span>
+                </div>
+              )}
+              {!collectionState.workersHealth.llm.alive && (
+                <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                  <AlertTriangle size={16} className="shrink-0" />
+                  <span>LLM-воркер не отвечает. Анализ отчётов приостановлен.</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Subscription cards grid */}
           <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {subscriptions.map((sub) => (

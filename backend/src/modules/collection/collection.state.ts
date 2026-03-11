@@ -43,11 +43,35 @@ export interface QueueTask {
   resume?: boolean;
 }
 
+/** LLM queue item — единый источник правды для LLM-очереди. */
+export interface LlmQueueItem {
+  reportId: string;
+  status: string;
+  subscriptionId: string;
+  employeeName?: string;
+  // Full task data for worker processing
+  collectionLogId?: string;
+  youtrackLogin: string;
+  projectName: string;
+  taskSummaries: Array<{ id: string; summary: string; type: string }>;
+}
+
+export interface WorkerHealthStatus {
+  alive: boolean;
+  lastHeartbeat: number | null;
+  startedAt: number | null;
+}
+
+export interface WorkersHealth {
+  collection: WorkerHealthStatus;
+  llm: WorkerHealthStatus;
+}
+
 export interface CollectionState {
   activeCollections: Map<string, CollectionProgress>;
   queue: QueueTask[];
   cronEnabled: boolean;
-  llmQueue: Array<{ reportId: string; status: string; subscriptionId: string; employeeName?: string }>;
+  llmQueue: LlmQueueItem[];
   /** Tracks how many LLM items have been processed per subscription (for progress calculation) */
   llmProcessed: Map<string, number>;
 }
@@ -65,6 +89,15 @@ class CollectionStateManager {
 
   /** Subscription IDs that should be cancelled */
   private cancelledSubscriptions = new Set<string>();
+
+  /** Worker heartbeats: name → { lastHeartbeat, startedAt } */
+  private workerHeartbeats = new Map<string, { lastHeartbeat: number; startedAt: number }>();
+
+  /** Max age (ms) before a worker is considered dead */
+  private static readonly WORKER_MAX_AGE: Record<string, number> = {
+    collection: 30_000,   // 30 sec (polls every 2s, even during processing)
+    llm: 360_000,         // 6 min (LLM request can take up to 5 min)
+  };
 
   static getInstance(): CollectionStateManager {
     if (!CollectionStateManager.instance) {
@@ -147,11 +180,26 @@ class CollectionStateManager {
     }
   }
 
-  addToLlmQueue(reportId: string, status: string, subscriptionId: string, employeeName?: string): void {
-    const existing = this.state.llmQueue.find((item) => item.reportId === reportId);
+  /** Add a task to the LLM queue (единый источник правды). */
+  enqueueLlmTask(item: LlmQueueItem): void {
+    const existing = this.state.llmQueue.find((i) => i.reportId === item.reportId);
     if (!existing) {
-      this.state.llmQueue.push({ reportId, status, subscriptionId, employeeName });
+      this.state.llmQueue.push(item);
     }
+  }
+
+  /** Take the next pending task from the LLM queue (FIFO). */
+  dequeueLlmTask(): LlmQueueItem | undefined {
+    const idx = this.state.llmQueue.findIndex((i) => i.status === 'pending');
+    if (idx === -1) return undefined;
+    // Mark as processing in-place (stay in queue for UI visibility)
+    const item = this.state.llmQueue[idx];
+    item.status = 'processing';
+    return item;
+  }
+
+  getLlmQueueSize(): number {
+    return this.state.llmQueue.length;
   }
 
   updateLlmQueueItem(reportId: string, status: string): void {
@@ -300,6 +348,51 @@ class CollectionStateManager {
     }
 
     return result;
+  }
+
+  // ── Worker heartbeat ─────────────────────────────────────────
+
+  /** Called by workers on every poll tick to signal they are alive. */
+  updateWorkerHeartbeat(name: string): void {
+    const existing = this.workerHeartbeats.get(name);
+    const now = Date.now();
+    if (existing) {
+      existing.lastHeartbeat = now;
+    } else {
+      this.workerHeartbeats.set(name, { lastHeartbeat: now, startedAt: now });
+    }
+  }
+
+  /** Remove heartbeat entry when worker stops. */
+  clearWorkerHeartbeat(name: string): void {
+    this.workerHeartbeats.delete(name);
+  }
+
+  /** Check if a specific worker is alive. */
+  isWorkerAlive(name: string): boolean {
+    const entry = this.workerHeartbeats.get(name);
+    if (!entry) return false;
+    const maxAge = CollectionStateManager.WORKER_MAX_AGE[name] ?? 30_000;
+    return (Date.now() - entry.lastHeartbeat) < maxAge;
+  }
+
+  /** Get health status for all known workers. */
+  getWorkersHealth(): WorkersHealth {
+    const getStatus = (name: string): WorkerHealthStatus => {
+      const entry = this.workerHeartbeats.get(name);
+      if (!entry) return { alive: false, lastHeartbeat: null, startedAt: null };
+      const maxAge = CollectionStateManager.WORKER_MAX_AGE[name] ?? 30_000;
+      return {
+        alive: (Date.now() - entry.lastHeartbeat) < maxAge,
+        lastHeartbeat: entry.lastHeartbeat,
+        startedAt: entry.startedAt,
+      };
+    };
+
+    return {
+      collection: getStatus('collection'),
+      llm: getStatus('llm'),
+    };
   }
 }
 

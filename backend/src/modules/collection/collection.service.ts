@@ -6,7 +6,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Subscription } from '../../entities/subscription.entity';
 import { CollectionLog, CollectionLogType } from '../../entities/collection-log.entity';
 import { MetricReport } from '../../entities/metric-report.entity';
-import { collectionState, CollectionProgress } from './collection.state';
+import { collectionState, CollectionProgress, WorkersHealth } from './collection.state';
 import { getCurrentWeekRange, getWeeksBetween, formatYTDate } from '../../common/utils/week-utils';
 import { ValidationError, NotFoundError, ConflictError } from '../../common/errors';
 import { getCollectionWorker } from './collection.singletons';
@@ -27,6 +27,7 @@ export interface CollectionStateResponse {
   llmQueue: Array<{ reportId: string; status: string; subscriptionId: string }>;
   llmProcessed: Record<string, number>;
   llmQueueBySubscription: Record<string, { pending: number; processing: number; total: number }>;
+  workersHealth: WorkersHealth;
 }
 
 export interface PaginatedCollectionLogs {
@@ -390,13 +391,22 @@ export class CollectionService {
       llmProcessed[subId] = count;
     }
 
+    // Map llmQueue to API shape (exclude internal task data like taskSummaries)
+    const llmQueue = state.llmQueue.map((item) => ({
+      reportId: item.reportId,
+      status: item.status,
+      subscriptionId: item.subscriptionId,
+      employeeName: item.employeeName,
+    }));
+
     return {
       activeCollections,
       queue,
       cronEnabled: state.cronEnabled,
-      llmQueue: state.llmQueue,
+      llmQueue,
       llmProcessed,
       llmQueueBySubscription: collectionState.getLlmQueueBySubscription(),
+      workersHealth: collectionState.getWorkersHealth(),
     };
   }
 

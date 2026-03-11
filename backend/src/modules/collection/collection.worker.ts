@@ -105,8 +105,10 @@ export class CollectionWorker {
     if (this.isRunning) return;
     this.isRunning = true;
     this.shouldStop = false;
+    collectionState.updateWorkerHeartbeat('collection');
     this.log.info('Collection worker started');
 
+    await this.recoverStoppingCollections();
     await this.recoverLlmQueue();
     await this.recoverRunningCollections();
     await this.recoverPendingCollections();
@@ -126,6 +128,7 @@ export class CollectionWorker {
       waitCount++;
     }
     this.isRunning = false;
+    collectionState.clearWorkerHeartbeat('collection');
     this.log.info('Collection worker stopped');
   }
 
@@ -134,6 +137,8 @@ export class CollectionWorker {
       this.isRunning = false;
       return;
     }
+
+    collectionState.updateWorkerHeartbeat('collection');
 
     const task = collectionState.shiftQueue();
     if (task) {
@@ -601,6 +606,66 @@ export class CollectionWorker {
     }
 
     throw lastError!;
+  }
+
+  /**
+   * Recovery 0: Stopping коллекции.
+   * CollectionLog с status='stopping' → перевести в 'stopped'.
+   * Связанные MetricReport с llmStatus='pending' → перевести в 'skipped'.
+   * Если процесс упал во время остановки, завершить её корректно.
+   */
+  private async recoverStoppingCollections(): Promise<void> {
+    const em = this.orm.em.fork();
+
+    const stoppingLogs = await em.find(
+      CollectionLog,
+      { status: 'stopping' },
+      { populate: ['subscription'] },
+    );
+
+    if (stoppingLogs.length === 0) return;
+
+    for (const log of stoppingLogs) {
+      log.status = 'stopped';
+      if (!log.completedAt) {
+        log.completedAt = new Date();
+        log.duration = Math.round(
+          (log.completedAt.getTime() - log.startedAt.getTime()) / 1000,
+        );
+      }
+
+      this.log.info(
+        `Recovery: stuck collection log ${log.id} ('stopping' → 'stopped')` +
+        (log.subscription ? `, project: ${log.subscription.projectName}` : ''),
+      );
+
+      // Skip pending LLM reports for this subscription
+      if (log.subscription) {
+        const pendingReports = await em.find(MetricReport, {
+          subscription: log.subscription.id,
+          llmStatus: { $in: ['pending', 'processing'] },
+          periodStart: log.periodStart ? { $gte: log.periodStart } : undefined,
+          periodEnd: log.periodEnd ? { $lte: log.periodEnd } : undefined,
+        });
+
+        if (pendingReports.length > 0) {
+          let skippedCount = 0;
+          for (const report of pendingReports) {
+            report.llmStatus = 'skipped';
+            skippedCount++;
+          }
+          log.llmSkipped += skippedCount;
+
+          this.log.info(
+            `Recovery: skipped ${skippedCount} pending LLM reports for stopped collection ${log.id}`,
+          );
+        }
+      }
+    }
+
+    await em.flush();
+
+    this.log.info(`Recovery summary: ${stoppingLogs.length} stopping collection(s) finalized to 'stopped'`);
   }
 
   /**

@@ -50,6 +50,17 @@ export interface LlmSubscriptionStatus {
   total: number;
 }
 
+export interface WorkerHealthStatus {
+  alive: boolean;
+  lastHeartbeat: number | null;
+  startedAt: number | null;
+}
+
+export interface WorkersHealth {
+  collection: WorkerHealthStatus;
+  llm: WorkerHealthStatus;
+}
+
 export interface CollectionState {
   activeCollections: CollectionProgress[];
   queue: QueueItem[];
@@ -57,6 +68,7 @@ export interface CollectionState {
   llmQueue: LlmQueueItem[];
   llmProcessed: Record<string, number>;
   llmQueueBySubscription: Record<string, LlmSubscriptionStatus>;
+  workersHealth: WorkersHealth;
 }
 
 export interface CronState {
