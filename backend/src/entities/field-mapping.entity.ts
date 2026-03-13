@@ -16,9 +16,6 @@ export class FieldMapping {
   @Property({ type: 'jsonb', default: '{}' })
   taskTypeMapping: TaskTypeMapping = {};
 
-  @Property({ nullable: true })
-  aiSavingWorkType?: string;
-
   @Property({ type: 'jsonb', default: '[]' })
   cycleTimeStartStatuses: string[] = [];
 

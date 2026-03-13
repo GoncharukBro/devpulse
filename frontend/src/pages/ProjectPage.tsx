@@ -180,23 +180,21 @@ export default function ProjectPage() {
         title={summary?.projectName ?? 'Загрузка...'}
         description={pageDescription}
         backLink={{ to: '/projects', label: 'Проекты' }}
+        topRight={<MethodologyLink />}
         actions={
-          <div className="flex items-center gap-2">
-            <MethodologyLink />
-            {summary && (
-              <>
-                <CopyButton getText={getCopyText} />
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  leftIcon={<Mail size={14} />}
-                  onClick={() => setEmailModalOpen(true)}
-                >
-                  На почту
-                </Button>
-              </>
-            )}
-          </div>
+          summary ? (
+            <div className="flex items-center gap-2">
+              <CopyButton getText={getCopyText} />
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Mail size={14} />}
+                onClick={() => setEmailModalOpen(true)}
+              >
+                На почту
+              </Button>
+            </div>
+          ) : undefined
         }
       />
 

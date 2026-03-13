@@ -197,7 +197,7 @@ export async function getSubscription(
     fieldMapping: sub.fieldMapping
       ? {
           taskTypeMapping: sub.fieldMapping.taskTypeMapping,
-          aiSavingWorkType: sub.fieldMapping.aiSavingWorkType ?? null,
+
           cycleTimeStartStatuses: sub.fieldMapping.cycleTimeStartStatuses,
           cycleTimeEndStatuses: sub.fieldMapping.cycleTimeEndStatuses,
           releaseStatuses: sub.fieldMapping.releaseStatuses,

@@ -7,7 +7,7 @@ export interface CreateEmployeeDto {
 
 export interface CreateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
-  aiSavingWorkType?: string | null;
+
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];
@@ -32,7 +32,7 @@ export interface UpdateEmployeeDto {
 
 export interface UpdateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
-  aiSavingWorkType?: string | null;
+
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];
@@ -59,7 +59,6 @@ export const DEFAULT_FIELD_MAPPING: Required<CreateFieldMappingDto> = {
     Documentation: 'documentation',
     'Code Review': 'codeReview',
   },
-  aiSavingWorkType: null,
   cycleTimeStartStatuses: ['In Progress', 'В работе'],
   cycleTimeEndStatuses: ['Done', 'Verified', 'Fixed', 'Готово'],
   releaseStatuses: [],

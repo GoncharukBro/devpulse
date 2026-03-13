@@ -44,7 +44,6 @@ export interface PromptData {
   avgCycleTimeHours: number | null;
   bugsAfterRelease: number;
   bugsOnTest: number;
-  aiSavingHours: number;
   taskSummaries: Array<{ id: string; summary: string; type: string }>;
 }
 

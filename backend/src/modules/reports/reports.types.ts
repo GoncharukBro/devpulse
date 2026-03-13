@@ -28,8 +28,6 @@ export interface EmployeeReportDTO {
   totalSpentHours: number;
   spentByType: Record<string, number>;
   totalEstimationHours: number;
-  aiSavingHours: number;
-
   utilization: number | null;
   estimationAccuracy: number | null;
   focus: number | null;

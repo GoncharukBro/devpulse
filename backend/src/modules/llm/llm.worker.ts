@@ -295,7 +295,6 @@ export class LlmWorker {
       avgCycleTimeHours: report.avgCycleTimeHours ?? null,
       bugsAfterRelease: report.bugsAfterRelease,
       bugsOnTest: report.bugsOnTest,
-      aiSavingHours: Math.round((report.aiSavingMinutes / 60) * 100) / 100,
       taskSummaries: task.taskSummaries,
     };
   }

@@ -47,7 +47,6 @@ export async function createFieldMapping(
   const mapping = new FieldMapping();
   mapping.subscription = subscription;
   mapping.taskTypeMapping = data.taskTypeMapping ?? DEFAULT_FIELD_MAPPING.taskTypeMapping;
-  mapping.aiSavingWorkType = data.aiSavingWorkType ?? undefined;
   mapping.cycleTimeStartStatuses =
     data.cycleTimeStartStatuses ?? DEFAULT_FIELD_MAPPING.cycleTimeStartStatuses;
   mapping.cycleTimeEndStatuses =
@@ -87,10 +86,6 @@ export async function updateFieldMapping(
   if (dto.taskTypeMapping !== undefined) {
     validateTaskTypeMapping(dto.taskTypeMapping);
     mapping.taskTypeMapping = dto.taskTypeMapping;
-  }
-
-  if (dto.aiSavingWorkType !== undefined) {
-    mapping.aiSavingWorkType = dto.aiSavingWorkType ?? undefined;
   }
 
   if (dto.cycleTimeStartStatuses !== undefined) {

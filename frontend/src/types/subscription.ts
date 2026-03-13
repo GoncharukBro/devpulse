@@ -53,7 +53,7 @@ export interface SubscriptionEmployee {
 
 export interface FieldMapping {
   taskTypeMapping: Record<string, string>;
-  aiSavingWorkType: string | null;
+
   cycleTimeStartStatuses: string[];
   cycleTimeEndStatuses: string[];
   releaseStatuses: string[];
@@ -77,7 +77,7 @@ export interface CreateSubscriptionDto {
 
 export interface CreateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
-  aiSavingWorkType?: string | null;
+
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];
@@ -89,7 +89,7 @@ export interface UpdateSubscriptionDto {
 
 export interface UpdateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
-  aiSavingWorkType?: string | null;
+
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];

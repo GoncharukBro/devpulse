@@ -137,8 +137,6 @@ export class ReportsService {
       totalSpentHours: minutesToHours(report.totalSpentMinutes),
       spentByType: minutesByTypeToHours(report.spentByType),
       totalEstimationHours: minutesToHours(report.totalEstimationMinutes),
-      aiSavingHours: minutesToHours(report.aiSavingMinutes),
-
       utilization: report.utilization ?? null,
       estimationAccuracy: report.estimationAccuracy ?? null,
       focus: report.focus ?? null,

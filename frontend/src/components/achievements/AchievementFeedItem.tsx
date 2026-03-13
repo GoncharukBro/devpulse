@@ -33,7 +33,6 @@ const TYPE_ICONS: Record<string, string> = {
   quick_closer: '\uD83D\uDE80',
   focus_master: '\uD83D\uDD2D',
   balanced_warrior: '\u2696\uFE0F',
-  ai_pioneer: '\uD83E\uDD16',
   rising_star: '\u2B50',
   consistency_king: '\uD83D\uDC51',
   top_performer: '\uD83C\uDFC6',

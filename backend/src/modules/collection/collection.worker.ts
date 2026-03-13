@@ -44,7 +44,6 @@ function createMetricReport(
   report.estimationByType = {};
   report.bugsAfterRelease = 0;
   report.bugsOnTest = 0;
-  report.aiSavingMinutes = 0;
   report.issuesWithoutEstimation = 0;
   report.issuesOverEstimation = 0;
   report.status = 'collected';
@@ -427,8 +426,6 @@ export class CollectionWorker {
           report.avgCycleTimeHours = kpi.avgCycleTimeHours ?? undefined;
           report.bugsAfterRelease = rawMetrics.bugsAfterRelease;
           report.bugsOnTest = rawMetrics.bugsOnTest;
-          report.aiSavingMinutes = rawMetrics.aiSavingMinutes;
-
           // KPI
           report.utilization = kpi.utilization ?? undefined;
           report.estimationAccuracy = kpi.estimationAccuracy ?? undefined;

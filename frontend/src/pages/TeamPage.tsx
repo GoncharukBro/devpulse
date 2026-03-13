@@ -13,6 +13,7 @@ import TeamMembersList from '@/components/teams/TeamMembersList';
 import ConcernsList from '@/components/metrics/ConcernsList';
 import EditTeamModal from '@/components/teams/EditTeamModal';
 import EmailReportModal from '@/components/shared/EmailReportModal';
+import MethodologyLink from '@/components/shared/MethodologyLink';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { teamsApi } from '@/api/endpoints/teams';
 import { formatPeriod } from '@/utils/format';
@@ -124,6 +125,7 @@ export default function TeamPage() {
         title={team?.name ?? 'Загрузка...'}
         description={pageDescription}
         backLink={{ to: '/teams', label: 'Команды' }}
+        topRight={<MethodologyLink />}
         actions={
           team ? (
             <div className="flex gap-2">

@@ -68,9 +68,6 @@ export class MetricReport {
   bugsOnTest: number = 0;
 
   @Property({ default: 0 })
-  aiSavingMinutes: number = 0;
-
-  @Property({ default: 0 })
   issuesWithoutEstimation: number = 0;
 
   @Property({ default: 0 })

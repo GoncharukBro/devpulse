@@ -165,10 +165,6 @@ export const ACHIEVEMENT_THRESHOLDS: Record<string, {
     description: 'Загрузка в идеальном диапазоне',
     levels: { common: '75-95%', rare: '80-90%', epic: '82-88%', legendary: '84-86%' },
   },
-  ai_pioneer: {
-    description: 'Часы сэкономленные с помощью ИИ',
-    levels: { common: '>=2 часа', rare: '>=5 часов', epic: '>=10 часов', legendary: '>=20 часов' },
-  },
   rising_star: {
     description: 'Рост оценки продуктивности за неделю',
     levels: { common: '+5 пунктов', rare: '+10 пунктов', epic: '+15 пунктов', legendary: '+20 пунктов' },

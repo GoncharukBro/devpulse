@@ -271,41 +271,43 @@ export default function EmployeePage() {
 
   return (
     <>
-      {/* Back link */}
-      <Link to={backTo} className="mb-3 inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
-        <ArrowLeft size={14} />
-        {backLabel}
-      </Link>
+      {/* Back link + methodology */}
+      <div className="mb-3 flex items-center justify-between">
+        <Link to={backTo} className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300">
+          <ArrowLeft size={14} />
+          {backLabel}
+        </Link>
+        <MethodologyLink />
+      </div>
 
       {/* Header with avatar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-xl font-bold text-brand-400">
-            {initial}
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-xl font-bold text-brand-400">
+          {initial}
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{summary?.displayName ?? 'Загрузка...'}</h1>
+          <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+            {login}
+            {summary?.email && <span> &bull; {summary.email}</span>}
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{summary?.displayName ?? 'Загрузка...'}</h1>
-            <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-              {login}
-              {summary?.email && <span> &bull; {summary.email}</span>}
-            </div>
-            <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-              Цифровой профиль — загрузка, качество, динамика и AI-анализ
-            </div>
-            {summary && summary.projects.length > 0 && (
-              <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                Проекты: {summary.projects.map((p) => p.projectName).join(', ')}
-              </div>
-            )}
-            {report?.periodStart && report?.periodEnd && (
-              <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                Показатели за неделю: {formatPeriod(report.periodStart, report.periodEnd)}
-              </div>
-            )}
+          <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+            Цифровой профиль — загрузка, качество, динамика и AI-анализ
           </div>
+          {summary && summary.projects.length > 0 && (
+            <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              Проекты: {summary.projects.map((p) => p.projectName).join(', ')}
+            </div>
+          )}
+          {report?.periodStart && report?.periodEnd && (
+            <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              Показатели за неделю: {formatPeriod(report.periodStart, report.periodEnd)}
+            </div>
+          )}
+        </div>
         </div>
         <div className="flex items-center gap-2">
-          <MethodologyLink />
           <CopyButton getText={getCopyText} />
           <Button
             variant="secondary"

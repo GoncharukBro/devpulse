@@ -91,19 +91,6 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
         </div>
       </div>
 
-      {/* AI saving */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">ИИ-Экономия</label>
-        <input
-          type="text"
-          value={value.aiSavingWorkType ?? ''}
-          onChange={(e) => updateMapping({ aiSavingWorkType: e.target.value || null })}
-          placeholder="Тип списания (например, AI Saving)"
-          className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
-        />
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-600">Оставьте пустым, если метрика не используется</p>
-      </div>
-
       {/* Cycle Time statuses */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Cycle Time</label>

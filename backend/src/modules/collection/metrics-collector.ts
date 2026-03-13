@@ -36,8 +36,6 @@ export interface RawMetrics {
   avgCycleTimeHours: number | null;
   bugsAfterRelease: number;
   bugsOnTest: number;
-  aiSavingMinutes: number;
-
   taskSummaries: TaskSummary[];
 }
 
@@ -165,7 +163,6 @@ export class MetricsCollector {
 
     // Группировка work items по типам
     const spentByType: Record<string, number> = {};
-    let aiSavingMinutes = 0;
     const issueMap = new Map(issues.map((i) => [i.id, i]));
 
     for (const wi of workItems) {
@@ -173,14 +170,6 @@ export class MetricsCollector {
       const parentIssue = issueMap.get(wi.issue.id);
       const type = parentIssue ? this.resolveIssueType(parentIssue) : 'other';
       spentByType[type] = (spentByType[type] || 0) + wi.duration.minutes;
-
-      // AI savings
-      if (
-        this.fieldMapping.aiSavingWorkType &&
-        wi.type?.name === this.fieldMapping.aiSavingWorkType
-      ) {
-        aiSavingMinutes += wi.duration.minutes;
-      }
     }
 
     // C. Cycle Time (для закрытых задач)
@@ -207,7 +196,6 @@ export class MetricsCollector {
       avgCycleTimeHours,
       bugsAfterRelease,
       bugsOnTest,
-      aiSavingMinutes,
       taskSummaries,
     };
   }

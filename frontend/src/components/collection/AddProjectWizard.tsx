@@ -36,7 +36,6 @@ const DEFAULT_FIELD_MAPPING: FieldMapping = {
     Documentation: 'documentation',
     'Code Review': 'codeReview',
   },
-  aiSavingWorkType: null,
   cycleTimeStartStatuses: ['In Progress'],
   cycleTimeEndStatuses: ['Done'],
   releaseStatuses: [],
@@ -200,7 +199,6 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
       employees,
       fieldMapping: useCustomMapping ? {
         taskTypeMapping: fieldMapping.taskTypeMapping,
-        aiSavingWorkType: fieldMapping.aiSavingWorkType,
         cycleTimeStartStatuses: fieldMapping.cycleTimeStartStatuses,
         cycleTimeEndStatuses: fieldMapping.cycleTimeEndStatuses,
         releaseStatuses: fieldMapping.releaseStatuses,

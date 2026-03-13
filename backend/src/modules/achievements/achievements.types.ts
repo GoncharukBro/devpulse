@@ -334,22 +334,6 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     },
   },
 
-  // === AI ===
-  {
-    type: 'ai_pioneer',
-    title: 'AI-пионер',
-    icon: 'Bot',
-    description: 'Сэкономил {value} часов с помощью ИИ',
-    check: (report) => {
-      const hours = minutesToHours(report.aiSavingMinutes);
-      if (hours >= 20) return { rarity: 'legendary', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
-      if (hours >= 10) return { rarity: 'epic', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
-      if (hours >= 5) return { rarity: 'rare', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
-      if (hours >= 2) return { rarity: 'common', metricValue: hours, description: `Сэкономил ${hours} часов с помощью ИИ` };
-      return null;
-    },
-  },
-
   // === GROWTH & STABILITY ===
   {
     type: 'rising_star',

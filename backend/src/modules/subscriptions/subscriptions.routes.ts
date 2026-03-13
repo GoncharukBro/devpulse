@@ -119,7 +119,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
     const mapping = await getFieldMapping(em, request.params.id, request.user.id);
     return {
       taskTypeMapping: mapping.taskTypeMapping,
-      aiSavingWorkType: mapping.aiSavingWorkType ?? null,
+
       cycleTimeStartStatuses: mapping.cycleTimeStartStatuses,
       cycleTimeEndStatuses: mapping.cycleTimeEndStatuses,
       releaseStatuses: mapping.releaseStatuses,
@@ -140,7 +140,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
       );
       return {
         taskTypeMapping: mapping.taskTypeMapping,
-        aiSavingWorkType: mapping.aiSavingWorkType ?? null,
+  
         cycleTimeStartStatuses: mapping.cycleTimeStartStatuses,
         cycleTimeEndStatuses: mapping.cycleTimeEndStatuses,
         releaseStatuses: mapping.releaseStatuses,

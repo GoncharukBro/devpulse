@@ -46,8 +46,7 @@ function buildUserPrompt(data: PromptData): string {
 Типы: ${typesStr}
 Время: списано ${fmt(data.totalSpentHours)}ч из 40ч (загрузка ${fmt(data.utilization, '%')}), оценка ${fmt(data.estimationHours)}ч (точность ${fmt(data.estimationAccuracy, '%')})
 Фокус: ${fmt(data.focus, '%')}, Completion Rate: ${fmt(data.completionRate, '%')}, Cycle Time: ${fmt(data.avgCycleTimeHours)}ч
-Баги после релиза: ${data.bugsAfterRelease}, Возвраты: ${data.bugsOnTest}
-ИИ-экономия: ${fmt(data.aiSavingHours)}ч`;
+Баги после релиза: ${data.bugsAfterRelease}, Возвраты: ${data.bugsOnTest}`;
 
   if (data.taskSummaries.length > 0) {
     const tasks = data.taskSummaries.slice(0, MAX_TASKS);
