@@ -72,7 +72,7 @@ export function getCategoryLabelRu(key: string): string {
 | `backend/.../subscriptions.types.ts` | `VALID_TASK_CATEGORIES` (массив строк) |
 | `frontend/.../subscription.ts` | `TASK_CATEGORIES` (массив строк), `TASK_CATEGORY_LABELS`, `TaskCategory` |
 | `frontend/.../IssuesByTypeChart.tsx` | `TYPE_LABELS`, `COLORS` |
-| `frontend/.../SpentByTypeChart.tsx` | `TYPE_LABELS`, `COLORS` |
+| `frontend/.../SpentByTypeChart.tsx` | `TYPE_LABELS` (константы `COLORS` нет — цвет задан литералом `fill="#6366f1"` в `<Bar>`) |
 
 ---
 
@@ -96,10 +96,11 @@ export function getCategoryColor(key: string): string {
 
 ### Графики: `IssuesByTypeChart.tsx`, `SpentByTypeChart.tsx`
 
-- Удалить локальные `TYPE_LABELS` и `COLORS`
-- Импортировать `getCategoryLabel`, `getCategoryColor` из утилитного файла
-- Формирование данных: каждый элемент chartData получает `color` по категории
-- `<Cell fill={chartData[index].color} />` — цвет привязан к категории, не к индексу
+- `IssuesByTypeChart.tsx`: удалить локальные `TYPE_LABELS` и `COLORS`. Импортировать хелперы. `<Cell fill={chartData[index].color} />` — цвет привязан к категории, не к индексу.
+- `SpentByTypeChart.tsx`: удалить локальный `TYPE_LABELS`. Заменить единый `fill="#6366f1"` в `<Bar>` на per-category цвета — либо через отдельные `<Bar>` секции, либо через `<Cell>` внутри `<Bar>` (аналогично PieChart). Импортировать хелперы.
+- Формирование данных в обоих: каждый элемент chartData получает `color` по категории.
+
+**Примечание:** привязка цветов к категориям изменит визуальное отображение для пользователей. Ранее цвета распределялись по порядку данных (bugfix мог быть зелёным), теперь bugfix всегда красный. Это осознанное улучшение UX.
 
 ### FieldMappingEditor.tsx
 
@@ -144,6 +145,7 @@ export const DEFAULT_FIELD_MAPPING = {
 ### Backend: DTO
 
 `CreateFieldMappingDto` и `UpdateFieldMappingDto` — добавить `typeFieldName?: string`.
+`DEFAULT_FIELD_MAPPING` типизирован как `Required<CreateFieldMappingDto>` — поле `typeFieldName` автоматически станет обязательным в нём через `Required<>`.
 
 ### Backend: MetricsCollector
 
@@ -239,6 +241,20 @@ typeEntries.map(([k, v]) => `${getCategoryLabelRu(k)}:${v}`).join(', ')
 
 Fallback на raw key если категория не найдена.
 
+Также в строке формирования списка задач (строка 53):
+
+```typescript
+// Было:
+const taskLines = tasks.map((t) => `- ${t.id}: ${t.summary} (${t.type})`);
+// → "- PROJ-1: Задача (feature)"
+
+// Стало:
+const taskLines = tasks.map((t) => `- ${t.id}: ${t.summary} (${getCategoryLabelRu(t.type)})`);
+// → "- PROJ-1: Задача (Фичи)"
+```
+
+Обе точки вывода типов конвертируются, промпт полностью согласован.
+
 ---
 
 ## Затрагиваемые файлы
@@ -255,24 +271,25 @@ Fallback на raw key если категория не найдена.
 | `modules/collection/metrics-collector.ts` | `typeFieldName` вместо хардкода, case-insensitive |
 | `modules/llm/llm.prompt.ts` | Русские лейблы |
 
-### Frontend (6 файлов)
+### Frontend (7 файлов)
 
 | Файл | Изменение |
 |------|-----------|
 | `types/subscription.ts` | Новый `TASK_CATEGORIES`, удалить старые |
 | `utils/task-categories.ts` | **Новый файл** — хелперы `getCategoryLabel`, `getCategoryColor` |
-| `components/metrics/IssuesByTypeChart.tsx` | Использовать хелперы, удалить дубли |
-| `components/metrics/SpentByTypeChart.tsx` | Использовать хелперы, удалить дубли |
+| `components/metrics/IssuesByTypeChart.tsx` | Использовать хелперы, удалить `TYPE_LABELS` и `COLORS` |
+| `components/metrics/SpentByTypeChart.tsx` | Использовать хелперы, удалить `TYPE_LABELS`, заменить `fill` литерал на per-category цвета |
 | `components/collection/FieldMappingEditor.tsx` | Русские лейблы в dropdown, поле `typeFieldName` |
-| `components/collection/AddProjectWizard.tsx` | Обновить тип `FieldMapping` (если используется) |
+| `components/collection/AddProjectWizard.tsx` | Добавить `typeFieldName: 'Type'` в локальный `DEFAULT_FIELD_MAPPING` |
+| `components/collection/EditSubscriptionModal.tsx` | Добавить `typeFieldName: 'Type'` в дефолтный `useState<FieldMapping>` (строка 39-44) |
 
 ### Миграция (1 файл)
 
 | Файл | Изменение |
 |------|-----------|
-| `migrations/Migration_AddTypeFieldName.ts` | `ALTER TABLE field_mappings ADD COLUMN type_field_name` |
+| `migrations/Migration20260313000000_add_type_field_name.ts` | `ALTER TABLE field_mappings ADD COLUMN type_field_name` |
 
-**Итого: 13 файлов изменений + 1 новый файл + 1 миграция.**
+**Итого: 14 файлов изменений + 1 новый файл + 1 миграция.**
 
 ---
 
@@ -288,5 +305,5 @@ Fallback на raw key если категория не найдена.
 ## Вне скоупа
 
 - Автокомплит типов задач из YouTrack API (отдельная итерация)
-- Настраиваемые категории для KPI focus (отдельная задача)
-- Рефакторинг хардкода `'bugfix'` в `countBugsAfterRelease` (отдельная задача)
+- Настраиваемые категории для KPI focus (отдельная задача, хардкод в `kpi-calculator.ts:59-61`)
+- Рефакторинг хардкода `'bugfix'` в `countBugsAfterRelease` (отдельная задача, `metrics-collector.ts:384`)
