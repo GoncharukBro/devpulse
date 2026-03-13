@@ -3,6 +3,7 @@
  */
 
 import { ChatMessage, PromptData } from './llm.types';
+import { getCategoryLabelRu } from '../subscriptions/subscriptions.types';
 
 const SYSTEM_PROMPT = `Ты — аналитик продуктивности разработчиков. Анализируй метрики и давай оценку.
 
@@ -37,7 +38,7 @@ function fmt(value: number | null | undefined, suffix = ''): string {
 function buildUserPrompt(data: PromptData): string {
   const typeEntries = Object.entries(data.issuesByType);
   const typesStr = typeEntries.length > 0
-    ? typeEntries.map(([k, v]) => `${k}:${v}`).join(', ')
+    ? typeEntries.map(([k, v]) => `${getCategoryLabelRu(k)}:${v}`).join(', ')
     : 'н/д';
 
   let prompt = `Сотрудник: ${data.employeeName}, проект: ${data.projectName}, период: ${data.periodStart}—${data.periodEnd}
@@ -50,7 +51,7 @@ function buildUserPrompt(data: PromptData): string {
 
   if (data.taskSummaries.length > 0) {
     const tasks = data.taskSummaries.slice(0, MAX_TASKS);
-    const taskLines = tasks.map((t) => `- ${t.id}: ${t.summary} (${t.type})`);
+    const taskLines = tasks.map((t) => `- ${t.id}: ${t.summary} (${getCategoryLabelRu(t.type)})`);
     prompt += `\n\nЗадачи (для классификации):\n${taskLines.join('\n')}`;
 
     if (data.taskSummaries.length > MAX_TASKS) {
