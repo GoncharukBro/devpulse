@@ -38,6 +38,7 @@ export default function EditSubscriptionModal({
   // Field mapping mode
   const [fieldMapping, setFieldMapping] = useState<FieldMapping>({
     taskTypeMapping: {},
+    typeFieldName: 'Type',
     cycleTimeStartStatuses: [],
     cycleTimeEndStatuses: [],
     releaseStatuses: [],
