@@ -6,17 +6,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
+  Cell,
 } from 'recharts';
-
-const TYPE_LABELS: Record<string, string> = {
-  feature: 'Фичи',
-  bugfix: 'Баги',
-  techDebt: 'Техдолг',
-  support: 'Поддержка',
-  documentation: 'Документация',
-  codeReview: 'Code Review',
-  other: 'Прочее',
-};
+import { getCategoryLabel, getCategoryColor } from '@/utils/task-categories';
 
 interface SpentByTypeChartProps {
   data: Record<string, number>;
@@ -50,8 +42,9 @@ export default function SpentByTypeChart({ data, height }: SpentByTypeChartProps
   const chartData = Object.entries(data)
     .filter(([, v]) => v > 0)
     .map(([key, value]) => ({
-      name: TYPE_LABELS[key] || key,
+      name: getCategoryLabel(key),
       value: Number(value.toFixed(1)),
+      color: getCategoryColor(key),
     }))
     .sort((a, b) => b.value - a.value);
 
@@ -90,10 +83,13 @@ export default function SpentByTypeChart({ data, height }: SpentByTypeChartProps
         <RechartsTooltip content={<CustomTooltip />} />
         <Bar
           dataKey="value"
-          fill="#6366f1"
           radius={[0, 4, 4, 0]}
           barSize={20}
-        />
+        >
+          {chartData.map((entry, index) => (
+            <Cell key={index} fill={entry.color} />
+          ))}
+        </Bar>
       </BarChart>
     </ResponsiveContainer>
   );
