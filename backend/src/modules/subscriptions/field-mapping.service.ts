@@ -38,20 +38,20 @@ export async function createFieldMapping(
   subscription: Subscription,
   dto?: CreateFieldMappingDto,
 ): Promise<FieldMapping> {
+  if (dto?.typeFieldName !== undefined && (typeof dto.typeFieldName !== 'string' || dto.typeFieldName.trim() === '')) {
+    throw new ValidationError('typeFieldName must be a non-empty string');
+  }
+
   const data = { ...DEFAULT_FIELD_MAPPING, ...dto };
 
   if (data.taskTypeMapping) {
     validateTaskTypeMapping(data.taskTypeMapping);
   }
 
-  if (data.typeFieldName !== undefined && (typeof data.typeFieldName !== 'string' || data.typeFieldName.trim() === '')) {
-    throw new ValidationError('typeFieldName must be a non-empty string');
-  }
-
   const mapping = new FieldMapping();
   mapping.subscription = subscription;
-  mapping.taskTypeMapping = data.taskTypeMapping ?? DEFAULT_FIELD_MAPPING.taskTypeMapping;
-  mapping.typeFieldName = data.typeFieldName ?? DEFAULT_FIELD_MAPPING.typeFieldName;
+  mapping.taskTypeMapping = data.taskTypeMapping;
+  mapping.typeFieldName = data.typeFieldName;
   mapping.cycleTimeStartStatuses =
     data.cycleTimeStartStatuses ?? DEFAULT_FIELD_MAPPING.cycleTimeStartStatuses;
   mapping.cycleTimeEndStatuses =
