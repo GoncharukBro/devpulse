@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import { TASK_CATEGORIES, TASK_CATEGORY_LABELS, type TaskCategory } from '@/types/subscription';
+import { TASK_CATEGORIES } from '@/types/subscription';
 import type { FieldMapping } from '@/types/subscription';
 
 interface FieldMappingEditorProps {
@@ -62,8 +62,8 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
                 className="rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 outline-none focus:border-brand-500"
               >
                 {TASK_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {TASK_CATEGORY_LABELS[cat as TaskCategory]}
+                  <option key={cat.key} value={cat.key}>
+                    {cat.labelEn}
                   </option>
                 ))}
               </select>

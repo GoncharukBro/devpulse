@@ -53,7 +53,7 @@ export interface SubscriptionEmployee {
 
 export interface FieldMapping {
   taskTypeMapping: Record<string, string>;
-
+  typeFieldName: string;
   cycleTimeStartStatuses: string[];
   cycleTimeEndStatuses: string[];
   releaseStatuses: string[];
@@ -77,7 +77,7 @@ export interface CreateSubscriptionDto {
 
 export interface CreateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
-
+  typeFieldName?: string;
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];
@@ -89,30 +89,29 @@ export interface UpdateSubscriptionDto {
 
 export interface UpdateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
-
+  typeFieldName?: string;
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];
 }
 
-export const TASK_CATEGORIES = [
-  'feature',
-  'bugfix',
-  'techDebt',
-  'support',
-  'documentation',
-  'codeReview',
-  'other',
-] as const;
+/**
+ * Категории задач — зеркало backend/src/modules/subscriptions/subscriptions.types.ts.
+ * При добавлении/изменении категорий обновлять оба файла.
+ */
+export interface TaskCategoryDefinition {
+  key: string;
+  labelRu: string;
+  labelEn: string;
+  color: string;
+}
 
-export type TaskCategory = (typeof TASK_CATEGORIES)[number];
-
-export const TASK_CATEGORY_LABELS: Record<TaskCategory, string> = {
-  feature: 'Feature',
-  bugfix: 'Bugfix',
-  techDebt: 'Tech Debt',
-  support: 'Support',
-  documentation: 'Documentation',
-  codeReview: 'Code Review',
-  other: 'Other',
-};
+export const TASK_CATEGORIES: TaskCategoryDefinition[] = [
+  { key: 'feature',       labelRu: 'Фичи',         labelEn: 'Feature',       color: '#6366f1' },
+  { key: 'bugfix',        labelRu: 'Баги',          labelEn: 'Bugfix',        color: '#ef4444' },
+  { key: 'techDebt',      labelRu: 'Техдолг',       labelEn: 'Tech Debt',     color: '#f59e0b' },
+  { key: 'support',       labelRu: 'Поддержка',     labelEn: 'Support',       color: '#06b6d4' },
+  { key: 'documentation', labelRu: 'Документация',  labelEn: 'Documentation', color: '#10b981' },
+  { key: 'codeReview',    labelRu: 'Code Review',   labelEn: 'Code Review',   color: '#8b5cf6' },
+  { key: 'other',         labelRu: 'Прочее',        labelEn: 'Other',         color: '#6b7280' },
+];
