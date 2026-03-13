@@ -280,7 +280,7 @@ const taskLines = tasks.map((t) => `- ${t.id}: ${t.summary} (${getCategoryLabelR
 | `components/metrics/IssuesByTypeChart.tsx` | Использовать хелперы, удалить `TYPE_LABELS` и `COLORS` |
 | `components/metrics/SpentByTypeChart.tsx` | Использовать хелперы, удалить `TYPE_LABELS`, заменить `fill` литерал на per-category цвета |
 | `components/collection/FieldMappingEditor.tsx` | Русские лейблы в dropdown, поле `typeFieldName` |
-| `components/collection/AddProjectWizard.tsx` | Добавить `typeFieldName: 'Type'` в локальный `DEFAULT_FIELD_MAPPING` |
+| `components/collection/AddProjectWizard.tsx` | Добавить `typeFieldName: 'Type'` в локальный `DEFAULT_FIELD_MAPPING`; добавить `typeFieldName: fieldMapping.typeFieldName` в объект `handleCreate` (строки 200-205), где поля перечисляются вручную |
 | `components/collection/EditSubscriptionModal.tsx` | Добавить `typeFieldName: 'Type'` в дефолтный `useState<FieldMapping>` (строка 39-44) |
 
 ### Миграция (1 файл)
@@ -289,7 +289,7 @@ const taskLines = tasks.map((t) => `- ${t.id}: ${t.summary} (${getCategoryLabelR
 |------|-----------|
 | `migrations/Migration20260313000000_add_type_field_name.ts` | `ALTER TABLE field_mappings ADD COLUMN type_field_name` |
 
-**Итого: 14 файлов изменений + 1 новый файл + 1 миграция.**
+**Итого: 14 файлов (включая 1 новый) + 1 миграция = 15 файлов.**
 
 ---
 
