@@ -16,6 +16,9 @@ export class FieldMapping {
   @Property({ type: 'jsonb', default: '{}' })
   taskTypeMapping: TaskTypeMapping = {};
 
+  @Property({ type: 'text', default: 'Type' })
+  typeFieldName: string = 'Type';
+
   @Property({ type: 'jsonb', default: '[]' })
   cycleTimeStartStatuses: string[] = [];
 
