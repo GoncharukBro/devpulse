@@ -49,6 +49,23 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
 
   return (
     <div className="space-y-6">
+      {/* Type field name */}
+      <div>
+        <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
+          Поле типа задачи в YouTrack
+        </label>
+        <input
+          type="text"
+          value={value.typeFieldName}
+          onChange={(e) => updateMapping({ typeFieldName: e.target.value })}
+          placeholder="Type"
+          className="w-60 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
+        />
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-600">
+          Название кастомного поля в YouTrack, определяющего тип задачи. Обычно &lsquo;Type&rsquo;, но может быть &lsquo;Тип&rsquo; или другое.
+        </p>
+      </div>
+
       {/* Task type mapping */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">Типы задач</label>
@@ -63,7 +80,7 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
               >
                 {TASK_CATEGORIES.map((cat) => (
                   <option key={cat.key} value={cat.key}>
-                    {cat.labelEn}
+                    {cat.labelRu}
                   </option>
                 ))}
               </select>
