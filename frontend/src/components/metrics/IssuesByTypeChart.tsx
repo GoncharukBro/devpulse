@@ -6,18 +6,7 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
 } from 'recharts';
-
-const TYPE_LABELS: Record<string, string> = {
-  feature: 'Фичи',
-  bugfix: 'Баги',
-  techDebt: 'Техдолг',
-  support: 'Поддержка',
-  documentation: 'Документация',
-  codeReview: 'Code Review',
-  other: 'Прочее',
-};
-
-const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#6b7280'];
+import { getCategoryLabel, getCategoryColor } from '@/utils/task-categories';
 
 interface IssuesByTypeChartProps {
   data: Record<string, number>;
@@ -50,8 +39,9 @@ export default function IssuesByTypeChart({ data, height = 240 }: IssuesByTypeCh
   const chartData = Object.entries(data)
     .filter(([, v]) => v > 0)
     .map(([key, value]) => ({
-      name: TYPE_LABELS[key] || key,
+      name: getCategoryLabel(key),
       value,
+      color: getCategoryColor(key),
     }));
 
   if (!chartData.length) {
@@ -79,7 +69,7 @@ export default function IssuesByTypeChart({ data, height = 240 }: IssuesByTypeCh
           stroke="none"
         >
           {chartData.map((_, index) => (
-            <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            <Cell key={index} fill={chartData[index].color} />
           ))}
         </Pie>
         <RechartsTooltip content={<CustomTooltip />} />
