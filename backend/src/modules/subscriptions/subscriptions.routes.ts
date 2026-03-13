@@ -19,7 +19,7 @@ import {
   CreateEmployeeDto,
   UpdateEmployeeDto,
   UpdateFieldMappingDto,
-  VALID_TASK_CATEGORIES,
+  VALID_TASK_CATEGORY_KEYS,
 } from './subscriptions.types';
 import { ValidationError } from '../../common/errors';
 
@@ -27,10 +27,10 @@ function validateFieldMapping(dto: UpdateFieldMappingDto | undefined): void {
   if (!dto) return;
   if (dto.taskTypeMapping) {
     const invalidValues = Object.values(dto.taskTypeMapping).filter(
-      (v) => !VALID_TASK_CATEGORIES.includes(v as (typeof VALID_TASK_CATEGORIES)[number]),
+      (v) => !VALID_TASK_CATEGORY_KEYS.includes(v),
     );
     if (invalidValues.length > 0) {
-      throw new ValidationError(`Invalid task category values: ${invalidValues.join(', ')}. Valid: ${VALID_TASK_CATEGORIES.join(', ')}`);
+      throw new ValidationError(`Invalid task category values: ${invalidValues.join(', ')}. Valid: ${VALID_TASK_CATEGORY_KEYS.join(', ')}`);
     }
   }
 }
@@ -119,7 +119,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
     const mapping = await getFieldMapping(em, request.params.id, request.user.id);
     return {
       taskTypeMapping: mapping.taskTypeMapping,
-
+      typeFieldName: mapping.typeFieldName,
       cycleTimeStartStatuses: mapping.cycleTimeStartStatuses,
       cycleTimeEndStatuses: mapping.cycleTimeEndStatuses,
       releaseStatuses: mapping.releaseStatuses,
@@ -140,7 +140,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
       );
       return {
         taskTypeMapping: mapping.taskTypeMapping,
-  
+        typeFieldName: mapping.typeFieldName,
         cycleTimeStartStatuses: mapping.cycleTimeStartStatuses,
         cycleTimeEndStatuses: mapping.cycleTimeEndStatuses,
         releaseStatuses: mapping.releaseStatuses,

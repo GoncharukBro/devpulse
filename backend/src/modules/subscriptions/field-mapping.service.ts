@@ -6,7 +6,7 @@ import {
   CreateFieldMappingDto,
   UpdateFieldMappingDto,
   DEFAULT_FIELD_MAPPING,
-  VALID_TASK_CATEGORIES,
+  VALID_TASK_CATEGORY_KEYS,
 } from './subscriptions.types';
 
 function validateTaskTypeMapping(mapping: Record<string, string>): void {
@@ -14,9 +14,9 @@ function validateTaskTypeMapping(mapping: Record<string, string>): void {
     if (typeof key !== 'string' || typeof value !== 'string') {
       throw new ValidationError('taskTypeMapping keys and values must be strings');
     }
-    if (!VALID_TASK_CATEGORIES.includes(value as (typeof VALID_TASK_CATEGORIES)[number])) {
+    if (!VALID_TASK_CATEGORY_KEYS.includes(value)) {
       throw new ValidationError(
-        `Invalid task category "${value}" for key "${key}". Valid: ${VALID_TASK_CATEGORIES.join(', ')}`,
+        `Invalid task category "${value}" for key "${key}". Valid: ${VALID_TASK_CATEGORY_KEYS.join(', ')}`,
       );
     }
   }
@@ -44,9 +44,14 @@ export async function createFieldMapping(
     validateTaskTypeMapping(data.taskTypeMapping);
   }
 
+  if (data.typeFieldName !== undefined && (typeof data.typeFieldName !== 'string' || data.typeFieldName.trim() === '')) {
+    throw new ValidationError('typeFieldName must be a non-empty string');
+  }
+
   const mapping = new FieldMapping();
   mapping.subscription = subscription;
   mapping.taskTypeMapping = data.taskTypeMapping ?? DEFAULT_FIELD_MAPPING.taskTypeMapping;
+  mapping.typeFieldName = data.typeFieldName ?? DEFAULT_FIELD_MAPPING.typeFieldName;
   mapping.cycleTimeStartStatuses =
     data.cycleTimeStartStatuses ?? DEFAULT_FIELD_MAPPING.cycleTimeStartStatuses;
   mapping.cycleTimeEndStatuses =
@@ -86,6 +91,13 @@ export async function updateFieldMapping(
   if (dto.taskTypeMapping !== undefined) {
     validateTaskTypeMapping(dto.taskTypeMapping);
     mapping.taskTypeMapping = dto.taskTypeMapping;
+  }
+
+  if (dto.typeFieldName !== undefined) {
+    if (typeof dto.typeFieldName !== 'string' || dto.typeFieldName.trim() === '') {
+      throw new ValidationError('typeFieldName must be a non-empty string');
+    }
+    mapping.typeFieldName = dto.typeFieldName;
   }
 
   if (dto.cycleTimeStartStatuses !== undefined) {
