@@ -263,7 +263,9 @@ export class MetricsCollector {
   }
 
   private resolveIssueType(issue: YouTrackIssue): string {
-    const typeField = issue.customFields.find((f) => f.name === 'Type');
+    const typeField = issue.customFields.find(
+      (f) => f.name === this.fieldMapping.typeFieldName
+    );
     if (!typeField || !typeField.value) return 'other';
 
     const value = typeField.value;
@@ -277,7 +279,15 @@ export class MetricsCollector {
 
     if (!typeName) return 'other';
 
-    return this.fieldMapping.taskTypeMapping[typeName] || 'other';
+    const mapping = this.fieldMapping.taskTypeMapping;
+    const directMatch = mapping[typeName];
+    if (directMatch) return directMatch;
+
+    const lowerTypeName = typeName.toLowerCase();
+    const found = Object.entries(mapping).find(
+      ([key]) => key.toLowerCase() === lowerTypeName
+    );
+    return found ? found[1] : 'other';
   }
 
   private getEstimation(issue: YouTrackIssue): number {
