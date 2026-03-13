@@ -7,6 +7,7 @@ export interface CreateEmployeeDto {
 
 export interface CreateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
+  typeFieldName?: string;
 
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
@@ -32,21 +33,35 @@ export interface UpdateEmployeeDto {
 
 export interface UpdateFieldMappingDto {
   taskTypeMapping?: Record<string, string>;
+  typeFieldName?: string;
 
   cycleTimeStartStatuses?: string[];
   cycleTimeEndStatuses?: string[];
   releaseStatuses?: string[];
 }
 
-export const VALID_TASK_CATEGORIES = [
-  'feature',
-  'bugfix',
-  'techDebt',
-  'support',
-  'documentation',
-  'codeReview',
-  'other',
-] as const;
+export interface TaskCategoryDefinition {
+  key: string;
+  labelRu: string;
+  labelEn: string;
+  color: string;
+}
+
+export const TASK_CATEGORIES: TaskCategoryDefinition[] = [
+  { key: 'feature',       labelRu: 'Фичи',         labelEn: 'Feature',       color: '#6366f1' },
+  { key: 'bugfix',        labelRu: 'Баги',          labelEn: 'Bugfix',        color: '#ef4444' },
+  { key: 'techDebt',      labelRu: 'Техдолг',       labelEn: 'Tech Debt',     color: '#f59e0b' },
+  { key: 'support',       labelRu: 'Поддержка',     labelEn: 'Support',       color: '#06b6d4' },
+  { key: 'documentation', labelRu: 'Документация',  labelEn: 'Documentation', color: '#10b981' },
+  { key: 'codeReview',    labelRu: 'Code Review',   labelEn: 'Code Review',   color: '#8b5cf6' },
+  { key: 'other',         labelRu: 'Прочее',        labelEn: 'Other',         color: '#6b7280' },
+];
+
+export const VALID_TASK_CATEGORY_KEYS = TASK_CATEGORIES.map(c => c.key);
+
+export function getCategoryLabelRu(key: string): string {
+  return TASK_CATEGORIES.find(c => c.key === key)?.labelRu ?? key;
+}
 
 export const DEFAULT_FIELD_MAPPING: Required<CreateFieldMappingDto> = {
   taskTypeMapping: {
@@ -59,6 +74,7 @@ export const DEFAULT_FIELD_MAPPING: Required<CreateFieldMappingDto> = {
     Documentation: 'documentation',
     'Code Review': 'codeReview',
   },
+  typeFieldName: 'Type',
   cycleTimeStartStatuses: ['In Progress', 'В работе'],
   cycleTimeEndStatuses: ['Done', 'Verified', 'Fixed', 'Готово'],
   releaseStatuses: [],
