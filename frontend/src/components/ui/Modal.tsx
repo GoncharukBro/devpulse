@@ -6,9 +6,10 @@ interface ModalProps {
   title?: string;
   children: ReactNode;
   footer?: ReactNode;
+  autoFocus?: boolean;
 }
 
-export default function Modal({ open, onClose, title, children, footer }: ModalProps) {
+export default function Modal({ open, onClose, title, children, footer, autoFocus = true }: ModalProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -53,11 +54,15 @@ export default function Modal({ open, onClose, title, children, footer }: ModalP
       // Focus first focusable element or the dialog itself
       requestAnimationFrame(() => {
         if (dialogRef.current) {
-          const firstFocusable = dialogRef.current.querySelector<HTMLElement>(
-            'a[href], button:not([disabled]), textarea, input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-          );
-          if (firstFocusable) {
-            firstFocusable.focus();
+          if (autoFocus) {
+            const firstFocusable = dialogRef.current.querySelector<HTMLElement>(
+              'a[href], button:not([disabled]), textarea, input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            );
+            if (firstFocusable) {
+              firstFocusable.focus();
+            } else {
+              dialogRef.current.focus();
+            }
           } else {
             dialogRef.current.focus();
           }

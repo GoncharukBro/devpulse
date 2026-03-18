@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FolderKanban, Users, ArrowRight } from 'lucide-react';
+import { FolderKanban, Users, ArrowRight, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
+import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import Card from '@/components/ui/Card';
 import ScoreBadge from '@/components/metrics/ScoreBadge';
@@ -59,7 +60,11 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
         <div className="mb-3 flex items-start justify-between">
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">{subscription.projectName}</h3>
-            <span className="text-xs text-gray-400 dark:text-gray-500">{subscription.projectShortName}</span>
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+              <span>{subscription.projectShortName}</span>
+              <span className="text-gray-300 dark:text-gray-600">·</span>
+              <span className="truncate" title={subscription.youtrackInstanceName}>{subscription.youtrackInstanceName}</span>
+            </div>
           </div>
           {summary && (
             <div className="flex items-center gap-2">
@@ -101,6 +106,7 @@ function ProjectCard({ data }: { data: ProjectCardData }) {
 
 export default function ProjectsListPage() {
   usePageTitle('Проекты');
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -142,7 +148,20 @@ export default function ProjectsListPage() {
   if (!loading && !error && projects.length === 0) {
     return (
       <>
-        <PageHeader title="Проекты" description="Динамика и эффективность по каждому проекту под мониторингом" />
+        <PageHeader
+          title="Проекты"
+          description="Динамика и эффективность по каждому проекту под мониторингом"
+          actions={
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus size={16} />}
+              onClick={() => navigate('/collection?addProject=true')}
+            >
+              Добавить проект
+            </Button>
+          }
+        />
         <EmptyState
           icon={FolderKanban}
           title="Нет проектов"
@@ -156,7 +175,20 @@ export default function ProjectsListPage() {
   if (error) {
     return (
       <>
-        <PageHeader title="Проекты" description="Динамика и эффективность по каждому проекту под мониторингом" />
+        <PageHeader
+          title="Проекты"
+          description="Динамика и эффективность по каждому проекту под мониторингом"
+          actions={
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus size={16} />}
+              onClick={() => navigate('/collection?addProject=true')}
+            >
+              Добавить проект
+            </Button>
+          }
+        />
         <Card>
           <div className="py-8 text-center">
             <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">Не удалось загрузить данные</p>
@@ -174,7 +206,20 @@ export default function ProjectsListPage() {
 
   return (
     <>
-      <PageHeader title="Проекты" description="Динамика и эффективность по каждому проекту под мониторингом" />
+      <PageHeader
+          title="Проекты"
+          description="Динамика и эффективность по каждому проекту под мониторингом"
+          actions={
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus size={16} />}
+              onClick={() => navigate('/collection?addProject=true')}
+            >
+              Добавить проект
+            </Button>
+          }
+        />
 
       {loading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

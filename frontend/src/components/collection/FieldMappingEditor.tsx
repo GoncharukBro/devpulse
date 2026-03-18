@@ -31,6 +31,15 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
     updateMapping({ taskTypeMapping: copy });
   };
 
+  const renameTaskType = (oldKey: string, newKey: string) => {
+    const trimmed = newKey.trim();
+    if (!trimmed || (trimmed !== oldKey && trimmed in value.taskTypeMapping)) return;
+    const entries = Object.entries(value.taskTypeMapping).map(([k, v]) =>
+      k === oldKey ? [trimmed, v] : [k, v],
+    );
+    updateMapping({ taskTypeMapping: Object.fromEntries(entries) });
+  };
+
   const changeCategory = (key: string, category: string) => {
     updateMapping({
       taskTypeMapping: { ...value.taskTypeMapping, [key]: category },
@@ -59,7 +68,7 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
           value={value.typeFieldName}
           onChange={(e) => updateMapping({ typeFieldName: e.target.value })}
           placeholder="Type"
-          className="w-60 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
+          className="w-full rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none focus:border-brand-500"
         />
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-600">
           Название кастомного поля в YouTrack, определяющего тип задачи. Обычно &lsquo;Type&rsquo;, но может быть &lsquo;Тип&rsquo; или другое.
@@ -72,7 +81,13 @@ export default function FieldMappingEditor({ value, onChange }: FieldMappingEdit
         <div className="space-y-2">
           {Object.entries(value.taskTypeMapping).map(([ytType, category]) => (
             <div key={ytType} className="flex items-center gap-2">
-              <span className="w-40 truncate text-sm text-gray-500 dark:text-gray-400">{ytType}</span>
+              <input
+                type="text"
+                defaultValue={ytType}
+                onBlur={(e) => renameTaskType(ytType, e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                className="w-40 rounded-lg border border-transparent bg-transparent px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 outline-none transition-colors hover:border-gray-200 dark:hover:border-surface-border focus:border-brand-500 focus:bg-gray-100 dark:focus:bg-surface-lighter"
+              />
               <select
                 value={category}
                 onChange={(e) => changeCategory(ytType, e.target.value)}

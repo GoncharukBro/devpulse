@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Play, Square, X, Clock, Hourglass, Users, Calendar, Bot, Database, Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MoreVertical, Play, Square, X, Clock, Hourglass, Users, Calendar, Bot, Database, Loader, ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import type { Subscription } from '@/types/subscription';
 import type { CollectionProgress, LlmQueueItem } from '@/types/collection';
@@ -43,6 +44,7 @@ export default function SubscriptionCard({
   triggerLoading,
   stopLoading,
 }: SubscriptionCardProps) {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -105,7 +107,13 @@ export default function SubscriptionCard({
         <div className="mb-3 flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <span className={`h-2.5 w-2.5 rounded-full ${dotColor}`} />
-            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{subscription.projectName}</h3>
+            <button
+              onClick={() => navigate(`/projects/${subscription.id}`)}
+              className="group flex items-center gap-1 text-base font-semibold text-gray-900 dark:text-gray-100 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
+            >
+              {subscription.projectName}
+              <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-500 dark:text-brand-400" />
+            </button>
           </div>
           <div className="relative" ref={menuRef}>
             <button
@@ -132,7 +140,7 @@ export default function SubscriptionCard({
                   onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}
                   className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                 >
-                  {subscription.isActive ? 'Приостановить' : 'Активировать'}
+                  {subscription.isActive ? 'Исключить из автосбора' : 'Включить в автосбор'}
                 </button>
                 <div className="my-1 border-t border-gray-200 dark:border-surface-border" />
                 <button

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Database, Plus, Play, Square, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageHeader from '@/components/ui/PageHeader';
@@ -22,6 +23,8 @@ import type { CollectionProgress, CronState } from '@/types/collection';
 
 export default function CollectionPage() {
   usePageTitle('Сбор данных');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openWizardFromQuery = useRef(searchParams.get('addProject') === 'true');
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [cronState, setCronState] = useState<CronState | null>(null);
   const [loadingPage, setLoadingPage] = useState(true);
@@ -30,7 +33,7 @@ export default function CollectionPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Modals
-  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardOpen, setWizardOpen] = useState(openWizardFromQuery.current);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editModalId, setEditModalId] = useState<string | null>(null);
   const [editModalMode, setEditModalMode] = useState<'employees' | 'fieldMapping'>('employees');
@@ -65,6 +68,14 @@ export default function CollectionPage() {
       // Error handled by interceptor
     }
   }, []);
+
+  // Clean up query param after opening wizard
+  useEffect(() => {
+    if (openWizardFromQuery.current) {
+      searchParams.delete('addProject');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initial load
   useEffect(() => {
@@ -157,7 +168,7 @@ export default function CollectionPage() {
   const handleToggleActive = async (id: string, isActive: boolean) => {
     try {
       await subscriptionsApi.update(id, { isActive });
-      toast.success(isActive ? 'Подписка активирована' : 'Подписка приостановлена');
+      toast.success(isActive ? 'Включена в автосбор' : 'Исключена из автосбора');
       loadSubscriptions();
     } catch {
       toast.error('Не удалось обновить подписку');

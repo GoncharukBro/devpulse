@@ -29,12 +29,7 @@ const DEFAULT_FIELD_MAPPING: FieldMapping = {
   taskTypeMapping: {
     Feature: 'feature',
     Bug: 'bugfix',
-    Task: 'feature',
-    Epic: 'feature',
-    'User Story': 'feature',
     'Tech Debt': 'techDebt',
-    Documentation: 'documentation',
-    'Code Review': 'codeReview',
   },
   typeFieldName: 'Type',
   cycleTimeStartStatuses: ['In Progress'],
@@ -59,10 +54,10 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
   // Step 3: Members
   const [members, setMembers] = useState<YouTrackUser[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
+  const [memberSearchValue, setMemberSearchValue] = useState('');
 
   // Step 4: Field mapping
   const [fieldMapping, setFieldMapping] = useState<FieldMapping>({ ...DEFAULT_FIELD_MAPPING });
-  const [useCustomMapping, setUseCustomMapping] = useState(false);
 
   // Load instances on open
   useEffect(() => {
@@ -72,8 +67,8 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
     setSelectedProject(null);
     setSelectedMembers(new Set());
     setFieldMapping({ ...DEFAULT_FIELD_MAPPING });
-    setUseCustomMapping(false);
     setProjectSearch('');
+    setMemberSearchValue('');
 
     setLoading(true);
     youtrackApi
@@ -198,13 +193,13 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
       projectShortName: selectedProject.shortName,
       projectName: selectedProject.name,
       employees,
-      fieldMapping: useCustomMapping ? {
+      fieldMapping: {
         taskTypeMapping: fieldMapping.taskTypeMapping,
         typeFieldName: fieldMapping.typeFieldName,
         cycleTimeStartStatuses: fieldMapping.cycleTimeStartStatuses,
         cycleTimeEndStatuses: fieldMapping.cycleTimeEndStatuses,
         releaseStatuses: fieldMapping.releaseStatuses,
-      } : undefined,
+      },
     };
 
     setCreating(true);
@@ -295,9 +290,27 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
           </div>
         );
 
-      case 2:
+      case 2: {
+        const memberSearch = memberSearchValue.toLowerCase();
+        const filteredMembers = memberSearch
+          ? members.filter(
+              (m) =>
+                m.name.toLowerCase().includes(memberSearch) ||
+                m.login.toLowerCase().includes(memberSearch),
+            )
+          : members;
         return (
           <div>
+            <div className="mb-3 flex items-center gap-2 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-100 dark:bg-surface-lighter px-3 py-2">
+              <Search size={16} className="text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                value={memberSearchValue}
+                onChange={(e) => setMemberSearchValue(e.target.value)}
+                placeholder="Поиск по имени или логину..."
+                className="flex-1 bg-transparent text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 outline-none"
+              />
+            </div>
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Выбрано: {selectedMembers.size} из {members.length}
@@ -312,7 +325,7 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
               </div>
             </div>
             <div className="max-h-72 space-y-1 overflow-y-auto">
-              {members.map((member) => (
+              {filteredMembers.map((member) => (
                 <label
                   key={member.login}
                   className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter"
@@ -341,35 +354,17 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
                   </div>
                 </label>
               ))}
+              {filteredMembers.length === 0 && (
+                <p className="py-8 text-center text-sm text-gray-400 dark:text-gray-500">Сотрудники не найдены</p>
+              )}
             </div>
           </div>
         );
+      }
 
       case 3:
         return (
-          <div>
-            <div className="mb-4">
-              <label className="flex cursor-pointer items-center gap-3">
-                <div
-                  className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
-                    useCustomMapping
-                      ? 'border-brand-500 bg-brand-500'
-                      : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-surface-lighter'
-                  }`}
-                  onClick={() => setUseCustomMapping(!useCustomMapping)}
-                >
-                  {useCustomMapping && <Check size={12} className="text-white" />}
-                </div>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Настроить маппинг полей</span>
-              </label>
-              <p className="ml-8 mt-1 text-xs text-gray-400 dark:text-gray-500">
-                По умолчанию используется стандартный маппинг
-              </p>
-            </div>
-            {useCustomMapping && (
-              <FieldMappingEditor value={fieldMapping} onChange={setFieldMapping} />
-            )}
-          </div>
+          <FieldMappingEditor value={fieldMapping} onChange={setFieldMapping} />
         );
 
       case 4:
@@ -392,8 +387,8 @@ export default function AddProjectWizard({ open, onClose, onCreated, existingSub
                 <span className="text-gray-700 dark:text-gray-200">{selectedMembers.size}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400 dark:text-gray-500">Маппинг полей</span>
-                <span className="text-gray-700 dark:text-gray-200">{useCustomMapping ? 'Кастомный' : 'По умолчанию'}</span>
+                <span className="text-gray-400 dark:text-gray-500">Типов задач</span>
+                <span className="text-gray-700 dark:text-gray-200">{Object.keys(fieldMapping.taskTypeMapping).length}</span>
               </div>
             </div>
             {selectedMembers.size > 0 && (

@@ -69,6 +69,7 @@ export default function CollectModal({
       open={open}
       onClose={onClose}
       title="Запустить сбор"
+      autoFocus={false}
       footer={
         <>
           <Button variant="secondary" size="sm" onClick={onClose}>
