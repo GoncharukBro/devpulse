@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { Subscription } from '../../entities/subscription.entity';
 import { SubscriptionEmployee } from '../../entities/subscription-employee.entity';
+import { prefixedTable } from '../../entities/table-prefix';
 import { AppError, NotFoundError, ValidationError } from '../../common/errors';
 import { getYouTrackInstances } from '../../config/youtrack.config';
 import { createFieldMapping } from './field-mapping.service';
@@ -77,20 +78,21 @@ export async function listSubscriptions(
 
     const inPlaceholders = subIds.map(() => '?').join(', ');
 
+    const mrTable = prefixedTable('metric_reports');
     const rows: PeriodRow[] = await em.getConnection().execute(`
       WITH target_period AS (
         SELECT
           subscription_id,
           CASE
             WHEN EXISTS (
-              SELECT 1 FROM metric_reports m2
+              SELECT 1 FROM ${mrTable} m2
               WHERE m2.subscription_id = m.subscription_id
                 AND m2.period_start = ?
             )
             THEN ?::date
             ELSE MAX(m.period_start)
           END AS period_start
-        FROM metric_reports m
+        FROM ${mrTable} m
         WHERE m.subscription_id IN (${inPlaceholders})
         GROUP BY m.subscription_id
       )
@@ -105,7 +107,7 @@ export async function listSubscriptions(
         COUNT(*) FILTER (WHERE mr.llm_status = 'skipped')::text AS llm_skipped,
         COUNT(*) FILTER (WHERE mr.llm_status = 'no_data')::text AS llm_no_data
       FROM target_period tp
-      JOIN metric_reports mr
+      JOIN ${mrTable} mr
         ON mr.subscription_id = tp.subscription_id
        AND mr.period_start = tp.period_start
       GROUP BY mr.subscription_id, tp.period_start

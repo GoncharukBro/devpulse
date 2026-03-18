@@ -1,11 +1,12 @@
 import { Entity, PrimaryKey, Property, ManyToOne, Unique } from '@mikro-orm/core';
 import { Subscription } from './subscription.entity';
+import { prefixedTable } from './table-prefix';
 
 export interface AchievementMetadata {
   [key: string]: unknown;
 }
 
-@Entity({ tableName: 'achievements' })
+@Entity({ tableName: prefixedTable('achievements') })
 @Unique({ properties: ['youtrackLogin', 'type', 'rarity', 'subscription'] })
 export class Achievement {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })

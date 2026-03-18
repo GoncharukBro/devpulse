@@ -12,8 +12,9 @@ import { FieldMapping } from './field-mapping.entity';
 import { MetricReport } from './metric-report.entity';
 import { CollectionLog } from './collection-log.entity';
 import { Achievement } from './achievement.entity';
+import { prefixedTable } from './table-prefix';
 
-@Entity({ tableName: 'subscriptions' })
+@Entity({ tableName: prefixedTable('subscriptions') })
 @Unique({ properties: ['youtrackInstanceId', 'projectId', 'ownerId'] })
 export class Subscription {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })

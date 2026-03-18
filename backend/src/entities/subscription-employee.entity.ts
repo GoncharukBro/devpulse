@@ -1,7 +1,8 @@
 import { Entity, PrimaryKey, Property, ManyToOne, Unique } from '@mikro-orm/core';
 import { Subscription } from './subscription.entity';
+import { prefixedTable } from './table-prefix';
 
-@Entity({ tableName: 'subscription_employees' })
+@Entity({ tableName: prefixedTable('subscription_employees') })
 @Unique({ properties: ['subscription', 'youtrackLogin'] })
 export class SubscriptionEmployee {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })

@@ -1,11 +1,12 @@
 import { Entity, PrimaryKey, Property, OneToOne } from '@mikro-orm/core';
 import { Subscription } from './subscription.entity';
+import { prefixedTable } from './table-prefix';
 
 export interface TaskTypeMapping {
   [youtrackType: string]: string;
 }
 
-@Entity({ tableName: 'field_mappings' })
+@Entity({ tableName: prefixedTable('field_mappings') })
 export class FieldMapping {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;

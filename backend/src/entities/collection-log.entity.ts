@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core';
 import { Subscription } from './subscription.entity';
+import { prefixedTable } from './table-prefix';
 
 export interface CollectionError {
   login: string;
@@ -20,7 +21,7 @@ export type CollectionLogStatus =
 
 export type CollectionLogType = 'manual' | 'cron';
 
-@Entity({ tableName: 'collection_logs' })
+@Entity({ tableName: prefixedTable('collection_logs') })
 export class CollectionLog {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;

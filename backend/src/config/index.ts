@@ -14,6 +14,7 @@ export interface AppConfig {
     name: string;
     user: string;
     password: string;
+    tablePrefix: string;
   };
   keycloak: {
     url: string;
@@ -78,6 +79,7 @@ export const config: AppConfig = {
     name: required('DB_NAME'),
     user: required('DB_USER'),
     password: required('DB_PASSWORD'),
+    tablePrefix: optional('DB_TABLE_PREFIX', 'devpulse_'),
   },
   keycloak: {
     url: authEnabled ? required('KEYCLOAK_URL') : optional('KEYCLOAK_URL', ''),

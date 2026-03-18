@@ -1,3 +1,4 @@
+export { prefixedTable } from './table-prefix';
 export { Subscription } from './subscription.entity';
 export { SubscriptionEmployee } from './subscription-employee.entity';
 export { FieldMapping } from './field-mapping.entity';

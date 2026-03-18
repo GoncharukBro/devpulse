@@ -1,5 +1,6 @@
 import { Entity, PrimaryKey, Property, ManyToOne, Unique } from '@mikro-orm/core';
 import { Subscription } from './subscription.entity';
+import { prefixedTable } from './table-prefix';
 
 export interface IssuesByType {
   [category: string]: number;
@@ -10,7 +11,7 @@ export interface LlmTaskClassification {
   technicallySignificant?: string[];
 }
 
-@Entity({ tableName: 'metric_reports' })
+@Entity({ tableName: prefixedTable('metric_reports') })
 @Unique({ properties: ['subscription', 'youtrackLogin', 'periodStart'] })
 export class MetricReport {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })

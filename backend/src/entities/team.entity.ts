@@ -1,7 +1,8 @@
 import { Entity, PrimaryKey, Property, OneToMany, Collection } from '@mikro-orm/core';
 import { TeamMember } from './team-member.entity';
+import { prefixedTable } from './table-prefix';
 
-@Entity({ tableName: 'teams' })
+@Entity({ tableName: prefixedTable('teams') })
 export class Team {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
