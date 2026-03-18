@@ -15,6 +15,7 @@ import {
 import { useUIStore } from '@/stores/ui.store';
 import { useAuthStore } from '@/auth/auth.store';
 import * as authService from '@/auth/auth.service';
+import { config } from '@/config';
 import { useIsMobile } from '@/hooks/useMediaQuery';
 
 const analyticsNav = [
@@ -97,14 +98,16 @@ export default function Sidebar() {
                 {user?.fullName ?? user?.username ?? 'Director'}
               </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-surface-lighter dark:hover:text-gray-300"
-              title="Выйти"
-              aria-label="Выйти из аккаунта"
-            >
-              <LogOut size={18} />
-            </button>
+            {config.authEnabled && (
+              <button
+                onClick={handleLogout}
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-surface-lighter dark:hover:text-gray-300"
+                title="Выйти"
+                aria-label="Выйти из аккаунта"
+              >
+                <LogOut size={18} />
+              </button>
+            )}
           </div>
         </div>
       </aside>

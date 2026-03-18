@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import type { AuthUser, TokenResponse } from '@/auth/auth.types';
 import * as authService from '@/auth/auth.service';
+import { config } from '@/config';
+
+const DEFAULT_USER: AuthUser = {
+  id: 'default-user',
+  username: 'admin',
+  email: 'admin@devpulse.local',
+  fullName: 'Администратор',
+};
 
 const LS_KEYS = {
   accessToken: 'dp_access_token',
@@ -99,6 +107,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initialize: async () => {
+    if (!config.authEnabled) {
+      set({
+        user: DEFAULT_USER,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+      return;
+    }
+
     const storedAccess = localStorage.getItem(LS_KEYS.accessToken);
     const storedRefresh = localStorage.getItem(LS_KEYS.refreshToken);
     const storedExpires = localStorage.getItem(LS_KEYS.expiresAt);

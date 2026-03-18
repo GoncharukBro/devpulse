@@ -4,7 +4,18 @@ import { config } from '../../config';
 import { getSigningKey } from '../services/jwks.service';
 import { AuthUser, KeycloakJwtPayload } from '../types/auth.types';
 
-const expectedIssuer = `${config.keycloak.url}/realms/${config.keycloak.realm}`;
+const DEFAULT_USER: AuthUser = {
+  id: 'default-user',
+  username: 'admin',
+  email: 'admin@devpulse.local',
+  fullName: 'Администратор',
+  roles: [],
+  clientRoles: [],
+};
+
+const expectedIssuer = config.authEnabled
+  ? `${config.keycloak.url}/realms/${config.keycloak.realm}`
+  : '';
 
 const PUBLIC_ROUTES = ['/api/health'];
 
@@ -70,6 +81,11 @@ export async function authenticate(
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> {
+  if (!config.authEnabled) {
+    request.user = DEFAULT_USER;
+    return;
+  }
+
   if (isPublicRoute(request.url)) return;
 
   const authHeader = request.headers.authorization;

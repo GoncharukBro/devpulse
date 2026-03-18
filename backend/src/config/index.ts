@@ -1,6 +1,7 @@
 import 'dotenv/config';
 
 export interface AppConfig {
+  authEnabled: boolean;
   server: {
     port: number;
     host: string;
@@ -61,7 +62,10 @@ function warnIfEmpty(name: string, value: string): string {
   return value;
 }
 
+const authEnabled = process.env.AUTH_ENABLED !== 'false';
+
 export const config: AppConfig = {
+  authEnabled,
   server: {
     port: parseInt(optional('PORT', '3101'), 10),
     host: optional('HOST', '0.0.0.0'),
@@ -76,14 +80,16 @@ export const config: AppConfig = {
     password: required('DB_PASSWORD'),
   },
   keycloak: {
-    url: required('KEYCLOAK_URL'),
-    realm: required('KEYCLOAK_REALM'),
-    clientId: required('KEYCLOAK_CLIENT_ID'),
-    clientSecret: required('KEYCLOAK_CLIENT_SECRET'),
+    url: authEnabled ? required('KEYCLOAK_URL') : optional('KEYCLOAK_URL', ''),
+    realm: authEnabled ? required('KEYCLOAK_REALM') : optional('KEYCLOAK_REALM', ''),
+    clientId: authEnabled ? required('KEYCLOAK_CLIENT_ID') : optional('KEYCLOAK_CLIENT_ID', ''),
+    clientSecret: authEnabled ? required('KEYCLOAK_CLIENT_SECRET') : optional('KEYCLOAK_CLIENT_SECRET', ''),
     internal: {
       realm: optional('KEYCLOAK_INTERNAL_REALM', 'internalApi'),
       clientId: optional('KEYCLOAK_INTERNAL_CLIENT_ID', 'api2api'),
-      clientSecret: warnIfEmpty('KEYCLOAK_INTERNAL_CLIENT_SECRET', optional('KEYCLOAK_INTERNAL_CLIENT_SECRET', '')),
+      clientSecret: authEnabled
+        ? warnIfEmpty('KEYCLOAK_INTERNAL_CLIENT_SECRET', optional('KEYCLOAK_INTERNAL_CLIENT_SECRET', ''))
+        : optional('KEYCLOAK_INTERNAL_CLIENT_SECRET', ''),
     },
   },
   llm: {

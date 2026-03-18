@@ -438,7 +438,7 @@ export class CollectionWorker {
 
           // Status
           report.status = 'collected';
-          report.llmStatus = hasNoData ? 'no_data' : 'pending';
+          report.llmStatus = hasNoData ? 'no_data' : (this.llmService ? 'pending' : 'skipped');
           report.collectedAt = new Date();
           report.errorMessage = undefined;
           report.llmProcessedAt = undefined;

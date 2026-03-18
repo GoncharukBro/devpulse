@@ -19,6 +19,7 @@ interface ServiceInfo {
 
 export interface SystemStatusResponse {
   version: string;
+  authEnabled: boolean;
   services: {
     youtrack: ServiceInfo[];
     ollama: ServiceInfo;
@@ -111,6 +112,10 @@ async function checkOllama(): Promise<ServiceInfo> {
 }
 
 async function checkKeycloak(): Promise<ServiceInfo> {
+  if (!config.authEnabled) {
+    return { status: 'not_configured', details: 'Отключён (AUTH_ENABLED=false)' };
+  }
+
   const url = config.keycloak.url;
   const realm = config.keycloak.realm;
   try {
@@ -164,9 +169,12 @@ export async function getSystemStatus(orm: MikroORM<PostgreSqlDriver>): Promise<
 
   return {
     version: APP_VERSION,
+    authEnabled: config.authEnabled,
     services: {
       youtrack,
-      ollama,
+      ollama: !config.authEnabled
+        ? { status: 'not_configured' as ServiceStatus, details: 'Отключён (требуется авторизация)' }
+        : ollama,
       keycloak,
       database,
       smtp,

@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import * as authService from '@/auth/auth.service';
 import { useAuthStore } from '@/auth/auth.store';
+import { config } from '@/config';
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
@@ -18,6 +19,13 @@ export default function LoginPage() {
 
   const [isProcessing, setIsProcessing] = useState(!!code);
   const [error, setError] = useState<string | null>(null);
+
+  // Auth disabled — redirect immediately
+  useEffect(() => {
+    if (!config.authEnabled) {
+      navigate('/overview', { replace: true });
+    }
+  }, [navigate]);
 
   // Already authenticated — redirect away
   useEffect(() => {

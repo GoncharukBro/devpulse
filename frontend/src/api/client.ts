@@ -4,6 +4,8 @@ import { config } from '@/config';
 import { useAuthStore } from '@/auth/auth.store';
 import * as authService from '@/auth/auth.service';
 
+const authEnabled = config.authEnabled;
+
 export const apiClient = axios.create({
   baseURL: config.api.baseUrl,
   headers: {
@@ -11,8 +13,9 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor — attach token
+// Request interceptor — attach token (only when auth is enabled)
 apiClient.interceptors.request.use((reqConfig) => {
+  if (!authEnabled) return reqConfig;
   const token = useAuthStore.getState().accessToken;
   if (token) {
     reqConfig.headers.Authorization = `Bearer ${token}`;
@@ -43,8 +46,9 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
-      if (error.response?.status !== 401) {
+    // When auth is disabled, don't handle 401 as auth error
+    if (!authEnabled || error.response?.status !== 401 || originalRequest._retry) {
+      if (error.response?.status !== 401 || !authEnabled) {
         const data = error.response?.data as Record<string, unknown> | undefined;
         const message =
           (typeof data?.message === 'string' ? data.message : null) || 'Произошла ошибка';

@@ -35,21 +35,26 @@ async function main(): Promise<void> {
   const achievementsGenerator = new AchievementsGenerator(orm, app.log);
   worker.setAchievementsGenerator(achievementsGenerator);
 
-  // Инициализация LLM-модуля
-  const llmService = new LlmService(orm, app.log);
-  try {
-    await llmService.initialize();
-    worker.setLlmService(llmService);
-    llmService.setAchievementsGenerator(achievementsGenerator);
-    setLlmServiceRef(llmService);
-  } catch (err) {
-    app.log.warn(`LLM module initialization failed: ${(err as Error).message}. LLM analysis disabled.`);
+  // Инициализация LLM-модуля (требует auth для Keycloak token service)
+  let llmService: LlmService | null = null;
+  if (config.authEnabled) {
+    llmService = new LlmService(orm, app.log);
+    try {
+      await llmService.initialize();
+      worker.setLlmService(llmService);
+      llmService.setAchievementsGenerator(achievementsGenerator);
+      setLlmServiceRef(llmService);
+    } catch (err) {
+      app.log.warn(`LLM module initialization failed: ${(err as Error).message}. LLM analysis disabled.`);
+    }
+  } else {
+    app.log.info('AUTH_ENABLED=false — LLM analysis disabled (requires Keycloak)');
   }
 
   const shutdown = async (signal: string) => {
     app.log.info(`Received ${signal}, shutting down gracefully...`);
     cron.stop();
-    await llmService.shutdown();
+    if (llmService) await llmService.shutdown();
     await worker.stop();
     await app.close();
     app.log.info('Server closed');

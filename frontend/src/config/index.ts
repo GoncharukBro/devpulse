@@ -1,4 +1,5 @@
 export const config = {
+  authEnabled: import.meta.env.VITE_AUTH_ENABLED !== 'false',
   api: {
     baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3100/api',
   },

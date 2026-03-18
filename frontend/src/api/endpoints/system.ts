@@ -12,6 +12,7 @@ export interface ServiceInfo {
 
 export interface SystemStatusResponse {
   version: string;
+  authEnabled: boolean;
   services: {
     youtrack: ServiceInfo[];
     ollama: ServiceInfo;
