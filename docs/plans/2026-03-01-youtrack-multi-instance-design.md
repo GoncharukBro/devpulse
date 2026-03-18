@@ -17,7 +17,7 @@ DevPulse уже имеет архитектуру для нескольких и
 
 ### 1. Конфигурация
 
-- `.env` — добавить `YOUTRACK_SECONDARY_URL/TOKEN/NAME`
+- `.env` — добавить `YOUTRACK_2024_URL/TOKEN/NAME`
 - `.env.example` — добавить пример второго инстанса
 - `config/index.ts` — удалить legacy-секцию `youtrack` из AppConfig (нигде не используется, всё работает через `getYouTrackInstances()`)
 

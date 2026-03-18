@@ -35,9 +35,9 @@ Expected: 0 результатов (всё использует `getYouTrackInst
 - Удалить из объекта `config`:
 ```typescript
   youtrack: {
-    mainUrl: required('YOUTRACK_MAIN_URL'),
-    mainToken: required('YOUTRACK_MAIN_TOKEN'),
-    mainName: optional('YOUTRACK_MAIN_NAME', 'YouTrack'),
+    mainUrl: required('YOUTRACK_DRCS_URL'),
+    mainToken: required('YOUTRACK_DRCS_TOKEN'),
+    mainName: optional('YOUTRACK_DRCS_NAME', 'YouTrack ДРКС'),
   },
 ```
 
@@ -193,17 +193,17 @@ git commit -m "feat: check all YouTrack instances in system status"
 После секции YouTrack добавить:
 ```env
 # YouTrack (дополнительные инстансы — по паттерну YOUTRACK_<ID>_URL/TOKEN/NAME)
-# YOUTRACK_SECONDARY_URL=http://localhost:8084
-# YOUTRACK_SECONDARY_TOKEN=
-# YOUTRACK_SECONDARY_NAME=YouTrack 2024
+# YOUTRACK_2024_URL=http://localhost:8084
+# YOUTRACK_2024_TOKEN=
+# YOUTRACK_2024_NAME=YouTrack 2024
 ```
 
 **Step 2: Добавить в .env реальные значения**
 
 ```env
-YOUTRACK_SECONDARY_URL=http://localhost:8084
-YOUTRACK_SECONDARY_TOKEN=perm:YWRtaW4=.NDQtMQ==.hH7NmPqByCdYLAGAK2wy3JuhX8PZpH
-YOUTRACK_SECONDARY_NAME=YouTrack 2024
+YOUTRACK_2024_URL=http://localhost:8084
+YOUTRACK_2024_TOKEN=perm:YWRtaW4=.NDQtMQ==.hH7NmPqByCdYLAGAK2wy3JuhX8PZpH
+YOUTRACK_2024_NAME=YouTrack 2024
 ```
 
 **Step 3: Commit (только .env.example)**
