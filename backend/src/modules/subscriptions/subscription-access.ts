@@ -24,7 +24,7 @@ export async function findAccessibleSubscriptions(
   if (subscriptionId) {
     const sub = await em.findOne(Subscription, {
       id: subscriptionId,
-      ...baseFilter,
+      ...(baseFilter as object),
     });
     if (!sub) return [];
     return [sub];

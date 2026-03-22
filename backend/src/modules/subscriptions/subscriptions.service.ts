@@ -12,6 +12,7 @@ import {
   CreateEmployeeDto,
   UpdateEmployeeDto,
 } from './subscriptions.types';
+import { subscriptionAccessFilter } from './subscription-access';
 
 function getInstanceName(instanceId: string): string | undefined {
   const instances = getYouTrackInstances();
@@ -44,9 +45,10 @@ function validateCreateDto(dto: CreateSubscriptionDto): void {
 export async function listSubscriptions(
   em: EntityManager,
   ownerId: string,
+  userLogin: string,
   active?: boolean,
 ): Promise<object[]> {
-  const where: Record<string, unknown> = { ownerId };
+  const where: Record<string, unknown> = { ...(subscriptionAccessFilter(ownerId, userLogin) as object) };
   if (active !== undefined) {
     where.isActive = active;
   }
@@ -160,6 +162,7 @@ export async function listSubscriptions(
             llmNoData: parseInt(periodRow.llm_no_data, 10),
           }
         : null,
+      isOwner: sub.ownerId === ownerId,
       createdAt: sub.createdAt.toISOString(),
     };
   });
@@ -169,10 +172,15 @@ export async function getSubscription(
   em: EntityManager,
   id: string,
   ownerId: string,
+  userLogin?: string,
 ): Promise<object> {
+  const where = userLogin
+    ? { id, ...(subscriptionAccessFilter(ownerId, userLogin) as object) }
+    : { id, ownerId };
+
   const sub = await em.findOne(
     Subscription,
-    { id, ownerId },
+    where,
     { populate: ['employees', 'fieldMapping'] },
   );
 
@@ -205,6 +213,7 @@ export async function getSubscription(
           releaseStatuses: sub.fieldMapping.releaseStatuses,
         }
       : null,
+    isOwner: sub.ownerId === ownerId,
     createdAt: sub.createdAt.toISOString(),
     updatedAt: sub.updatedAt.toISOString(),
   };

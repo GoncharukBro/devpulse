@@ -41,7 +41,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
     const em = request.orm.em.fork();
     const active =
       request.query.active === 'true' ? true : request.query.active === 'false' ? false : undefined;
-    return listSubscriptions(em, request.user.id, active);
+    return listSubscriptions(em, request.user.id, request.user.username, active);
   });
 
   // POST /api/subscriptions
@@ -55,7 +55,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/subscriptions/:id
   app.get<{ Params: { id: string } }>('/subscriptions/:id', async (request) => {
     const em = request.orm.em.fork();
-    return getSubscription(em, request.params.id, request.user.id);
+    return getSubscription(em, request.params.id, request.user.id, request.user.username);
   });
 
   // PATCH /api/subscriptions/:id
