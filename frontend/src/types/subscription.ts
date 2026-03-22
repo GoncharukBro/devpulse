@@ -34,6 +34,7 @@ export interface Subscription {
   } | null;
   currentPeriodStatus: CurrentPeriodStatus | null;
   createdAt: string;
+  isOwner: boolean;
 }
 
 export interface SubscriptionDetail extends Subscription {
@@ -115,3 +116,15 @@ export const TASK_CATEGORIES: TaskCategoryDefinition[] = [
   { key: 'codeReview',    labelRu: 'Code Review',   labelEn: 'Code Review',   color: '#8b5cf6' },
   { key: 'other',         labelRu: 'Прочее',        labelEn: 'Other',         color: '#6b7280' },
 ];
+
+export interface SubscriptionShare {
+  id: number;
+  sharedWithLogin: string;
+  sharedBy: string;
+  createdAt: string;
+}
+
+export interface SharesListResponse {
+  items: SubscriptionShare[];
+  total: number;
+}
