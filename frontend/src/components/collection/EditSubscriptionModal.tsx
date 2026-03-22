@@ -162,16 +162,6 @@ export default function EditSubscriptionModal({
     });
   };
 
-  if (loading) {
-    return (
-      <Modal open={open} onClose={onClose} title="Загрузка...">
-        <div className="flex items-center justify-center py-12">
-          <Spinner size="lg" />
-        </div>
-      </Modal>
-    );
-  }
-
   if (mode === 'access') {
     return (
       <Modal
@@ -185,6 +175,16 @@ export default function EditSubscriptionModal({
         }
       >
         {subscriptionId && <SharesManager subscriptionId={subscriptionId} />}
+      </Modal>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Modal open={open} onClose={onClose} title="Загрузка...">
+        <div className="flex items-center justify-center py-12">
+          <Spinner size="lg" />
+        </div>
       </Modal>
     );
   }

@@ -13,12 +13,17 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
   const [total, setTotal] = useState(0);
   const [login, setLogin] = useState('');
   const [loading, setLoading] = useState(false);
+  const [removingId, setRemovingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadShares = useCallback(async () => {
-    const result = await sharesApi.list(subscriptionId, { limit: 50 });
-    setShares(result.items);
-    setTotal(result.total);
+    try {
+      const result = await sharesApi.list(subscriptionId, { limit: 50 });
+      setShares(result.items);
+      setTotal(result.total);
+    } catch {
+      setError('Не удалось загрузить список доступов');
+    }
   }, [subscriptionId]);
 
   useEffect(() => { loadShares(); }, [loadShares]);
@@ -41,8 +46,15 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
   };
 
   const handleRemove = async (shareId: number) => {
-    await sharesApi.remove(subscriptionId, shareId);
-    await loadShares();
+    setRemovingId(shareId);
+    try {
+      await sharesApi.remove(subscriptionId, shareId);
+      await loadShares();
+    } catch {
+      setError('Не удалось удалить доступ');
+    } finally {
+      setRemovingId(null);
+    }
   };
 
   return (
@@ -85,8 +97,11 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
               </div>
               <button
                 onClick={() => handleRemove(share.id)}
+                disabled={removingId === share.id}
+                title="Удалить"
                 className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500
-                           dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
+                           dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors
+                           disabled:opacity-50 disabled:pointer-events-none"
               >
                 <Trash2 size={14} />
               </button>
