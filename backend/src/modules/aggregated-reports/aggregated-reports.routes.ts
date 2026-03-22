@@ -74,6 +74,7 @@ export async function aggregatedReportsRoutes(app: FastifyInstance): Promise<voi
         type,
         page: page ? Number(page) : undefined,
         limit: limit ? Number(limit) : undefined,
+        userId: request.user.id,
       });
     },
   );
@@ -84,7 +85,7 @@ export async function aggregatedReportsRoutes(app: FastifyInstance): Promise<voi
     async (request, reply) => {
       const em = request.orm.em.fork();
       const service = new AggregatedReportsService(em, llmServiceRef, request.orm);
-      const result = await service.getById(request.params.id);
+      const result = await service.getById(request.params.id, request.user.id);
       if (!result) {
         reply.status(404).send({ message: 'Report not found' });
         return;
@@ -99,7 +100,7 @@ export async function aggregatedReportsRoutes(app: FastifyInstance): Promise<voi
     async (request, reply) => {
       const em = request.orm.em.fork();
       const service = new AggregatedReportsService(em, llmServiceRef, request.orm);
-      await service.delete(request.params.id);
+      await service.delete(request.params.id, request.user.id);
       reply.status(204).send();
     },
   );

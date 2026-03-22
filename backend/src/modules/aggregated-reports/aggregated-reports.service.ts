@@ -135,12 +135,12 @@ export class AggregatedReportsService {
   }
 
   // ─── List ─────────────────────────────────────────────────────────
-  async list(params: { type?: string; page?: number; limit?: number }): Promise<ListResponse> {
+  async list(params: { type?: string; page?: number; limit?: number; userId: string }): Promise<ListResponse> {
     const page = params.page ?? 1;
     const limit = Math.min(params.limit ?? 20, 100);
     const offset = (page - 1) * limit;
 
-    const where: Record<string, unknown> = {};
+    const where: Record<string, unknown> = { createdBy: params.userId };
     if (params.type) where.type = params.type;
 
     const [items, total] = await this.em.findAndCount(
@@ -169,8 +169,8 @@ export class AggregatedReportsService {
   }
 
   // ─── GetById ──────────────────────────────────────────────────────
-  async getById(id: string): Promise<AggregatedReportDTO | null> {
-    const r = await this.em.findOne(AggregatedReport, id);
+  async getById(id: string, userId: string): Promise<AggregatedReportDTO | null> {
+    const r = await this.em.findOne(AggregatedReport, { id, createdBy: userId });
     if (!r) return null;
 
     return {
@@ -210,8 +210,8 @@ export class AggregatedReportsService {
   }
 
   // ─── Delete ───────────────────────────────────────────────────────
-  async delete(id: string): Promise<void> {
-    const report = await this.em.findOne(AggregatedReport, id);
+  async delete(id: string, userId: string): Promise<void> {
+    const report = await this.em.findOne(AggregatedReport, { id, createdBy: userId });
     if (report) {
       await this.em.removeAndFlush(report);
     }
