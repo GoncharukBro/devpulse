@@ -22,6 +22,7 @@ import {
   VALID_TASK_CATEGORY_KEYS,
 } from './subscriptions.types';
 import { ValidationError } from '../../common/errors';
+import { sharesRoutes } from './shares.routes';
 
 function validateFieldMapping(dto: UpdateFieldMappingDto | undefined): void {
   if (!dto) return;
@@ -147,4 +148,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
       };
     },
   );
+
+  // Register shares sub-routes
+  await sharesRoutes(app);
 }
