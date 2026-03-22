@@ -6,6 +6,7 @@ import {
   UserRound,
   Users,
   Trophy,
+  FileText,
   BookOpen,
   Database,
   Monitor,
@@ -24,6 +25,7 @@ const analyticsNav = [
   { label: 'Сотрудники', to: '/employees', icon: UserRound },
   { label: 'Команды', to: '/teams', icon: Users },
   { label: 'Ачивки', to: '/achievements', icon: Trophy },
+  { label: 'Отчёты', to: '/reports', icon: FileText },
 ];
 
 const managementNav = [

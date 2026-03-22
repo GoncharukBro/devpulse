@@ -14,6 +14,8 @@ import EmployeePage from '@/pages/EmployeePage';
 import TeamsListPage from '@/pages/TeamsListPage';
 import TeamPage from '@/pages/TeamPage';
 import AchievementsPage from '@/pages/AchievementsPage';
+import ReportsPage from '@/pages/ReportsPage';
+import AggregatedReportPage from '@/pages/AggregatedReportPage';
 import CollectionPage from '@/pages/CollectionPage';
 import SettingsPage from '@/pages/SettingsPage';
 import MethodologyPage from '@/pages/MethodologyPage';
@@ -45,6 +47,8 @@ export default function App() {
             <Route path="/teams" element={<TeamsListPage />} />
             <Route path="/teams/:id" element={<TeamPage />} />
             <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/reports/:id" element={<AggregatedReportPage />} />
             <Route path="/collection" element={<CollectionPage />} />
             <Route path="/methodology" element={<MethodologyPage />} />
             <Route path="/system" element={<SettingsPage />} />
