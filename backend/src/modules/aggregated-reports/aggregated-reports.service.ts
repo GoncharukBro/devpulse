@@ -16,6 +16,7 @@ import {
   minutesToHours,
 } from '../../common/utils/metrics-utils';
 import { LlmService } from '../llm/llm.service';
+import { buildPeriodAnalysisPrompt, PeriodPromptData } from './period-llm.prompt';
 import {
   PreviewRequest,
   PreviewResponse,
@@ -118,24 +119,10 @@ export class AggregatedReportsService {
 
       // Async LLM generation — MUST use orm.em.fork() because HTTP em will be invalid
       const reportId = report.id;
-      const orm = this.orm;
-      setImmediate(async () => {
-        try {
-          const freshEm = orm.em.fork();
-          const savedReport = await freshEm.findOneOrFail(AggregatedReport, reportId);
-          // LLM generation will be implemented in Task 5
-          // For now just mark as ready
-          savedReport.status = 'ready';
-          await freshEm.flush();
-        } catch (err) {
-          const freshEm = orm.em.fork();
-          const failedReport = await freshEm.findOne(AggregatedReport, reportId);
-          if (failedReport) {
-            failedReport.status = 'failed';
-            failedReport.errorMessage = (err as Error).message;
-            await freshEm.flush();
-          }
-        }
+      setImmediate(() => {
+        this.generatePeriodLlmSummary(reportId).catch(() => {
+          // Error handling is inside generatePeriodLlmSummary
+        });
       });
 
       return { id: report.id, status: 'generating' };
@@ -231,6 +218,106 @@ export class AggregatedReportsService {
   }
 
   // ─── Private helpers ──────────────────────────────────────────────
+
+  private async generatePeriodLlmSummary(reportId: string): Promise<void> {
+    const em = this.orm.em.fork();
+    try {
+      const report = await em.findOneOrFail(AggregatedReport, reportId);
+
+      const promptData: PeriodPromptData = {
+        targetType: report.type,
+        targetName: report.targetName,
+        periodStart: formatYTDate(report.periodStart),
+        periodEnd: formatYTDate(report.periodEnd),
+        weeksCount: report.weeksCount,
+        aggregatedMetrics: {
+          totalIssues: report.totalIssues,
+          completedIssues: report.completedIssues,
+          overdueIssues: report.overdueIssues,
+          totalSpentHours: minutesToHours(report.totalSpentMinutes),
+          totalEstimationHours: minutesToHours(report.totalEstimationMinutes),
+          avgUtilization: report.avgUtilization ?? null,
+          avgEstimationAccuracy: report.avgEstimationAccuracy ?? null,
+          avgFocus: report.avgFocus ?? null,
+          avgCompletionRate: report.avgCompletionRate ?? null,
+          avgCycleTimeHours: report.avgCycleTimeHours ?? null,
+          avgScore: report.avgScore ?? null,
+        },
+        weeklyData: report.weeklyData as unknown as WeeklyDataItem[],
+        weeklyLlmSummaries: report.weeklyLlmSummaries as unknown as WeeklyLlmItem[],
+      };
+
+      const messages = buildPeriodAnalysisPrompt(promptData);
+      const response = await this.llmService!.chatCompletion(messages);
+
+      if (!response) {
+        report.status = 'failed';
+        report.errorMessage = 'LLM returned empty response';
+        await em.flush();
+        return;
+      }
+
+      // Parse JSON response
+      const parsed = this.parsePeriodLlmResponse(response);
+      if (!parsed) {
+        report.status = 'failed';
+        report.errorMessage = 'Failed to parse LLM response';
+        await em.flush();
+        return;
+      }
+
+      report.llmPeriodScore = parsed.score;
+      report.llmPeriodSummary = parsed.summary;
+      report.llmPeriodConcerns = parsed.concerns;
+      report.llmPeriodRecommendations = parsed.recommendations;
+      report.status = 'ready';
+      await em.flush();
+    } catch (err) {
+      try {
+        const freshEm = this.orm.em.fork();
+        const failedReport = await freshEm.findOne(AggregatedReport, reportId);
+        if (failedReport) {
+          failedReport.status = 'failed';
+          failedReport.errorMessage = (err as Error).message;
+          await freshEm.flush();
+        }
+      } catch {
+        // ignore cleanup errors
+      }
+    }
+  }
+
+  private parsePeriodLlmResponse(raw: string): {
+    score: number;
+    summary: string;
+    concerns: string[];
+    recommendations: string[];
+  } | null {
+    if (!raw || raw.trim().length === 0) return null;
+
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      // Try to extract JSON from text
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) return null;
+      try {
+        parsed = JSON.parse(match[0]) as Record<string, unknown>;
+      } catch {
+        return null;
+      }
+    }
+
+    const score = typeof parsed.score === 'number' ? Math.max(0, Math.min(100, Math.round(parsed.score))) : null;
+    if (score === null) return null;
+
+    const summary = typeof parsed.summary === 'string' ? parsed.summary.slice(0, 2000) : '';
+    const concerns = Array.isArray(parsed.concerns) ? parsed.concerns.filter((v): v is string => typeof v === 'string') : [];
+    const recommendations = Array.isArray(parsed.recommendations) ? parsed.recommendations.filter((v): v is string => typeof v === 'string') : [];
+
+    return { score, summary, concerns, recommendations };
+  }
 
   private roundPeriod(dateFrom: string, dateTo: string): {
     periodStart: Date;
