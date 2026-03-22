@@ -9,7 +9,7 @@ import { config } from '../../config';
 import { KeycloakTokenService } from './keycloak-token.service';
 import { LlmClient } from './llm.client';
 import { LlmWorker } from './llm.worker';
-import { LlmConfig, LlmWorkerState } from './llm.types';
+import { ChatMessage, LlmConfig, LlmWorkerState } from './llm.types';
 import { AchievementsGenerator } from '../achievements/achievements.generator';
 import { Logger } from '../../common/types/logger';
 
@@ -89,6 +89,11 @@ export class LlmService {
     if (this.worker) {
       this.worker.setAchievementsGenerator(generator);
     }
+  }
+
+  async chatCompletion(messages: ChatMessage[]): Promise<string | null> {
+    if (!this.client) return null;
+    return this.client.chatCompletion(messages);
   }
 
   getState(): LlmWorkerState {

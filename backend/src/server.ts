@@ -6,6 +6,7 @@ import mikroOrmConfig from './config/mikro-orm.config';
 import { initCollectionModule } from './modules/collection';
 import { LlmService } from './modules/llm/llm.service';
 import { setLlmServiceRef } from './modules/settings/settings.routes';
+import { setAggregatedReportsLlmRef } from './modules/aggregated-reports/aggregated-reports.routes';
 import { AchievementsGenerator } from './modules/achievements/achievements.generator';
 
 async function main(): Promise<void> {
@@ -44,6 +45,7 @@ async function main(): Promise<void> {
       worker.setLlmService(llmService);
       llmService.setAchievementsGenerator(achievementsGenerator);
       setLlmServiceRef(llmService);
+      setAggregatedReportsLlmRef(llmService);
     } catch (err) {
       app.log.warn(`LLM module initialization failed: ${(err as Error).message}. LLM analysis disabled.`);
     }
