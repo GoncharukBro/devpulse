@@ -16,6 +16,7 @@ import {
   TeamMember,
   Achievement,
   CollectionLog,
+  AggregatedReport,
 } from '../entities';
 
 const mikroOrmConfig: Options<PostgreSqlDriver> = {
@@ -34,6 +35,7 @@ const mikroOrmConfig: Options<PostgreSqlDriver> = {
     TeamMember,
     Achievement,
     CollectionLog,
+    AggregatedReport,
   ],
   extensions: [Migrator],
   migrations: {

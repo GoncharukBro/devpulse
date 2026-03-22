@@ -7,3 +7,4 @@ export { Team } from './team.entity';
 export { TeamMember } from './team-member.entity';
 export { Achievement } from './achievement.entity';
 export { CollectionLog } from './collection-log.entity';
+export { AggregatedReport } from './aggregated-report.entity';
