@@ -5,6 +5,7 @@ import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import FieldMappingEditor from './FieldMappingEditor';
+import SharesManager from './SharesManager';
 import { subscriptionsApi } from '@/api/endpoints/subscriptions';
 import { youtrackApi } from '@/api/endpoints/youtrack';
 import type { SubscriptionDetail, SubscriptionEmployee, FieldMapping } from '@/types/subscription';
@@ -13,7 +14,7 @@ import type { YouTrackUser } from '@/types/youtrack';
 interface EditSubscriptionModalProps {
   open: boolean;
   subscriptionId: string | null;
-  mode: 'employees' | 'fieldMapping';
+  mode: 'employees' | 'fieldMapping' | 'access';
   onClose: () => void;
   onUpdated: () => void;
 }
@@ -167,6 +168,23 @@ export default function EditSubscriptionModal({
         <div className="flex items-center justify-center py-12">
           <Spinner size="lg" />
         </div>
+      </Modal>
+    );
+  }
+
+  if (mode === 'access') {
+    return (
+      <Modal
+        open={open}
+        onClose={onClose}
+        title={`Доступ — ${subscription?.projectName ?? ''}`}
+        footer={
+          <Button variant="secondary" size="sm" onClick={onClose}>
+            Закрыть
+          </Button>
+        }
+      >
+        {subscriptionId && <SharesManager subscriptionId={subscriptionId} />}
       </Modal>
     );
   }

@@ -17,6 +17,7 @@ interface SubscriptionCardProps {
   onCancel: (id: string) => void;
   onEdit: (id: string) => void;
   onFieldMapping: (id: string) => void;
+  onAccess: (id: string) => void;
   onToggleActive: (id: string, isActive: boolean) => void;
   onDelete: (id: string) => void;
   triggerLoading?: boolean;
@@ -42,6 +43,7 @@ export default function SubscriptionCard({
   onCancel,
   onEdit,
   onFieldMapping,
+  onAccess,
   onToggleActive,
   onDelete,
   triggerLoading,
@@ -140,6 +142,12 @@ export default function SubscriptionCard({
                     className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
                   >
                     Настройка маппинга полей
+                  </button>
+                  <button
+                    onClick={() => { onAccess(subscription.id); setMenuOpen(false); }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                  >
+                    Доступ
                   </button>
                   <button
                     onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}

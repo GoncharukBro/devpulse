@@ -36,7 +36,7 @@ export default function CollectionPage() {
   const [wizardOpen, setWizardOpen] = useState(openWizardFromQuery.current);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editModalId, setEditModalId] = useState<string | null>(null);
-  const [editModalMode, setEditModalMode] = useState<'employees' | 'fieldMapping'>('employees');
+  const [editModalMode, setEditModalMode] = useState<'employees' | 'fieldMapping' | 'access'>('employees');
   const [collectModalOpen, setCollectModalOpen] = useState(false);
   const [collectModalSubscription, setCollectModalSubscription] = useState<Subscription | null>(null);
   const [collectAllModalOpen, setCollectAllModalOpen] = useState(false);
@@ -216,7 +216,7 @@ export default function CollectionPage() {
   };
 
   // Edit modal (only for owned subscriptions)
-  const openEditModal = (id: string, mode: 'employees' | 'fieldMapping') => {
+  const openEditModal = (id: string, mode: 'employees' | 'fieldMapping' | 'access') => {
     const sub = subscriptions.find((s) => s.id === id);
     if (!sub?.isOwner) return;
     setEditModalId(id);
@@ -385,6 +385,7 @@ export default function CollectionPage() {
                 onCancel={handleCancel}
                 onEdit={(id) => openEditModal(id, 'employees')}
                 onFieldMapping={(id) => openEditModal(id, 'fieldMapping')}
+                onAccess={(id) => openEditModal(id, 'access')}
                 onToggleActive={handleToggleActive}
                 onDelete={openDeleteConfirm}
                 triggerLoading={false}
