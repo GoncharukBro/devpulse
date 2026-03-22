@@ -116,7 +116,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
   // GET /api/subscriptions/:id/field-mapping
   app.get<{ Params: { id: string } }>('/subscriptions/:id/field-mapping', async (request) => {
     const em = request.orm.em.fork();
-    const mapping = await getFieldMapping(em, request.params.id, request.user.id);
+    const mapping = await getFieldMapping(em, request.params.id, request.user.id, request.user.username);
     return {
       taskTypeMapping: mapping.taskTypeMapping,
       typeFieldName: mapping.typeFieldName,

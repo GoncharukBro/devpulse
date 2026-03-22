@@ -8,6 +8,7 @@ import {
   DEFAULT_FIELD_MAPPING,
   VALID_TASK_CATEGORY_KEYS,
 } from './subscriptions.types';
+import { subscriptionAccessFilter } from './subscription-access';
 
 function validateTaskTypeMapping(mapping: Record<string, string>): void {
   for (const [key, value] of Object.entries(mapping)) {
@@ -66,10 +67,11 @@ export async function getFieldMapping(
   em: EntityManager,
   subscriptionId: string,
   ownerId: string,
+  userLogin: string = '',
 ): Promise<FieldMapping> {
   const mapping = await em.findOne(
     FieldMapping,
-    { subscription: { id: subscriptionId, ownerId } },
+    { subscription: { id: subscriptionId, ...(subscriptionAccessFilter(ownerId, userLogin) as object) } },
     { populate: ['subscription'] },
   );
 
