@@ -106,9 +106,10 @@ export default function CollectionPage() {
     return () => onLlmDone(null);
   }, [onLlmDone, loadSubscriptions]);
 
-  // Open collect modal for single project
+  // Open collect modal for single project (only for owned subscriptions)
   const openCollectModal = (subscriptionId: string) => {
     const sub = subscriptions.find((s) => s.id === subscriptionId) ?? null;
+    if (!sub?.isOwner) return;
     setCollectModalSubscription(sub);
     setCollectModalOpen(true);
   };
@@ -210,8 +211,10 @@ export default function CollectionPage() {
     }
   };
 
-  // Edit modal
+  // Edit modal (only for owned subscriptions)
   const openEditModal = (id: string, mode: 'employees' | 'fieldMapping') => {
+    const sub = subscriptions.find((s) => s.id === id);
+    if (!sub?.isOwner) return;
     setEditModalId(id);
     setEditModalMode(mode);
     setEditModalOpen(true);
@@ -284,6 +287,7 @@ export default function CollectionPage() {
   }
 
   const hasSubscriptions = subscriptions.length > 0;
+  const hasOwnedSubscriptions = subscriptions.some((s) => s.isOwner);
 
   return (
     <>
@@ -305,7 +309,7 @@ export default function CollectionPage() {
       {/* Cron + global actions */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <CronControl cronState={cronState} onPause={handlePauseCron} onResume={handleResumeCron} />
-        {hasSubscriptions && (
+        {hasOwnedSubscriptions && (
           <div className="flex items-center gap-2 sm:ml-auto">
             {isGlobalBusy ? (
               <Button
@@ -323,7 +327,7 @@ export default function CollectionPage() {
                 size="sm"
                 leftIcon={<Play size={14} />}
                 onClick={() => setCollectAllModalOpen(true)}
-                disabled={subscriptions.filter((s) => s.isActive).length === 0}
+                disabled={subscriptions.filter((s) => s.isActive && s.isOwner).length === 0}
               >
                 Запустить всё
               </Button>
@@ -371,6 +375,7 @@ export default function CollectionPage() {
                 activeCollection={getActiveCollection(sub.id)}
                 llmItems={getLlmItems(sub.id)}
                 llmProcessed={getLlmProcessed(sub.id)}
+                isOwner={sub.isOwner}
                 onTrigger={openCollectModal}
                 onStop={handleStop}
                 onCancel={handleCancel}
@@ -385,7 +390,7 @@ export default function CollectionPage() {
           </div>
 
           {/* Duplicate action buttons below cards when many subscriptions */}
-          {subscriptions.length > 2 && (
+          {subscriptions.length > 2 && hasOwnedSubscriptions && (
             <div className="mb-6 flex justify-end gap-2">
               {isGlobalBusy ? (
                 <Button
@@ -403,7 +408,7 @@ export default function CollectionPage() {
                   size="sm"
                   leftIcon={<Play size={14} />}
                   onClick={() => setCollectAllModalOpen(true)}
-                  disabled={subscriptions.filter((s) => s.isActive).length === 0}
+                  disabled={subscriptions.filter((s) => s.isActive && s.isOwner).length === 0}
                 >
                   Запустить всё
                 </Button>

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreVertical, Play, Square, X, Clock, Hourglass, Users, Calendar, Bot, Database, Loader, ArrowRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import SharedBadge from '@/components/collection/SharedBadge';
 import type { Subscription } from '@/types/subscription';
 import type { CollectionProgress, LlmQueueItem } from '@/types/collection';
 
@@ -10,6 +11,7 @@ interface SubscriptionCardProps {
   activeCollection?: CollectionProgress;
   llmItems?: LlmQueueItem[];
   llmProcessed?: number;
+  isOwner: boolean;
   onTrigger: (id: string) => void;
   onStop: (id: string) => void;
   onCancel: (id: string) => void;
@@ -34,6 +36,7 @@ export default function SubscriptionCard({
   activeCollection,
   llmItems = [],
   llmProcessed = 0,
+  isOwner,
   onTrigger,
   onStop,
   onCancel,
@@ -114,44 +117,47 @@ export default function SubscriptionCard({
               {subscription.projectName}
               <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-500 dark:text-brand-400" />
             </button>
+            {!isOwner && <SharedBadge />}
           </div>
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="rounded-lg p-1.5 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-gray-700 dark:hover:text-gray-200"
-            >
-              <MoreVertical size={16} />
-            </button>
-            {menuOpen && (
-              <div className="absolute right-0 top-full z-20 mt-1 w-52 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light py-1 shadow-xl">
-                <button
-                  onClick={() => { onEdit(subscription.id); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                >
-                  Редактировать сотрудников
-                </button>
-                <button
-                  onClick={() => { onFieldMapping(subscription.id); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                >
-                  Настройка маппинга полей
-                </button>
-                <button
-                  onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                >
-                  {subscription.isActive ? 'Исключить из автосбора' : 'Включить в автосбор'}
-                </button>
-                <div className="my-1 border-t border-gray-200 dark:border-surface-border" />
-                <button
-                  onClick={() => { onDelete(subscription.id); setMenuOpen(false); }}
-                  className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                >
-                  Удалить
-                </button>
-              </div>
-            )}
-          </div>
+          {isOwner && (
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="rounded-lg p-1.5 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-surface-lighter hover:text-gray-700 dark:hover:text-gray-200"
+              >
+                <MoreVertical size={16} />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 top-full z-20 mt-1 w-52 rounded-lg border border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light py-1 shadow-xl">
+                  <button
+                    onClick={() => { onEdit(subscription.id); setMenuOpen(false); }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                  >
+                    Редактировать сотрудников
+                  </button>
+                  <button
+                    onClick={() => { onFieldMapping(subscription.id); setMenuOpen(false); }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                  >
+                    Настройка маппинга полей
+                  </button>
+                  <button
+                    onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                  >
+                    {subscription.isActive ? 'Исключить из автосбора' : 'Включить в автосбор'}
+                  </button>
+                  <div className="my-1 border-t border-gray-200 dark:border-surface-border" />
+                  <button
+                    onClick={() => { onDelete(subscription.id); setMenuOpen(false); }}
+                    className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                  >
+                    Удалить
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Subtitle */}
@@ -276,61 +282,63 @@ export default function SubscriptionCard({
           </div>
         )}
 
-        {/* Actions — different buttons per state */}
-        {isPending ? (
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<X size={14} />}
-              onClick={() => onCancel(subscription.id)}
-              loading={stopLoading}
-            >
-              Отменить
-            </Button>
-          </div>
-        ) : isRunning ? (
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Square size={14} />}
-              onClick={() => onStop(subscription.id)}
-              loading={stopLoading}
-            >
-              Остановить
-            </Button>
-          </div>
-        ) : isStopping ? (
-          <div className="flex gap-2">
-            <Button variant="secondary" size="sm" disabled>
-              Останавливается...
-            </Button>
-          </div>
-        ) : hasLlm ? (
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Square size={14} />}
-              onClick={() => onStop(subscription.id)}
-              loading={stopLoading}
-            >
-              Остановить LLM
-            </Button>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<Play size={14} />}
-              onClick={() => onTrigger(subscription.id)}
-              loading={triggerLoading}
-            >
-              Запустить сбор
-            </Button>
-          </div>
+        {/* Actions — different buttons per state; hidden for viewers */}
+        {isOwner && (
+          isPending ? (
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<X size={14} />}
+                onClick={() => onCancel(subscription.id)}
+                loading={stopLoading}
+              >
+                Отменить
+              </Button>
+            </div>
+          ) : isRunning ? (
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Square size={14} />}
+                onClick={() => onStop(subscription.id)}
+                loading={stopLoading}
+              >
+                Остановить
+              </Button>
+            </div>
+          ) : isStopping ? (
+            <div className="flex gap-2">
+              <Button variant="secondary" size="sm" disabled>
+                Останавливается...
+              </Button>
+            </div>
+          ) : hasLlm ? (
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Square size={14} />}
+                onClick={() => onStop(subscription.id)}
+                loading={stopLoading}
+              >
+                Остановить LLM
+              </Button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Play size={14} />}
+                onClick={() => onTrigger(subscription.id)}
+                loading={triggerLoading}
+              >
+                Запустить сбор
+              </Button>
+            </div>
+          )
         )}
       </div>
     </div>
