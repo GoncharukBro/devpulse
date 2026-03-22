@@ -10,6 +10,13 @@ import { Achievement } from '../../entities/achievement.entity';
 import { Team } from '../../entities/team.entity';
 import { NotFoundError } from '../../common/errors';
 import { formatYTDate } from '../../common/utils/week-utils';
+import {
+  avgNullable,
+  calcTrend,
+  calcMetricTrend,
+  minutesToHours,
+  minutesByTypeToHours,
+} from '../../common/utils/metrics-utils';
 import { AchievementsService } from '../achievements/achievements.service';
 import {
   EmployeeReportDTO,
@@ -44,45 +51,6 @@ function getEffectiveScore(report: MetricReport): number | null {
 function getScoreSource(report: MetricReport): 'llm' | null {
   if (report.llmScore != null) return 'llm';
   return null;
-}
-
-function minutesToHours(minutes: number): number {
-  return Math.round((minutes / 60) * 100) / 100;
-}
-
-function minutesByTypeToHours(byType: Record<string, number>): Record<string, number> {
-  const result: Record<string, number> = {};
-  for (const [k, v] of Object.entries(byType)) {
-    result[k] = minutesToHours(v);
-  }
-  return result;
-}
-
-function calcTrend(scores: Array<number | null>, threshold = 5): ScoreTrend {
-  const valid = scores.filter((s): s is number => s !== null);
-  if (valid.length < 2) return null;
-  const last = valid[valid.length - 1];
-  const prev = valid[valid.length - 2];
-  const diff = last - prev;
-  if (diff > threshold) return 'up';
-  if (diff < -threshold) return 'down';
-  return 'stable';
-}
-
-function calcMetricTrend(current: number | null, prev: number | null, threshold = 5): MetricTrendDTO {
-  if (current == null || prev == null) return { direction: null, delta: null };
-  const delta = Math.round((current - prev) * 10) / 10;
-  let direction: ScoreTrend;
-  if (delta > threshold) direction = 'up';
-  else if (delta < -threshold) direction = 'down';
-  else direction = 'stable';
-  return { direction, delta };
-}
-
-function avgNullable(values: Array<number | null | undefined>): number | null {
-  const nums = values.filter((v): v is number => v != null);
-  if (nums.length === 0) return null;
-  return Math.round((nums.reduce((s, v) => s + v, 0) / nums.length) * 100) / 100;
 }
 
 export class ReportsService {
