@@ -283,7 +283,95 @@ export default function MethodologyPage() {
           </Card>
         </section>
 
-        {/* 7. Что означает "Нет данных" */}
+        {/* 7. Агрегированные отчёты */}
+        <section id="aggregated-reports">
+          <Card header={<SectionHeader emoji="📋" title="Агрегированные отчёты" />}>
+            <p className="mb-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              Агрегированные отчёты позволяют проанализировать работу сотрудника, проекта или команды
+              за произвольный период — от нескольких недель до нескольких месяцев.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Как формируется период</p>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+              Вы выбираете произвольные даты «от» и «до». Система автоматически округляет диапазон
+              до полных недель (понедельник — воскресенье) и собирает данные из еженедельных отчётов,
+              попадающих в этот период.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Агрегация метрик</p>
+            <ul className="mb-3 space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Score, Загрузка, Точность, Фокус, Закрытие</strong> — среднее за все недели периода</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Cycle Time</strong> — среднее по неделям, где есть данные</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Задачи и часы</strong> — сумма за весь период</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Типы работ</strong> — суммарные часы по каждому типу</span>
+              </li>
+            </ul>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Тренды</p>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+              Для каждой недели отображается тренд относительно предыдущей недели.
+              Общий тренд показывает динамику за весь период — сравнивается первая и последняя неделя.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Уровни отчётов</p>
+            <ul className="mb-3 space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Сотрудник</strong> — метрики одного человека за период</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Проект</strong> — средние метрики по всем сотрудникам проекта + таблица по каждому</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-gray-500">&bull;</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Команда</strong> — средние метрики по участникам команды + таблица по каждому</span>
+              </li>
+            </ul>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Предпросмотр и генерация</p>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+              Перед созданием отчёта можно выполнить предпросмотр — быструю агрегацию без AI-анализа.
+              При полной генерации AI-модель дополнительно анализирует динамику за период и формирует
+              текстовую сводку с оценкой, выявленными проблемами и рекомендациями.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Статусы</p>
+            <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                <span><strong className="text-gray-700 dark:text-gray-200">Генерация</strong> — AI-анализ выполняется, данные обновятся автоматически</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
+                <span><strong className="text-gray-700 dark:text-gray-200">Готов</strong> — отчёт полностью сформирован</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-red-400" />
+                <span><strong className="text-gray-700 dark:text-gray-200">Ошибка</strong> — AI-анализ не удался, метрики доступны без AI-сводки</span>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-gray-400">
+              Отчёты хранятся в системе. Вы можете просматривать, фильтровать и удалять их на странице{' '}
+              <Link to="/reports" className="text-brand-400 hover:text-brand-300 transition-colors">
+                Отчётов
+              </Link>.
+            </p>
+          </Card>
+        </section>
+
+        {/* 8. Что означает "Нет данных" */}
         <section id="no-data">
           <Card header={<SectionHeader emoji="❓" title='Что означает "Нет данных"' />}>
             <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">

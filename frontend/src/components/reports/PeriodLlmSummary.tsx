@@ -3,6 +3,15 @@ import { AlertTriangle, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import type { WeeklyLlmItem } from '@/types/aggregated-report';
 
+function formatWeekRange(periodStart: string): string {
+  const d = new Date(periodStart);
+  const end = new Date(d);
+  end.setDate(end.getDate() + 6);
+  const fmt = (dt: Date) =>
+    `${dt.getDate().toString().padStart(2, '0')}.${(dt.getMonth() + 1).toString().padStart(2, '0')}`;
+  return `${fmt(d)} — ${fmt(end)}.${end.getFullYear()}`;
+}
+
 interface PeriodLlmSummaryProps {
   llmPeriodScore: number | null;
   llmPeriodSummary: string | null;
@@ -111,7 +120,7 @@ export default function PeriodLlmSummary({
                 .map((week) => (
                   <div key={week.periodStart} className="rounded-lg bg-gray-50 dark:bg-surface-lighter p-3">
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{week.periodStart}</span>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{formatWeekRange(week.periodStart)}</span>
                       {week.score !== null && (
                         <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Score: {week.score}</span>
                       )}

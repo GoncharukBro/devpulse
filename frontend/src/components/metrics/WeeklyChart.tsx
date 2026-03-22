@@ -25,11 +25,18 @@ interface WeeklyChartProps {
   height?: number;
 }
 
-function formatWeek(periodStart: string): string {
-  const d = new Date(periodStart);
-  const day = d.getDate().toString().padStart(2, '0');
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  return `${day}.${month}`;
+function buildWeekLabels(data: ChartDataItem[]): string[] {
+  let prevYear: number | null = null;
+  return data.map((item, i) => {
+    const d = new Date(item.periodStart);
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    const shortYear = String(year).slice(2);
+    const showYear = i === 0 || year !== prevYear;
+    prevYear = year;
+    return showYear ? `${day}.${month}.${shortYear}` : `${day}.${month}`;
+  });
 }
 
 interface TooltipPayloadItem {
@@ -44,12 +51,26 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+function formatTooltipDate(periodStart: string): string {
+  const d = new Date(periodStart);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const end = new Date(d);
+  end.setDate(end.getDate() + 6);
+  const endDay = end.getDate().toString().padStart(2, '0');
+  const endMonth = (end.getMonth() + 1).toString().padStart(2, '0');
+  return `${day}.${month} — ${endDay}.${endMonth}.${end.getFullYear()}`;
+}
+
+function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
+
+  const original = (payload[0] as unknown as { payload: ChartDataItem }).payload;
+  const tooltipLabel = original?.periodStart ? formatTooltipDate(original.periodStart) : '';
 
   return (
     <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 px-3 py-2 shadow-xl">
-      <div className="mb-1 text-xs text-gray-500 dark:text-gray-400">{label}</div>
+      <div className="mb-1 text-xs text-gray-500 dark:text-gray-400">{tooltipLabel}</div>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center gap-2 text-sm">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
@@ -64,9 +85,10 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 }
 
 export default function WeeklyChart({ data, metrics, height = 280 }: WeeklyChartProps) {
-  const chartData = data.map((d) => ({
+  const labels = buildWeekLabels(data);
+  const chartData = data.map((d, i) => ({
     ...d,
-    label: formatWeek(d.periodStart),
+    label: labels[i],
   }));
 
   if (!chartData.length) {

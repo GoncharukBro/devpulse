@@ -50,9 +50,6 @@ export default function EmployeeHeader({
               {login}
               {summary?.email && <span> &bull; {summary.email}</span>}
             </div>
-            <div className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-              Цифровой профиль — загрузка, качество, динамика и AI-анализ
-            </div>
             {summary && summary.projects.length > 0 && (
               <div className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 Проекты: {summary.projects.map((p) => p.projectName).join(', ')}

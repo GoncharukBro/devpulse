@@ -36,6 +36,11 @@
   *:focus-visible {
     outline: none;
   }
+
+  /* Date input calendar icon — visible in both themes */
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+  }
 }
 
 /* ── Achievement card gamedev styles ── */

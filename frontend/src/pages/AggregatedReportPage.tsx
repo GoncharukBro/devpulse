@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, FolderKanban, Users } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, User, FolderKanban, Users, HelpCircle } from 'lucide-react';
 import { aggregatedReportsApi } from '@/api/endpoints/aggregated-reports';
 import ReportStatusBadge from '@/components/reports/ReportStatusBadge';
 import PeriodKpiCards from '@/components/reports/PeriodKpiCards';
@@ -107,14 +107,23 @@ export default function AggregatedReportPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <button
-        type="button"
-        onClick={() => navigate('/reports')}
-        className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-gray-200"
-      >
-        <ArrowLeft size={14} />
-        Отчёты
-      </button>
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => navigate('/reports')}
+          className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-gray-200"
+        >
+          <ArrowLeft size={14} />
+          Отчёты
+        </button>
+        <Link
+          to="/methodology#aggregated-reports"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Как это работает?
+        </Link>
+      </div>
 
       {/* Header */}
       <div className="flex items-start justify-between">

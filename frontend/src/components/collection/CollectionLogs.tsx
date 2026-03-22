@@ -613,17 +613,17 @@ export default function CollectionLogs({ subscriptions, refreshKey }: Collection
 
               {/* Таблица */}
               <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-surface-border">
-                <table className="w-full text-left text-sm">
+                <table className="w-full table-fixed text-left text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-surface-border bg-gray-50 dark:bg-surface-light">
                       <th className="w-8" />
                       <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Проект</th>
                       {groupBy !== 'period' && (
-                        <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Период</th>
+                        <th className="w-32 px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Период</th>
                       )}
-                      <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Тип</th>
-                      <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Статус</th>
-                      <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Обработано</th>
+                      <th className="w-24 px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Тип</th>
+                      <th className="w-28 px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Статус</th>
+                      <th className="w-32 px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Обработано</th>
                       <th className="w-10" />
                     </tr>
                   </thead>
@@ -770,7 +770,7 @@ function LogRow({
         </td>
 
         {/* Проект */}
-        <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{log.projectName ?? '\u2014'}</td>
+        <td className="px-4 py-3 text-gray-600 dark:text-gray-300 truncate">{log.projectName ?? '\u2014'}</td>
 
         {/* Период (скрыт при группировке по периоду) */}
         {groupBy !== 'period' && (

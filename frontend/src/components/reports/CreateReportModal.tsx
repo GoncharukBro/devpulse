@@ -127,6 +127,7 @@ export default function CreateReportModal({ open, onClose, onCreated }: CreateRe
       open={open}
       onClose={onClose}
       title="Сформировать отчёт"
+      autoFocus={false}
       footer={
         <>
           <button
