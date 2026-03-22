@@ -12,6 +12,7 @@ import { FieldMapping } from './field-mapping.entity';
 import { MetricReport } from './metric-report.entity';
 import { CollectionLog } from './collection-log.entity';
 import { Achievement } from './achievement.entity';
+import { SubscriptionShare } from './subscription-share.entity';
 import { prefixedTable } from './table-prefix';
 
 @Entity({ tableName: prefixedTable('subscriptions') })
@@ -58,4 +59,7 @@ export class Subscription {
 
   @OneToMany(() => Achievement, (a) => a.subscription)
   achievements = new Collection<Achievement>(this);
+
+  @OneToMany(() => SubscriptionShare, (s) => s.subscription)
+  shares = new Collection<SubscriptionShare>(this);
 }

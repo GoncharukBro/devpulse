@@ -8,3 +8,4 @@ export { TeamMember } from './team-member.entity';
 export { Achievement } from './achievement.entity';
 export { CollectionLog } from './collection-log.entity';
 export { AggregatedReport } from './aggregated-report.entity';
+export { SubscriptionShare } from './subscription-share.entity';
