@@ -116,6 +116,8 @@ export default function CollectionPage() {
 
   // Stop single subscription (running → stopping → stopped, or LLM cancel)
   const handleStop = async (subscriptionId: string) => {
+    const sub = subscriptions.find((s) => s.id === subscriptionId);
+    if (!sub?.isOwner) return;
     setStopLoadingId(subscriptionId);
     try {
       const ac = getActiveCollection(subscriptionId);
@@ -135,6 +137,8 @@ export default function CollectionPage() {
 
   // Cancel single subscription (pending in queue → cancelled)
   const handleCancel = async (subscriptionId: string) => {
+    const sub = subscriptions.find((s) => s.id === subscriptionId);
+    if (!sub?.isOwner) return;
     setStopLoadingId(subscriptionId);
     try {
       await collectionApi.stop({ subscriptionIds: [subscriptionId] });
