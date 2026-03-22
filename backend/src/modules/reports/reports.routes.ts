@@ -44,7 +44,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
     async (request) => {
       const em = request.orm.em.fork();
       const service = new ReportsService(em);
-      return service.getEmployeeList(request.user.id, request.query.subscriptionId);
+      return service.getEmployeeList(request.user.id, request.user.username, request.query.subscriptionId);
     },
   );
 
@@ -52,7 +52,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
   app.get('/reports/overview', async (request) => {
     const em = request.orm.em.fork();
     const service = new ReportsService(em);
-    return service.getOverview(request.user.id);
+    return service.getOverview(request.user.id, request.user.username);
   });
 
   // GET /api/reports/employees
@@ -61,7 +61,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
     async (request) => {
       const em = request.orm.em.fork();
       const service = new ReportsService(em);
-      return service.getEmployeeList(request.user.id, request.query.subscriptionId);
+      return service.getEmployeeList(request.user.id, request.user.username, request.query.subscriptionId);
     },
   );
 
@@ -74,6 +74,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
       return service.getProjectSummary({
         subscriptionId: request.params.subscriptionId,
         userId: request.user.id,
+        userLogin: request.user.username,
       });
     },
   );
@@ -87,6 +88,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
       return service.getProjectHistory({
         subscriptionId: request.params.subscriptionId,
         userId: request.user.id,
+        userLogin: request.user.username,
         weeks: request.query.weeks ? parseInt(request.query.weeks, 10) : undefined,
       });
     },
@@ -101,6 +103,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
       return service.getEmployeeSummary({
         youtrackLogin: request.params.login,
         userId: request.user.id,
+        userLogin: request.user.username,
       });
     },
   );
@@ -114,6 +117,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
       return service.getEmployeeHistory({
         youtrackLogin: request.params.login,
         userId: request.user.id,
+        userLogin: request.user.username,
         subscriptionId: request.query.subscriptionId,
         weeks: request.query.weeks ? parseInt(request.query.weeks, 10) : undefined,
       });
@@ -137,6 +141,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
         subscriptionId,
         periodStart: new Date(periodStart),
         userId: request.user.id,
+        userLogin: request.user.username,
       });
 
       if (!report) {
@@ -157,6 +162,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
       return service.getEmployeeReportList({
         youtrackLogin: request.params.login,
         userId: request.user.id,
+        userLogin: request.user.username,
         subscriptionId: request.query.subscriptionId,
         page: request.query.page ? parseInt(request.query.page, 10) : undefined,
         limit: request.query.limit ? parseInt(request.query.limit, 10) : undefined,
@@ -192,6 +198,7 @@ export async function reportsRoutes(app: FastifyInstance): Promise<void> {
       return service.getEmailPreview({
         type,
         userId: request.user.id,
+        userLogin: request.user.username,
         youtrackLogin,
         subscriptionId,
         teamId,

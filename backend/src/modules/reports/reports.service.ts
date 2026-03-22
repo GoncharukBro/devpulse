@@ -43,6 +43,7 @@ import {
   type ProjectEmailData,
   type TeamEmailData,
 } from './email-template';
+import { findAccessibleSubscriptions, subscriptionAccessFilter } from '../subscriptions/subscription-access';
 
 function getEffectiveScore(report: MetricReport): number | null {
   return report.llmScore ?? null;
@@ -63,10 +64,11 @@ export class ReportsService {
     subscriptionId: string;
     periodStart: Date;
     userId: string;
+    userLogin: string;
   }): Promise<EmployeeReportDTO | null> {
     const sub = await this.em.findOne(Subscription, {
       id: params.subscriptionId,
-      ownerId: params.userId,
+      ...(subscriptionAccessFilter(params.userId, params.userLogin) as object),
     });
     if (!sub) throw new NotFoundError('Subscription not found');
 
@@ -132,12 +134,13 @@ export class ReportsService {
   async getEmployeeHistory(params: {
     youtrackLogin: string;
     userId: string;
+    userLogin: string;
     subscriptionId?: string;
     weeks?: number;
   }): Promise<EmployeeHistoryDTO> {
     const weeksCount = params.weeks ?? 12;
 
-    const subscriptions = await this.getUserSubscriptions(params.userId, params.subscriptionId);
+    const subscriptions = await this.getUserSubscriptions(params.userId, params.userLogin, params.subscriptionId);
 
     const reports = await this.em.find(
       MetricReport,
@@ -188,8 +191,9 @@ export class ReportsService {
   async getEmployeeSummary(params: {
     youtrackLogin: string;
     userId: string;
+    userLogin: string;
   }): Promise<EmployeeSummaryDTO> {
-    const subscriptions = await this.getUserSubscriptions(params.userId);
+    const subscriptions = await this.getUserSubscriptions(params.userId, params.userLogin);
     const employee = await this.findEmployee(subscriptions, params.youtrackLogin);
 
     // Get all reports for this employee across all subscriptions
@@ -313,10 +317,14 @@ export class ReportsService {
   async getProjectSummary(params: {
     subscriptionId: string;
     userId: string;
+    userLogin: string;
   }): Promise<ProjectSummaryDTO> {
     const sub = await this.em.findOne(
       Subscription,
-      { id: params.subscriptionId, ownerId: params.userId },
+      {
+        id: params.subscriptionId,
+        ...(subscriptionAccessFilter(params.userId, params.userLogin) as object),
+      },
       { populate: ['employees'] },
     );
     if (!sub) throw new NotFoundError('Subscription not found');
@@ -465,11 +473,12 @@ export class ReportsService {
   async getProjectHistory(params: {
     subscriptionId: string;
     userId: string;
+    userLogin: string;
     weeks?: number;
   }): Promise<ProjectHistoryDTO> {
     const sub = await this.em.findOne(Subscription, {
       id: params.subscriptionId,
-      ownerId: params.userId,
+      ...(subscriptionAccessFilter(params.userId, params.userLogin) as object),
     });
     if (!sub) throw new NotFoundError('Subscription not found');
 
@@ -512,8 +521,8 @@ export class ReportsService {
 
   // ─── Overview ──────────────────────────────────────────────────────
 
-  async getOverview(userId: string): Promise<OverviewDTO> {
-    const subscriptions = await this.getUserSubscriptions(userId);
+  async getOverview(userId: string, userLogin: string): Promise<OverviewDTO> {
+    const subscriptions = await this.getUserSubscriptions(userId, userLogin);
 
     const emptyResult: OverviewDTO = {
       totalEmployees: 0,
@@ -708,9 +717,10 @@ export class ReportsService {
 
   async getEmployeeList(
     userId: string,
+    userLogin: string,
     subscriptionId?: string,
   ): Promise<EmployeeListItem[]> {
-    const subscriptions = await this.getUserSubscriptions(userId);
+    const subscriptions = await this.getUserSubscriptions(userId, userLogin);
     if (subscriptions.length === 0) return [];
 
     const filteredSubs = subscriptionId
@@ -773,6 +783,7 @@ export class ReportsService {
   async getEmployeeReportList(params: {
     youtrackLogin: string;
     userId: string;
+    userLogin: string;
     subscriptionId?: string;
     page?: number;
     limit?: number;
@@ -781,7 +792,7 @@ export class ReportsService {
     const limit = params.limit ?? 10;
     const offset = (page - 1) * limit;
 
-    const subscriptions = await this.getUserSubscriptions(params.userId, params.subscriptionId);
+    const subscriptions = await this.getUserSubscriptions(params.userId, params.userLogin, params.subscriptionId);
     const subIds = subscriptions.map((s) => s.id);
 
     const [reports, total] = await this.em.findAndCount(
@@ -818,17 +829,14 @@ export class ReportsService {
 
   private async getUserSubscriptions(
     userId: string,
+    userLogin: string,
     subscriptionId?: string,
   ): Promise<Subscription[]> {
-    if (subscriptionId) {
-      const sub = await this.em.findOne(Subscription, {
-        id: subscriptionId,
-        ownerId: userId,
-      });
-      if (!sub) throw new NotFoundError('Subscription not found');
-      return [sub];
+    const subs = await findAccessibleSubscriptions(this.em, userId, userLogin, subscriptionId);
+    if (subscriptionId && subs.length === 0) {
+      throw new NotFoundError('Subscription not found');
     }
-    return this.em.find(Subscription, { ownerId: userId });
+    return subs;
   }
 
   private async findEmployee(
@@ -1049,29 +1057,31 @@ export class ReportsService {
   async getEmailPreview(params: {
     type: 'employee' | 'project' | 'team';
     userId: string;
+    userLogin: string;
     youtrackLogin?: string;
     subscriptionId?: string;
     teamId?: string;
     periodStart?: string;
   }): Promise<{ subject: string; html: string }> {
     if (params.type === 'employee') {
-      return this.getEmployeeEmailPreview(params.userId, params.youtrackLogin!, params.subscriptionId!, params.periodStart);
+      return this.getEmployeeEmailPreview(params.userId, params.userLogin, params.youtrackLogin!, params.subscriptionId!, params.periodStart);
     }
     if (params.type === 'project') {
-      return this.getProjectEmailPreview(params.userId, params.subscriptionId!, params.periodStart);
+      return this.getProjectEmailPreview(params.userId, params.userLogin, params.subscriptionId!, params.periodStart);
     }
-    return this.getTeamEmailPreview(params.userId, params.teamId!, params.periodStart);
+    return this.getTeamEmailPreview(params.userId, params.userLogin, params.teamId!, params.periodStart);
   }
 
   private async getEmployeeEmailPreview(
     userId: string,
+    userLogin: string,
     youtrackLogin: string,
     subscriptionId: string,
     periodStart?: string,
   ): Promise<{ subject: string; html: string }> {
     const sub = await this.em.findOne(Subscription, {
       id: subscriptionId,
-      ownerId: userId,
+      ...(subscriptionAccessFilter(userId, userLogin) as object),
     });
     if (!sub) throw new NotFoundError('Subscription not found');
 
@@ -1173,12 +1183,16 @@ export class ReportsService {
 
   private async getProjectEmailPreview(
     userId: string,
+    userLogin: string,
     subscriptionId: string,
     periodStart?: string,
   ): Promise<{ subject: string; html: string }> {
     const sub = await this.em.findOne(
       Subscription,
-      { id: subscriptionId, ownerId: userId },
+      {
+        id: subscriptionId,
+        ...(subscriptionAccessFilter(userId, userLogin) as object),
+      },
       { populate: ['employees'] },
     );
     if (!sub) throw new NotFoundError('Subscription not found');
@@ -1270,6 +1284,7 @@ export class ReportsService {
 
   private async getTeamEmailPreview(
     userId: string,
+    userLogin: string,
     teamId: string,
     periodStart?: string,
   ): Promise<{ subject: string; html: string }> {
@@ -1280,7 +1295,7 @@ export class ReportsService {
     );
     if (!team) throw new NotFoundError('Team not found');
 
-    const subscriptions = await this.getUserSubscriptions(userId);
+    const subscriptions = await this.getUserSubscriptions(userId, userLogin);
     const subIds = subscriptions.map((s) => s.id);
     const logins = team.members.getItems().map((m) => m.youtrackLogin);
 
