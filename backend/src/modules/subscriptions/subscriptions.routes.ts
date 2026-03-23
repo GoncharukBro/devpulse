@@ -80,7 +80,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
     '/subscriptions/:id/employees',
     async (request) => {
       const em = request.orm.em.fork();
-      return addEmployees(em, request.params.id, request.user.id, request.body.employees);
+      return addEmployees(em, request.params.id, request.user.id, request.body.employees, request.user.username);
     },
   );
 
@@ -95,6 +95,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
         request.params.employeeId,
         request.user.id,
         request.body,
+        request.user.username,
       );
     },
   );
@@ -109,6 +110,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
         request.params.id,
         request.params.employeeId,
         request.user.id,
+        request.user.username,
       );
       reply.status(204).send();
     },
@@ -138,6 +140,7 @@ export async function subscriptionRoutes(app: FastifyInstance): Promise<void> {
         request.params.id,
         request.user.id,
         request.body,
+        request.user.username,
       );
       return {
         taskTypeMapping: mapping.taskTypeMapping,

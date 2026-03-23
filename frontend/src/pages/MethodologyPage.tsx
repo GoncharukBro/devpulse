@@ -371,7 +371,61 @@ export default function MethodologyPage() {
           </Card>
         </section>
 
-        {/* 8. Что означает "Нет данных" */}
+        {/* 8. Совместный доступ */}
+        <section id="sharing">
+          <Card header={<SectionHeader emoji="🔗" title="Совместный доступ" />}>
+            <p className="mb-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              Владелец подписки может предоставить доступ другим пользователям по логину
+              с одной из двух ролей. Это позволяет коллегам работать с метриками без
+              необходимости создавать собственную подписку на тот же проект.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Роли</p>
+            <div className="mb-3 overflow-hidden rounded-lg border border-gray-200 dark:border-surface-border">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 dark:bg-surface-lighter text-left">
+                    <th className="px-3 py-2 font-medium text-gray-600 dark:text-gray-300">Действие</th>
+                    <th className="px-3 py-2 font-medium text-gray-600 dark:text-gray-300 text-center">Владелец</th>
+                    <th className="px-3 py-2 font-medium text-gray-600 dark:text-gray-300 text-center">Редактор</th>
+                    <th className="px-3 py-2 font-medium text-gray-600 dark:text-gray-300 text-center">Просмотр</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-surface-border text-gray-600 dark:text-gray-300">
+                  <tr><td className="px-3 py-1.5">Просмотр метрик и отчётов</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td></tr>
+                  <tr><td className="px-3 py-1.5">Запуск и остановка сбора</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td></tr>
+                  <tr><td className="px-3 py-1.5">Редактирование сотрудников</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td></tr>
+                  <tr><td className="px-3 py-1.5">Настройка маппинга полей</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td></tr>
+                  <tr><td className="px-3 py-1.5">Управление доступом</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td></tr>
+                  <tr><td className="px-3 py-1.5">Включение/исключение из автосбора</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td></tr>
+                  <tr><td className="px-3 py-1.5">Удаление подписки</td><td className="px-3 py-1.5 text-center text-emerald-500">✓</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td><td className="px-3 py-1.5 text-center text-gray-300 dark:text-gray-600">—</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Как управлять доступом</p>
+            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
+              Откройте меню подписки (три точки) и выберите «Доступ».
+              В открывшемся окне введите логин пользователя, выберите роль и нажмите «Добавить».
+              Роль можно изменить в любой момент через выпадающий список рядом с логином.
+              Для отзыва доступа нажмите кнопку удаления.
+            </p>
+
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Индикация</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              Подписки, к которым вам предоставлен доступ, отмечены бейджем роли на карточке проекта:{' '}
+              <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                Просмотр
+              </span>
+              {' '}или{' '}
+              <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                Редактор
+              </span>.
+            </p>
+          </Card>
+        </section>
+
+        {/* 9. Что означает "Нет данных" */}
         <section id="no-data">
           <Card header={<SectionHeader emoji="❓" title='Что означает "Нет данных"' />}>
             <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">

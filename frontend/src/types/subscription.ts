@@ -10,6 +10,8 @@ export interface CurrentPeriodStatus {
   llmNoData: number;
 }
 
+export type SubscriptionRole = 'owner' | 'editor' | 'viewer';
+
 export interface Subscription {
   id: string;
   youtrackInstanceId: string;
@@ -35,6 +37,7 @@ export interface Subscription {
   currentPeriodStatus: CurrentPeriodStatus | null;
   createdAt: string;
   isOwner: boolean;
+  role: SubscriptionRole;
 }
 
 export interface SubscriptionDetail extends Subscription {
@@ -117,10 +120,13 @@ export const TASK_CATEGORIES: TaskCategoryDefinition[] = [
   { key: 'other',         labelRu: 'Прочее',        labelEn: 'Other',         color: '#6b7280' },
 ];
 
+export type ShareRole = 'viewer' | 'editor';
+
 export interface SubscriptionShare {
   id: number;
   sharedWithLogin: string;
   sharedBy: string;
+  role: ShareRole;
   createdAt: string;
 }
 

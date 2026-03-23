@@ -11,7 +11,6 @@ interface SubscriptionCardProps {
   activeCollection?: CollectionProgress;
   llmItems?: LlmQueueItem[];
   llmProcessed?: number;
-  isOwner: boolean;
   onTrigger: (id: string) => void;
   onStop: (id: string) => void;
   onCancel: (id: string) => void;
@@ -37,7 +36,6 @@ export default function SubscriptionCard({
   activeCollection,
   llmItems = [],
   llmProcessed = 0,
-  isOwner,
   onTrigger,
   onStop,
   onCancel,
@@ -49,6 +47,9 @@ export default function SubscriptionCard({
   triggerLoading,
   stopLoading,
 }: SubscriptionCardProps) {
+  const role = subscription.role;
+  const isOwner = role === 'owner';
+  const canEdit = role === 'owner' || role === 'editor';
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -119,9 +120,9 @@ export default function SubscriptionCard({
               {subscription.projectName}
               <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-500 dark:text-brand-400" />
             </button>
-            {!isOwner && <SharedBadge />}
+            {!isOwner && <SharedBadge role={role as 'viewer' | 'editor'} />}
           </div>
-          {isOwner && (
+          {canEdit && (
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -143,25 +144,29 @@ export default function SubscriptionCard({
                   >
                     Настройка маппинга полей
                   </button>
-                  <button
-                    onClick={() => { onAccess(subscription.id); setMenuOpen(false); }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                  >
-                    Доступ
-                  </button>
-                  <button
-                    onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                  >
-                    {subscription.isActive ? 'Исключить из автосбора' : 'Включить в автосбор'}
-                  </button>
-                  <div className="my-1 border-t border-gray-200 dark:border-surface-border" />
-                  <button
-                    onClick={() => { onDelete(subscription.id); setMenuOpen(false); }}
-                    className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-100 dark:hover:bg-surface-lighter"
-                  >
-                    Удалить
-                  </button>
+                  {isOwner && (
+                    <>
+                      <button
+                        onClick={() => { onAccess(subscription.id); setMenuOpen(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                      >
+                        Доступ
+                      </button>
+                      <button
+                        onClick={() => { onToggleActive(subscription.id, !subscription.isActive); setMenuOpen(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                      >
+                        {subscription.isActive ? 'Исключить из автосбора' : 'Включить в автосбор'}
+                      </button>
+                      <div className="my-1 border-t border-gray-200 dark:border-surface-border" />
+                      <button
+                        onClick={() => { onDelete(subscription.id); setMenuOpen(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-100 dark:hover:bg-surface-lighter"
+                      >
+                        Удалить
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -291,7 +296,7 @@ export default function SubscriptionCard({
         )}
 
         {/* Actions — different buttons per state; hidden for viewers */}
-        {isOwner && (
+        {canEdit && (
           isPending ? (
             <div className="flex gap-2">
               <Button

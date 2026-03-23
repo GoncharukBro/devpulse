@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/client';
-import type { SubscriptionShare, SharesListResponse } from '@/types/subscription';
+import type { SubscriptionShare, SharesListResponse, ShareRole } from '@/types/subscription';
 
 export const sharesApi = {
   async list(subscriptionId: string, params?: { page?: number; limit?: number }): Promise<SharesListResponse> {
@@ -10,10 +10,18 @@ export const sharesApi = {
     return response.data;
   },
 
-  async add(subscriptionId: string, login: string): Promise<SubscriptionShare> {
+  async add(subscriptionId: string, login: string, role: ShareRole = 'viewer'): Promise<SubscriptionShare> {
     const response = await apiClient.post<SubscriptionShare>(
       `/subscriptions/${subscriptionId}/shares`,
-      { login },
+      { login, role },
+    );
+    return response.data;
+  },
+
+  async updateRole(subscriptionId: string, shareId: number, role: ShareRole): Promise<SubscriptionShare> {
+    const response = await apiClient.patch<SubscriptionShare>(
+      `/subscriptions/${subscriptionId}/shares/${shareId}`,
+      { role },
     );
     return response.data;
   },

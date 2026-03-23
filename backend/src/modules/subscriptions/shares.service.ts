@@ -2,9 +2,11 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { Subscription } from '../../entities/subscription.entity';
 import { SubscriptionShare } from '../../entities/subscription-share.entity';
+import type { ShareRole } from '../../entities/subscription-share.entity';
 import { NotFoundError, ValidationError, AppError } from '../../common/errors';
 
 const MAX_SHARES_PER_SUBSCRIPTION = 50;
+const VALID_ROLES: ShareRole[] = ['viewer', 'editor'];
 
 async function getOwnedSubscription(
   em: EntityManager,
@@ -16,12 +18,17 @@ async function getOwnedSubscription(
   return sub;
 }
 
+export function isValidRole(role: unknown): role is ShareRole {
+  return typeof role === 'string' && VALID_ROLES.includes(role as ShareRole);
+}
+
 export async function addShare(
   em: EntityManager,
   subscriptionId: string,
   ownerId: string,
   ownerLogin: string,
   login: string,
+  role: ShareRole = 'viewer',
 ): Promise<object> {
   const sub = await getOwnedSubscription(em, subscriptionId, ownerId);
   const normalizedLogin = login.trim().toLowerCase();
@@ -34,6 +41,10 @@ export async function addShare(
     throw new ValidationError('Cannot share with yourself');
   }
 
+  if (!isValidRole(role)) {
+    throw new ValidationError(`Invalid role. Valid: ${VALID_ROLES.join(', ')}`);
+  }
+
   const existingCount = await em.count(SubscriptionShare, { subscription: sub });
   if (existingCount >= MAX_SHARES_PER_SUBSCRIPTION) {
     throw new ValidationError(`Maximum ${MAX_SHARES_PER_SUBSCRIPTION} shares per subscription`);
@@ -43,6 +54,7 @@ export async function addShare(
   share.subscription = sub;
   share.sharedWithLogin = normalizedLogin;
   share.sharedBy = ownerLogin;
+  share.role = role;
 
   try {
     em.persist(share);
@@ -58,6 +70,7 @@ export async function addShare(
     id: share.id,
     sharedWithLogin: share.sharedWithLogin,
     sharedBy: share.sharedBy,
+    role: share.role,
     createdAt: share.createdAt.toISOString(),
   };
 }
@@ -83,9 +96,42 @@ export async function listShares(
       id: s.id,
       sharedWithLogin: s.sharedWithLogin,
       sharedBy: s.sharedBy,
+      role: s.role,
       createdAt: s.createdAt.toISOString(),
     })),
     total,
+  };
+}
+
+export async function updateShareRole(
+  em: EntityManager,
+  subscriptionId: string,
+  shareId: number,
+  ownerId: string,
+  role: ShareRole,
+): Promise<object> {
+  await getOwnedSubscription(em, subscriptionId, ownerId);
+
+  if (!isValidRole(role)) {
+    throw new ValidationError(`Invalid role. Valid: ${VALID_ROLES.join(', ')}`);
+  }
+
+  const share = await em.findOne(SubscriptionShare, {
+    id: shareId,
+    subscription: { id: subscriptionId },
+  });
+
+  if (!share) throw new NotFoundError('Share not found');
+
+  share.role = role;
+  await em.flush();
+
+  return {
+    id: share.id,
+    sharedWithLogin: share.sharedWithLogin,
+    sharedBy: share.sharedBy,
+    role: share.role,
+    createdAt: share.createdAt.toISOString(),
   };
 }
 

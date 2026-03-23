@@ -12,7 +12,8 @@ import {
   CreateEmployeeDto,
   UpdateEmployeeDto,
 } from './subscriptions.types';
-import { subscriptionAccessFilter } from './subscription-access';
+import { subscriptionAccessFilter, subscriptionEditorFilter } from './subscription-access';
+import { SubscriptionShare } from '../../entities/subscription-share.entity';
 
 function getInstanceName(instanceId: string): string | undefined {
   const instances = getYouTrackInstances();
@@ -118,6 +119,19 @@ export async function listSubscriptions(
     periodMap = new Map(rows.map((r) => [r.subscription_id, r]));
   }
 
+  // Determine role for shared subscriptions (batch query)
+  const sharedSubIds = subscriptions.filter((s) => s.ownerId !== ownerId).map((s) => s.id);
+  const roleMap = new Map<string, string>();
+  if (sharedSubIds.length > 0) {
+    const shares = await em.find(SubscriptionShare, {
+      subscription: { id: { $in: sharedSubIds } },
+      sharedWithLogin: userLogin.toLowerCase(),
+    });
+    for (const share of shares) {
+      roleMap.set(share.subscription.id, share.role);
+    }
+  }
+
   return subscriptions.map((sub) => {
     const lastLog = sub.collectionLogs
       .getItems()
@@ -163,6 +177,7 @@ export async function listSubscriptions(
           }
         : null,
       isOwner: sub.ownerId === ownerId,
+      role: sub.ownerId === ownerId ? 'owner' : (roleMap.get(sub.id) ?? 'viewer'),
       createdAt: sub.createdAt.toISOString(),
     };
   });
@@ -186,6 +201,16 @@ export async function getSubscription(
 
   if (!sub) {
     throw new NotFoundError('Subscription not found');
+  }
+
+  // Determine role
+  let role = 'owner';
+  if (sub.ownerId !== ownerId && userLogin) {
+    const share = await em.findOne(SubscriptionShare, {
+      subscription: sub,
+      sharedWithLogin: userLogin.toLowerCase(),
+    });
+    role = share?.role ?? 'viewer';
   }
 
   return {
@@ -214,6 +239,7 @@ export async function getSubscription(
         }
       : null,
     isOwner: sub.ownerId === ownerId,
+    role,
     createdAt: sub.createdAt.toISOString(),
     updatedAt: sub.updatedAt.toISOString(),
   };
@@ -291,10 +317,14 @@ export async function addEmployees(
   subscriptionId: string,
   ownerId: string,
   employees: CreateEmployeeDto[],
+  userLogin?: string,
 ): Promise<object[]> {
+  const filter = userLogin
+    ? { id: subscriptionId, ...(subscriptionEditorFilter(ownerId, userLogin) as object) }
+    : { id: subscriptionId, ownerId };
   const sub = await em.findOne(
     Subscription,
-    { id: subscriptionId, ownerId },
+    filter,
     { populate: ['employees'] },
   );
   if (!sub) throw new NotFoundError('Subscription not found');
@@ -338,10 +368,14 @@ export async function updateEmployee(
   employeeId: string,
   ownerId: string,
   dto: UpdateEmployeeDto,
+  userLogin?: string,
 ): Promise<object> {
+  const subFilter = userLogin
+    ? { id: subscriptionId, ...(subscriptionEditorFilter(ownerId, userLogin) as object) }
+    : { id: subscriptionId, ownerId };
   const emp = await em.findOne(SubscriptionEmployee, {
     id: employeeId,
-    subscription: { id: subscriptionId, ownerId },
+    subscription: subFilter,
   });
   if (!emp) throw new NotFoundError('Employee not found');
 
@@ -366,10 +400,14 @@ export async function deleteEmployee(
   subscriptionId: string,
   employeeId: string,
   ownerId: string,
+  userLogin?: string,
 ): Promise<void> {
+  const subFilter = userLogin
+    ? { id: subscriptionId, ...(subscriptionEditorFilter(ownerId, userLogin) as object) }
+    : { id: subscriptionId, ownerId };
   const emp = await em.findOne(SubscriptionEmployee, {
     id: employeeId,
-    subscription: { id: subscriptionId, ownerId },
+    subscription: subFilter,
   });
   if (!emp) throw new NotFoundError('Employee not found');
 

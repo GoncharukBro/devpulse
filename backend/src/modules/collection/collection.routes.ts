@@ -93,6 +93,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
         end,
         'manual',
         overwrite ?? false,
+        request.user.username,
       );
 
       reply.status(202).send({
@@ -139,6 +140,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
       end,
       overwrite ?? false,
       subscriptionIds,
+      request.user.username,
     );
 
     reply.status(202).send({
@@ -224,6 +226,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     const cancelledLogIds = await service.cancelCollections(
       subscriptionIds,
       request.user.id,
+      request.user.username,
     );
 
     reply.send({
@@ -237,7 +240,7 @@ export async function collectionRoutes(app: FastifyInstance): Promise<void> {
     const em = request.orm.em.fork();
     const service = new CollectionService(em);
 
-    const cancelledLogIds = await service.cancelAllCollections(request.user.id);
+    const cancelledLogIds = await service.cancelAllCollections(request.user.id, request.user.username);
 
     reply.send({
       message: 'All collections stopped',

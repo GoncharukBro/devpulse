@@ -11,6 +11,7 @@ import { getCurrentWeekRange, getWeeksBetween, formatYTDate } from '../../common
 import { ValidationError, NotFoundError, ConflictError } from '../../common/errors';
 import { getCollectionWorker } from './collection.singletons';
 import { SubscriptionEmployee } from '../../entities/subscription-employee.entity';
+import { subscriptionEditorFilter } from '../subscriptions/subscription-access';
 
 export interface CollectionStateResponse {
   activeCollections: Array<
@@ -129,11 +130,12 @@ export class CollectionService {
     periodEnd?: Date,
     type: CollectionLogType = 'manual',
     overwrite = false,
+    userLogin?: string,
   ): Promise<string> {
-    const subscription = await this.em.findOne(Subscription, {
-      id: subscriptionId,
-      ownerId,
-    });
+    const filter = userLogin
+      ? { id: subscriptionId, ...(subscriptionEditorFilter(ownerId, userLogin) as object) }
+      : { id: subscriptionId, ownerId };
+    const subscription = await this.em.findOne(Subscription, filter);
     if (!subscription) throw new NotFoundError('Subscription not found');
 
     // Manual trigger allowed even on inactive subscriptions (Scenario 13)
@@ -190,11 +192,12 @@ export class CollectionService {
     periodEnd?: Date,
     overwrite = false,
     subscriptionIds?: string[],
+    userLogin?: string,
   ): Promise<string[]> {
-    let subscriptions = await this.em.find(Subscription, {
-      ownerId,
-      isActive: true,
-    });
+    const filter = userLogin
+      ? { ...(subscriptionEditorFilter(ownerId, userLogin) as object), isActive: true }
+      : { ownerId, isActive: true };
+    let subscriptions = await this.em.find(Subscription, filter);
 
     // If specific IDs provided (from modal checkboxes), filter to those
     if (subscriptionIds && subscriptionIds.length > 0) {
@@ -490,12 +493,12 @@ export class CollectionService {
    * Отменить сбор для конкретных подписок.
    * Queued items → 'cancelled', running items → 'stopped'.
    */
-  async cancelCollections(subscriptionIds: string[], ownerId: string): Promise<string[]> {
-    // Verify ownership
-    const subscriptions = await this.em.find(Subscription, {
-      id: { $in: subscriptionIds },
-      ownerId,
-    });
+  async cancelCollections(subscriptionIds: string[], ownerId: string, userLogin?: string): Promise<string[]> {
+    // Verify ownership or editor access
+    const filter = userLogin
+      ? { id: { $in: subscriptionIds }, ...(subscriptionEditorFilter(ownerId, userLogin) as object) }
+      : { id: { $in: subscriptionIds }, ownerId };
+    const subscriptions = await this.em.find(Subscription, filter);
     const validIds = subscriptions.map((s) => s.id);
 
     if (validIds.length === 0) {
@@ -584,14 +587,17 @@ export class CollectionService {
   /**
    * Отменить сбор по всем активным подпискам пользователя.
    */
-  async cancelAllCollections(ownerId: string): Promise<string[]> {
-    const subscriptions = await this.em.find(Subscription, { ownerId });
+  async cancelAllCollections(ownerId: string, userLogin?: string): Promise<string[]> {
+    const filter = userLogin
+      ? (subscriptionEditorFilter(ownerId, userLogin) as object)
+      : { ownerId };
+    const subscriptions = await this.em.find(Subscription, filter);
 
     if (subscriptions.length === 0) {
       return [];
     }
 
-    return this.cancelCollections(subscriptions.map((s) => s.id), ownerId);
+    return this.cancelCollections(subscriptions.map((s) => s.id), ownerId, userLogin);
   }
 
   /**

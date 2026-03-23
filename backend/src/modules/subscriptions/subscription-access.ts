@@ -13,6 +13,18 @@ export function subscriptionAccessFilter(
   };
 }
 
+export function subscriptionEditorFilter(
+  userId: string,
+  userLogin: string,
+): FilterQuery<Subscription> {
+  return {
+    $or: [
+      { ownerId: userId },
+      { shares: { sharedWithLogin: userLogin.toLowerCase(), role: 'editor' } },
+    ],
+  };
+}
+
 export async function findAccessibleSubscriptions(
   em: EntityManager,
   userId: string,

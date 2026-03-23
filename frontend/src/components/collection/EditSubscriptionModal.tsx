@@ -218,13 +218,15 @@ export default function EditSubscriptionModal({
       title={`Сотрудники — ${subscription?.projectName ?? ''}`}
       footer={
         <div className="flex w-full items-center justify-between">
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => setShowDeleteConfirm(true)}
-          >
-            Удалить подписку
-          </Button>
+          {subscription?.role === 'owner' && (
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Удалить подписку
+            </Button>
+          )}
           <Button variant="secondary" size="sm" onClick={onClose}>
             Закрыть
           </Button>

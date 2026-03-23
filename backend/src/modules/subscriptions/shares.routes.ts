@@ -1,18 +1,25 @@
 import { FastifyInstance } from 'fastify';
-import { addShare, listShares, removeShare } from './shares.service';
+import { addShare, listShares, updateShareRole, removeShare, isValidRole } from './shares.service';
+import type { ShareRole } from '../../entities/subscription-share.entity';
+import { ValidationError } from '../../common/errors';
 
 export async function sharesRoutes(app: FastifyInstance): Promise<void> {
   // POST /api/subscriptions/:id/shares
-  app.post<{ Params: { id: string }; Body: { login: string } }>(
+  app.post<{ Params: { id: string }; Body: { login: string; role?: ShareRole } }>(
     '/subscriptions/:id/shares',
     async (request, reply) => {
+      const { login, role } = request.body;
+      if (role !== undefined && !isValidRole(role)) {
+        throw new ValidationError('Invalid role. Valid: viewer, editor');
+      }
       const em = request.orm.em.fork();
       const result = await addShare(
         em,
         request.params.id,
         request.user.id,
         request.user.username,
-        request.body.login,
+        login,
+        role,
       );
       reply.status(201).send(result);
     },
@@ -29,6 +36,25 @@ export async function sharesRoutes(app: FastifyInstance): Promise<void> {
         request.user.id,
         request.query.page ? Number(request.query.page) : undefined,
         request.query.limit ? Number(request.query.limit) : undefined,
+      );
+    },
+  );
+
+  // PATCH /api/subscriptions/:id/shares/:shareId
+  app.patch<{ Params: { id: string; shareId: string }; Body: { role: ShareRole } }>(
+    '/subscriptions/:id/shares/:shareId',
+    async (request) => {
+      const { role } = request.body;
+      if (!isValidRole(role)) {
+        throw new ValidationError('Invalid role. Valid: viewer, editor');
+      }
+      const em = request.orm.em.fork();
+      return updateShareRole(
+        em,
+        request.params.id,
+        Number(request.params.shareId),
+        request.user.id,
+        role,
       );
     },
   );

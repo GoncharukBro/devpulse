@@ -27,7 +27,7 @@ export default function CollectAllModal({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const activeSubscriptions = useMemo(
-    () => subscriptions.filter((s) => s.isActive && s.isOwner),
+    () => subscriptions.filter((s) => s.isActive && s.role !== 'viewer'),
     [subscriptions],
   );
 

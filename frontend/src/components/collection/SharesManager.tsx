@@ -2,18 +2,25 @@ import { useState, useEffect, useCallback } from 'react';
 import { Trash2 } from 'lucide-react';
 import { sharesApi } from '@/api/endpoints/shares';
 import Button from '@/components/ui/Button';
-import type { SubscriptionShare } from '@/types/subscription';
+import type { SubscriptionShare, ShareRole } from '@/types/subscription';
 
 interface SharesManagerProps {
   subscriptionId: string;
 }
 
+const ROLE_OPTIONS: { value: ShareRole; label: string }[] = [
+  { value: 'viewer', label: 'Просмотр' },
+  { value: 'editor', label: 'Редактор' },
+];
+
 export default function SharesManager({ subscriptionId }: SharesManagerProps) {
   const [shares, setShares] = useState<SubscriptionShare[]>([]);
   const [total, setTotal] = useState(0);
   const [login, setLogin] = useState('');
+  const [newRole, setNewRole] = useState<ShareRole>('viewer');
   const [loading, setLoading] = useState(false);
   const [removingId, setRemovingId] = useState<number | null>(null);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadShares = useCallback(async () => {
@@ -33,8 +40,9 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
     setError(null);
     setLoading(true);
     try {
-      await sharesApi.add(subscriptionId, login.trim());
+      await sharesApi.add(subscriptionId, login.trim(), newRole);
       setLogin('');
+      setNewRole('viewer');
       await loadShares();
     } catch (err: unknown) {
       const message = (err as { response?: { data?: { message?: string } } })
@@ -42,6 +50,21 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
       setError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRoleChange = async (shareId: number, role: ShareRole) => {
+    setUpdatingId(shareId);
+    setError(null);
+    try {
+      await sharesApi.updateRole(subscriptionId, shareId, role);
+      setShares((prev) =>
+        prev.map((s) => (s.id === shareId ? { ...s, role } : s)),
+      );
+    } catch {
+      setError('Не удалось изменить роль');
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -59,6 +82,7 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
 
   return (
     <div className="space-y-4">
+      {/* Add form */}
       <div className="flex gap-2">
         <input
           type="text"
@@ -70,6 +94,17 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
                      dark:border-surface-border dark:bg-gray-800 dark:text-gray-100
                      focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
         />
+        <select
+          value={newRole}
+          onChange={(e) => setNewRole(e.target.value as ShareRole)}
+          className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm
+                     dark:border-surface-border dark:bg-gray-800 dark:text-gray-100
+                     focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+        >
+          {ROLE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
         <Button size="sm" onClick={handleAdd} disabled={loading || !login.trim()}>
           Добавить
         </Button>
@@ -86,8 +121,8 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
       ) : (
         <div className="divide-y divide-gray-100 dark:divide-surface-border">
           {shares.map((share) => (
-            <div key={share.id} className="flex items-center justify-between py-2">
-              <div>
+            <div key={share.id} className="flex items-center justify-between gap-2 py-2">
+              <div className="min-w-0 flex-1">
                 <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   {share.sharedWithLogin}
                 </span>
@@ -95,6 +130,19 @@ export default function SharesManager({ subscriptionId }: SharesManagerProps) {
                   {new Date(share.createdAt).toLocaleDateString('ru-RU')}
                 </span>
               </div>
+              <select
+                value={share.role}
+                onChange={(e) => handleRoleChange(share.id, e.target.value as ShareRole)}
+                disabled={updatingId === share.id}
+                className="rounded-md border border-gray-200 bg-white px-2 py-1 text-xs
+                           dark:border-surface-border dark:bg-gray-800 dark:text-gray-200
+                           focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500
+                           disabled:opacity-50"
+              >
+                {ROLE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
               <button
                 onClick={() => handleRemove(share.id)}
                 disabled={removingId === share.id}

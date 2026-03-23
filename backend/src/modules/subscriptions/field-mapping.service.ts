@@ -8,7 +8,7 @@ import {
   DEFAULT_FIELD_MAPPING,
   VALID_TASK_CATEGORY_KEYS,
 } from './subscriptions.types';
-import { subscriptionAccessFilter } from './subscription-access';
+import { subscriptionAccessFilter, subscriptionEditorFilter } from './subscription-access';
 
 function validateTaskTypeMapping(mapping: Record<string, string>): void {
   for (const [key, value] of Object.entries(mapping)) {
@@ -87,8 +87,13 @@ export async function updateFieldMapping(
   subscriptionId: string,
   ownerId: string,
   dto: UpdateFieldMappingDto,
+  userLogin?: string,
 ): Promise<FieldMapping> {
-  const mapping = await getFieldMapping(em, subscriptionId, ownerId);
+  const filter = userLogin
+    ? { subscription: { id: subscriptionId, ...(subscriptionEditorFilter(ownerId, userLogin) as object) } }
+    : { subscription: { id: subscriptionId, ownerId } };
+  const mapping = await em.findOne(FieldMapping, filter, { populate: ['subscription'] });
+  if (!mapping) throw new NotFoundError('Field mapping not found');
 
   if (dto.taskTypeMapping !== undefined) {
     validateTaskTypeMapping(dto.taskTypeMapping);
