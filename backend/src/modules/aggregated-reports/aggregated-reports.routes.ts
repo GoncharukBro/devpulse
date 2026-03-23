@@ -94,6 +94,21 @@ export async function aggregatedReportsRoutes(app: FastifyInstance): Promise<voi
     },
   );
 
+  // GET /api/aggregated-reports/:id/email-preview
+  app.get<{ Params: { id: string } }>(
+    '/aggregated-reports/:id/email-preview',
+    async (request, reply) => {
+      const em = request.orm.em.fork();
+      const service = new AggregatedReportsService(em, llmServiceRef, request.orm);
+      const result = await service.getEmailPreview(request.params.id, request.user.id);
+      if (!result) {
+        reply.status(404).send({ message: 'Report not found' });
+        return;
+      }
+      return result;
+    },
+  );
+
   // DELETE /api/aggregated-reports/:id
   app.delete<{ Params: { id: string } }>(
     '/aggregated-reports/:id',

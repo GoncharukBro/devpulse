@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, User, FolderKanban, Users, HelpCircle } from 'lucide-react';
+import { ArrowLeft, User, FolderKanban, Users, HelpCircle, Mail } from 'lucide-react';
 import { aggregatedReportsApi } from '@/api/endpoints/aggregated-reports';
 import ReportStatusBadge from '@/components/reports/ReportStatusBadge';
 import PeriodKpiCards from '@/components/reports/PeriodKpiCards';
 import PeriodWeeklyChart from '@/components/reports/PeriodWeeklyChart';
 import PeriodLlmSummary from '@/components/reports/PeriodLlmSummary';
+import CopyButton from '@/components/shared/CopyButton';
+import AggregatedEmailModal from '@/components/shared/AggregatedEmailModal';
+import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import type { AggregatedReportDTO } from '@/types/aggregated-report';
 import type { ScoreTrend } from '@/types/reports';
@@ -34,6 +37,7 @@ export default function AggregatedReportPage() {
   const [report, setReport] = useState<AggregatedReportDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -102,6 +106,30 @@ export default function AggregatedReportPage() {
     );
   }
 
+  function getCopyText() {
+    if (!report) return '';
+    const m = report.aggregatedMetrics;
+    const lines = [
+      `${report.type === 'employee' ? 'Сотрудник' : report.type === 'project' ? 'Проект' : 'Команда'}: ${report.targetName}`,
+      `Период: ${formatDate(report.periodStart)} — ${formatDate(report.periodEnd)} (${report.weeksCount} нед.)`,
+      '',
+      `Score: ${m.avgScore !== null ? Math.round(m.avgScore) : '—'}`,
+      `Загрузка: ${m.avgUtilization !== null ? Math.round(m.avgUtilization) + '%' : '—'}`,
+      `Точность оценок: ${m.avgEstimationAccuracy !== null ? Math.round(m.avgEstimationAccuracy) + '%' : '—'}`,
+      `Закрытие: ${m.avgCompletionRate !== null ? Math.round(m.avgCompletionRate) + '%' : '—'}`,
+      `Задачи: ${m.completedIssues}/${m.totalIssues}`,
+      `Списано часов: ${m.totalSpentHours !== null ? Math.round(m.totalSpentHours) : '—'}`,
+    ];
+    if (report.llmPeriodSummary) {
+      lines.push('', 'Резюме:', report.llmPeriodSummary);
+    }
+    if (report.llmPeriodRecommendations?.length) {
+      lines.push('', 'Рекомендации:');
+      report.llmPeriodRecommendations.forEach((r) => lines.push(`- ${r}`));
+    }
+    return lines.join('\n');
+  }
+
   const Icon = typeIcons[report.type] ?? User;
 
   return (
@@ -138,7 +166,22 @@ export default function AggregatedReportPage() {
             </p>
           </div>
         </div>
-        <ReportStatusBadge status={report.status} />
+        <div className="flex items-center gap-2">
+          {report.status === 'ready' && (
+            <>
+              <CopyButton getText={getCopyText} />
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<Mail size={14} />}
+                onClick={() => setEmailModalOpen(true)}
+              >
+                На почту
+              </Button>
+            </>
+          )}
+          <ReportStatusBadge status={report.status} />
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -195,6 +238,14 @@ export default function AggregatedReportPage() {
         <Card>
           <p className="text-sm text-red-500 dark:text-red-400">Ошибка: {report.errorMessage}</p>
         </Card>
+      )}
+
+      {id && (
+        <AggregatedEmailModal
+          open={emailModalOpen}
+          onClose={() => setEmailModalOpen(false)}
+          reportId={id}
+        />
       )}
     </div>
   );

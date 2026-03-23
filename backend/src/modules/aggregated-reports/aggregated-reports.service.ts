@@ -209,6 +209,57 @@ export class AggregatedReportsService {
     };
   }
 
+  // ─── Email preview ───────────────────────────────────────────────
+  async getEmailPreview(id: string, userId: string): Promise<{ subject: string; html: string } | null> {
+    const r = await this.em.findOne(AggregatedReport, { id, createdBy: userId });
+    if (!r) return null;
+
+    const { generateAggregatedEmailHtml } = await import('../reports/email-template');
+
+    const employees = r.employeesData as unknown as EmployeeAggItem[] | null;
+
+    const data = {
+      type: r.type,
+      targetName: r.targetName,
+      period: { start: formatYTDate(r.periodStart), end: formatYTDate(r.periodEnd) },
+      weeksCount: r.weeksCount,
+      avgScore: r.avgScore ?? null,
+      kpis: {
+        utilization: r.avgUtilization ?? null,
+        estimationAccuracy: r.avgEstimationAccuracy ?? null,
+        focus: r.avgFocus ?? null,
+        completionRate: r.avgCompletionRate ?? null,
+      },
+      tasks: {
+        total: r.totalIssues,
+        completed: r.completedIssues,
+        overdue: r.overdueIssues,
+      },
+      time: {
+        spentHours: minutesToHours(r.totalSpentMinutes),
+        avgCycleTimeHours: r.avgCycleTimeHours ?? null,
+      },
+      llm: r.llmPeriodSummary ? {
+        score: r.llmPeriodScore ?? null,
+        summary: r.llmPeriodSummary ?? null,
+        concerns: r.llmPeriodConcerns ?? null,
+        recommendations: r.llmPeriodRecommendations ?? null,
+      } : null,
+      employees: employees?.map(e => ({
+        displayName: e.displayName,
+        score: e.avgScore,
+        utilization: e.avgUtilization,
+        completedIssues: e.completedIssues,
+        totalIssues: e.totalIssues,
+      })) ?? null,
+    };
+
+    const html = generateAggregatedEmailHtml(data);
+    const subject = `DevPulse · ${r.targetName} · ${data.period.start}–${data.period.end} (${r.weeksCount} нед.)`;
+
+    return { subject, html };
+  }
+
   // ─── Delete ───────────────────────────────────────────────────────
   async delete(id: string, userId: string): Promise<void> {
     const report = await this.em.findOne(AggregatedReport, { id, createdBy: userId });

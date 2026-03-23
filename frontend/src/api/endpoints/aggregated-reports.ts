@@ -29,6 +29,11 @@ export const aggregatedReportsApi = {
     return response.data;
   },
 
+  async emailPreview(id: string): Promise<{ subject: string; html: string }> {
+    const response = await apiClient.get<{ subject: string; html: string }>(`/aggregated-reports/${id}/email-preview`);
+    return response.data;
+  },
+
   async remove(id: string): Promise<void> {
     await apiClient.delete(`/aggregated-reports/${id}`);
   },

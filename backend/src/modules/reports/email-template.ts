@@ -687,6 +687,142 @@ ${sectionTitle('Сотрудники команды')}
 
 // ─── Генерация subject ──────────────────────────────────────────────
 
+// ─── Генератор: Агрегированный отчёт ─────────────────────────────────
+
+export interface AggregatedEmailData {
+  type: 'employee' | 'project' | 'team';
+  targetName: string;
+  period: { start: string; end: string };
+  weeksCount: number;
+  avgScore: number | null;
+  kpis: {
+    utilization: number | null;
+    estimationAccuracy: number | null;
+    focus: number | null;
+    completionRate: number | null;
+  };
+  tasks: {
+    total: number;
+    completed: number;
+    overdue: number;
+  };
+  time: {
+    spentHours: number;
+    avgCycleTimeHours: number | null;
+  };
+  llm: {
+    score: number | null;
+    summary: string | null;
+    concerns: string[] | null;
+    recommendations: string[] | null;
+  } | null;
+  employees: Array<{
+    displayName: string;
+    score: number | null;
+    utilization: number | null;
+    completedIssues: number;
+    totalIssues: number;
+  }> | null;
+}
+
+const TYPE_LABELS: Record<string, string> = {
+  employee: 'Агрегированный отчёт',
+  project: 'Агрегированный отчёт по проекту',
+  team: 'Агрегированный отчёт по команде',
+};
+
+export function generateAggregatedEmailHtml(data: AggregatedEmailData): string {
+  const periodText = formatPeriodRu(data.period.start, data.period.end);
+
+  const parts: string[] = [];
+
+  // 1. Header
+  parts.push(headerBlock({
+    periodText: `${periodText} · ${data.weeksCount} нед.`,
+    subtitle: TYPE_LABELS[data.type] ?? 'Агрегированный отчёт',
+    title: data.targetName,
+  }));
+
+  // 2. Score
+  parts.push(scoreBlock(data.avgScore, null, 'Средняя оценка за период'));
+
+  // 3. KPI grid
+  parts.push(kpiGrid({
+    utilization: data.kpis.utilization,
+    estimationAccuracy: data.kpis.estimationAccuracy,
+    focus: data.kpis.focus,
+    completionRate: data.kpis.completionRate,
+  }));
+
+  // 4. Tasks summary
+  parts.push(dividerRow());
+  parts.push(`<tr><td style="background-color:#ffffff;padding:20px 32px;">
+${sectionTitle('Итоги за период')}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#374151;">
+<tr><td style="padding:3px 16px 3px 0;">Задач всего:</td><td style="font-weight:bold;">${data.tasks.total}</td></tr>
+<tr><td style="padding:3px 16px 3px 0;">Закрыто:</td><td style="font-weight:bold;">${data.tasks.completed}</td></tr>
+${data.tasks.overdue > 0 ? `<tr><td style="padding:3px 16px 3px 0;">Просрочено:</td><td style="font-weight:bold;color:#dc2626;">${data.tasks.overdue}</td></tr>` : ''}
+<tr><td style="padding:3px 16px 3px 0;">Списано часов:</td><td style="font-weight:bold;">${round1(data.time.spentHours)}ч</td></tr>
+${data.time.avgCycleTimeHours !== null ? `<tr><td style="padding:3px 16px 3px 0;">Cycle Time:</td><td style="font-weight:bold;">${round1(data.time.avgCycleTimeHours)}ч</td></tr>` : ''}
+</table>
+</td></tr>`);
+
+  // 5. Employees table (project/team)
+  if (data.employees && data.employees.length > 0) {
+    parts.push(dividerRow());
+    parts.push(`<tr><td style="background-color:#ffffff;padding:20px 32px;">
+${sectionTitle('Сотрудники')}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+<tr style="background-color:#f9fafb;">
+<td style="padding:8px 12px;font-size:11px;color:#6b7280;font-weight:bold;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #e5e7eb;">Сотрудник</td>
+<td align="center" style="padding:8px 12px;font-size:11px;color:#6b7280;font-weight:bold;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #e5e7eb;">Score</td>
+<td align="center" style="padding:8px 12px;font-size:11px;color:#6b7280;font-weight:bold;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #e5e7eb;">Загрузка</td>
+<td align="center" style="padding:8px 12px;font-size:11px;color:#6b7280;font-weight:bold;text-transform:uppercase;font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #e5e7eb;">Закрыто</td>
+</tr>`);
+
+    for (const emp of data.employees) {
+      const scoreColor = getScoreColor(emp.score);
+      const utilColor = getScoreColor(emp.utilization !== null && emp.utilization >= 70 ? 70 : emp.utilization);
+      parts.push(`<tr>
+<td style="padding:8px 12px;font-size:13px;color:#374151;font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #f3f4f6;">${escapeHtml(emp.displayName)}</td>
+<td align="center" style="padding:8px 12px;font-size:13px;font-weight:bold;color:${scoreColor};font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #f3f4f6;">${emp.score !== null ? Math.round(emp.score) : '\u2014'}</td>
+<td align="center" style="padding:8px 12px;font-size:13px;color:${utilColor};font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #f3f4f6;">${pct(emp.utilization)}</td>
+<td align="center" style="padding:8px 12px;font-size:13px;color:#374151;font-family:Arial,Helvetica,sans-serif;border-bottom:1px solid #f3f4f6;">${emp.completedIssues}/${emp.totalIssues}</td>
+</tr>`);
+    }
+
+    parts.push(`</table></td></tr>`);
+  }
+
+  // 6. LLM summary
+  if (data.llm) {
+    if (data.llm.summary) {
+      parts.push(dividerRow());
+      parts.push(llmBlock({
+        summary: data.llm.summary,
+        achievements: [],
+        concerns: data.llm.concerns ?? [],
+        recommendations: data.llm.recommendations ?? [],
+      }));
+    } else if ((data.llm.recommendations ?? []).length > 0) {
+      parts.push(dividerRow());
+      let recsHtml = `<tr><td style="background-color:#ffffff;padding:20px 32px;">
+${sectionTitle('Рекомендации')}`;
+      for (const r of data.llm.recommendations!) {
+        recsHtml += `<div style="font-size:13px;color:#4f46e5;font-family:Arial,Helvetica,sans-serif;padding:2px 0 2px 12px;">\u2022 ${escapeHtml(r)}</div>`;
+      }
+      recsHtml += `</td></tr>`;
+      parts.push(recsHtml);
+    }
+  }
+
+  // 7. Footer
+  parts.push(footerBlock());
+
+  const subject = `DevPulse \u00b7 ${data.targetName} \u00b7 ${periodText} (${data.weeksCount} нед.)`;
+  return wrapHtml(subject, parts.join('\n'));
+}
+
 export function generateSubject(
   type: 'employee' | 'project' | 'team',
   name: string,
