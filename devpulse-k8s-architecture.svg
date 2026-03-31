@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 796 520" font-family="'Inter','SF Pro Display','Segoe UI',system-ui,sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 796 548" font-family="'Inter','SF Pro Display','Segoe UI',system-ui,sans-serif">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 2L7 5L1 8" fill="none" stroke="context-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
     <filter id="sh" x="-3%" y="-4%" width="106%" height="112%"><feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-opacity="0.05"/></filter>
@@ -10,14 +10,14 @@
   <text x="4" y="44" font-size="9" fill="#a8a29e">Сбор метрик из YouTrack · KPI · LLM-анализ · отчёты</text>
 
   <!-- ═══ КОНТУР КОМПАНИИ ═══ -->
-  <rect x="4" y="54" width="788" height="462" rx="16" fill="none" stroke="#a8a29e" stroke-width="1" stroke-dasharray="12 4"/>
+  <rect x="4" y="54" width="788" height="488" rx="16" fill="none" stroke="#a8a29e" stroke-width="1" stroke-dasharray="12 4"/>
   <text x="16" y="70" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.5">КОНТУР КОМПАНИИ</text>
 
   <g transform="translate(5, 72)">
 
   <!-- ═══ USERS ═══ -->
   <g filter="url(#sh)">
-    <rect x="170" y="4" width="170" height="42" rx="10" fill="#fff" stroke="#a8a29e" stroke-width="0.8"/>
+    <rect x="170" y="4" width="170" height="42" rx="21" fill="#fff" stroke="#a8a29e" stroke-width="0.8"/>
   </g>
   <circle cx="204" cy="20" r="4.5" fill="none" stroke="#78716c" stroke-width="1"/>
   <path d="M198 28 Q204 23 210 28" fill="none" stroke="#78716c" stroke-width="1" stroke-linecap="round"/>
@@ -33,7 +33,7 @@
 
   <!-- ═══ CLUSTER ═══ -->
   <rect x="20" y="104" width="508" height="292" rx="14" fill="#fafaf8" stroke="#a8a29e" stroke-width="0.8"/>
-  <text x="34" y="120" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.5">KUBERNETES CLUSTER: k8s-cluster</text>
+  <text x="34" y="120" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.5">KUBERNETES CLUSTER: k8s-front</text>
 
   <!-- ─── Ingress ─── -->
   <g filter="url(#sh)">
@@ -44,7 +44,7 @@
 
   <!-- ═══ NS: FRONTEND (y=184, h=94) ═══ -->
   <rect x="36" y="184" width="476" height="94" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="0.8"/>
-  <text x="48" y="201" font-size="9" font-weight="600" fill="#15803d" letter-spacing="0">NS: devpulse-frontend-test</text>
+  <text x="48" y="201" font-size="9" font-weight="600" fill="#15803d" letter-spacing="0">NS: devpulse-frontend-prod</text>
 
   <!-- App card -->
   <g filter="url(#sh)">
@@ -68,7 +68,7 @@
 
   <!-- ═══ NS: BACKEND (y=292, h=116) ═══ -->
   <rect x="36" y="292" width="476" height="96" rx="10" fill="#f5f3ff" stroke="#a78bfa" stroke-width="0.8"/>
-  <text x="48" y="309" font-size="9" font-weight="600" fill="#6d28d9" letter-spacing="0">NS: devpulse-backend-test</text>
+  <text x="48" y="309" font-size="9" font-weight="600" fill="#6d28d9" letter-spacing="0">NS: devpulse-backend-prod</text>
 
   <!-- Backend API card -->
   <g filter="url(#sh)">
@@ -113,46 +113,49 @@
   <text x="582" y="140" font-size="8.5" fill="#78716c" dominant-baseline="central">Двухфакторная авторизация · OIDC</text>
   <text x="582" y="155" font-size="8" fill="#db2777" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">keycloak.company.group</text>
 
-  <!-- YouTrack: y=178, h=62 -->
+  <!-- YouTrack: y=178, h=112 -->
   <g filter="url(#sh)">
-    <rect x="570" y="178" width="196" height="62" rx="8" fill="#fff" stroke="#fb923c" stroke-width="0.8"/>
+    <rect x="570" y="178" width="196" height="112" rx="8" fill="#fff" stroke="#fb923c" stroke-width="0.8"/>
   </g>
   <rect x="582" y="192" width="10" height="12" rx="2" fill="#ea580c" fill-opacity="0.15" stroke="#ea580c" stroke-width="0.8" stroke-opacity="0.6"/>
   <path d="M588 192 L588 196 L592 196" fill="none" stroke="#ea580c" stroke-width="0.7" stroke-opacity="0.6" stroke-linejoin="round"/>
   <text x="597" y="198" font-size="11" font-weight="600" fill="#9a3412" dominant-baseline="central">YouTrack</text>
   <text x="582" y="214" font-size="8.5" fill="#78716c" dominant-baseline="central">Сбор issues и workItems</text>
-  <text x="582" y="229" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack.company.group</text>
+  <text x="582" y="229" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack-1.company.group</text>
+  <text x="582" y="241" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack-2.company.group</text>
+  <text x="582" y="253" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack-3.company.group</text>
+  <text x="582" y="265" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack-4.company.group</text>
+  <text x="582" y="277" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack-5.company.group</text>
 
-  <!-- LLM API: y=252, h=62 -->
+  <!-- LLM API: y=302, h=62 -->
   <g filter="url(#sh)">
-    <rect x="570" y="252" width="196" height="62" rx="8" fill="#fff" stroke="#a78bfa" stroke-width="0.8"/>
+    <rect x="570" y="302" width="196" height="62" rx="8" fill="#fff" stroke="#a78bfa" stroke-width="0.8"/>
   </g>
-  <circle cx="587" cy="272" r="6" fill="#7c3aed" fill-opacity="0.15" stroke="#7c3aed" stroke-width="0.8" stroke-opacity="0.6"/>
-  <circle cx="587" cy="272" r="2" fill="#7c3aed" opacity="0.4"/>
-  <text x="597" y="272" font-size="11" font-weight="600" fill="#3b0764" dominant-baseline="central">LLM API</text>
-  <text x="582" y="288" font-size="8.5" fill="#78716c" dominant-baseline="central">Анализ метрик, генерация отчётов</text>
-  <text x="582" y="303" font-size="8" fill="#7c3aed" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">llm.company.group</text>
+  <circle cx="587" cy="322" r="6" fill="#7c3aed" fill-opacity="0.15" stroke="#7c3aed" stroke-width="0.8" stroke-opacity="0.6"/>
+  <circle cx="587" cy="322" r="2" fill="#7c3aed" opacity="0.4"/>
+  <text x="597" y="322" font-size="11" font-weight="600" fill="#3b0764" dominant-baseline="central">LLM API</text>
+  <text x="582" y="338" font-size="8.5" fill="#78716c" dominant-baseline="central">Анализ метрик, генерация отчётов</text>
+  <text x="582" y="353" font-size="8" fill="#7c3aed" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">llm.company.group</text>
 
-  <!-- PostgreSQL: y=326, h=48 -->
+  <!-- Graylog: y=376, h=48 -->
   <g filter="url(#sh)">
-    <rect x="570" y="326" width="196" height="48" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="0.8"/>
+    <rect x="570" y="376" width="196" height="48" rx="8" fill="#fff" stroke="#4ade80" stroke-width="0.8"/>
   </g>
-  <ellipse cx="587" cy="343" rx="6" ry="2.5" fill="#2563eb" fill-opacity="0.15" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
-  <path d="M581 343 L581 349 M593 343 L593 349" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
-  <ellipse cx="587" cy="349" rx="6" ry="2.5" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
-  <text x="597" y="346" font-size="11" font-weight="600" fill="#1e3a8a" dominant-baseline="central">PostgreSQL 16</text>
-  <text x="582" y="362" font-size="8" fill="#2563eb" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">postgresql.company.group</text>
+  <rect x="582" y="390" width="10" height="12" rx="1.5" fill="#16a34a" fill-opacity="0.15" stroke="#16a34a" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="585" y1="394" x2="589" y2="394" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.5"/>
+  <line x1="585" y1="397" x2="589" y2="397" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.5"/>
+  <line x1="585" y1="400" x2="588" y2="400" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.4"/>
+  <text x="597" y="396" font-size="11" font-weight="600" fill="#14532d" dominant-baseline="central">Graylog</text>
+  <text x="582" y="412" font-size="8" fill="#16a34a" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">graylog.company.group</text>
 
-  <!-- Graylog: y=386, h=48 -->
+  <!-- PostgreSQL: below cluster, centered -->
   <g filter="url(#sh)">
-    <rect x="570" y="386" width="196" height="48" rx="8" fill="#fff" stroke="#4ade80" stroke-width="0.8"/>
+    <rect x="176" y="410" width="196" height="48" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="0.8"/>
   </g>
-  <rect x="582" y="400" width="10" height="12" rx="1.5" fill="#16a34a" fill-opacity="0.15" stroke="#16a34a" stroke-width="0.8" stroke-opacity="0.6"/>
-  <line x1="585" y1="404" x2="589" y2="404" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.5"/>
-  <line x1="585" y1="407" x2="589" y2="407" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.5"/>
-  <line x1="585" y1="410" x2="588" y2="410" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.4"/>
-  <text x="597" y="406" font-size="11" font-weight="600" fill="#14532d" dominant-baseline="central">Graylog</text>
-  <text x="582" y="422" font-size="8" fill="#16a34a" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">graylog.company.group</text>
+  <ellipse cx="203" cy="430" rx="6" ry="2.5" fill="#2563eb" fill-opacity="0.15" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
+  <path d="M197 430 L197 438 M209 430 L209 438" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
+  <ellipse cx="203" cy="438" rx="6" ry="2.5" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="217" y="434" font-size="11" font-weight="600" fill="#1e3a8a" dominant-baseline="central">PostgreSQL</text>
 
   <!-- ═══ ARROWS ═══ -->
 
@@ -171,17 +174,17 @@
   <!-- BE → Keycloak: spine x=526, arrive y=142 -->
   <path d="M512 334 L521 334 Q526 334 526 329 L526 147 Q526 142 531 142 L568 142" fill="none" stroke="#db2777" stroke-width="1.2" marker-end="url(#a)"/>
 
-  <!-- BE → YouTrack: spine x=534, arrive y=209 -->
-  <path d="M512 344 L529 344 Q534 344 534 339 L534 214 Q534 209 539 209 L568 209" fill="none" stroke="#ea580c" stroke-width="1.2" marker-end="url(#a)"/>
+  <!-- BE → YouTrack: spine x=534, arrive y=237 -->
+  <path d="M512 344 L529 344 Q534 344 534 339 L534 242 Q534 237 539 237 L568 237" fill="none" stroke="#ea580c" stroke-width="1.2" marker-end="url(#a)"/>
 
-  <!-- BE → LLM API: spine x=542, arrive y=283 -->
-  <path d="M512 354 L537 354 Q542 354 542 349 L542 288 Q542 283 547 283 L568 283" fill="none" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#a)"/>
+  <!-- BE → LLM API: spine x=542, arrive y=333 -->
+  <path d="M512 354 L537 354 Q542 354 542 349 L542 338 Q542 333 547 333 L568 333" fill="none" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#a)"/>
 
-  <!-- BE → PostgreSQL: spine x=550, arrive y=350 -->
-  <path d="M512 364 L545 364 Q550 364 550 359 L550 355 Q550 350 555 350 L568 350" fill="none" stroke="#2563eb" stroke-width="1.2" marker-end="url(#a)"/>
+  <!-- BE → Graylog: spine x=550, arrive y=400 -->
+  <path d="M512 364 L545 364 Q550 364 550 369 L550 395 Q550 400 555 400 L568 400" fill="none" stroke="#16a34a" stroke-width="1.2" marker-end="url(#a)"/>
 
-  <!-- BE → Graylog: spine x=558, arrive y=410 -->
-  <path d="M512 374 L553 374 Q558 374 558 379 L558 405 Q558 410 563 410 L568 410" fill="none" stroke="#16a34a" stroke-width="1.2" marker-end="url(#a)"/>
+  <!-- BE → PostgreSQL: vertical down, through cluster bottom -->
+  <path d="M274 388 L274 408" fill="none" stroke="#2563eb" stroke-width="1.2" marker-end="url(#a)"/>
 
   <!-- FE → Keycloak: spine x=518, arrive y=120 -->
   <path d="M512 244 L513 244 Q518 244 518 239 L518 125 Q518 120 523 120 L568 120" fill="none" stroke="#db2777" stroke-width="1.2" marker-end="url(#a)"/>
