@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { CheckCircle, AlertTriangle, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
 import Card from '@/components/ui/Card';
+import TrendIndicator from '@/components/metrics/TrendIndicator';
+import MetricTooltip from '@/components/metrics/MetricTooltip';
+import { useMetricColor } from '@/hooks/useMetricColor';
+import type { ScoreTrend } from '@/types/reports';
 
 interface LlmSummaryBlockProps {
   summary: string | null;
@@ -11,6 +15,9 @@ interface LlmSummaryBlockProps {
   loading?: boolean;
   llmStatus?: string;
   hasNoData?: boolean;
+  score?: number | null;
+  scoreTrend?: ScoreTrend;
+  scoreDelta?: number | null;
 }
 
 export default function LlmSummaryBlock({
@@ -22,7 +29,11 @@ export default function LlmSummaryBlock({
   loading,
   llmStatus,
   hasNoData,
+  score,
+  scoreTrend,
+  scoreDelta,
 }: LlmSummaryBlockProps) {
+  const { colors: scoreColors } = useMetricColor('score', score ?? null);
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -75,7 +86,21 @@ export default function LlmSummaryBlock({
 
   return (
     <Card>
-      <h4 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">LLM-сводка</h4>
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300">LLM-сводка</h4>
+          <MetricTooltip metric="score" />
+        </div>
+        {score != null && (
+          <div className="flex items-center gap-2">
+            <span className={`text-2xl font-bold ${scoreColors.text}`}>{Math.round(score)}</span>
+            <TrendIndicator
+              trend={scoreTrend ?? null}
+              value={scoreDelta != null ? `${scoreDelta > 0 ? '+' : ''}${Number.isInteger(scoreDelta) ? scoreDelta : scoreDelta.toFixed(1)}` : null}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="relative">
         <div

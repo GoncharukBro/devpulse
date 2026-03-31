@@ -30,14 +30,24 @@ export function getCurrentWeekRange(): { start: Date; end: Date } {
   return getWeekRange(new Date());
 }
 
-/** Получить список недель между двумя датами (включительно) */
+/** Получить список полных недель между двумя датами.
+ *  Неделя включается только если её воскресенье ≤ to (т.е. неделя полностью
+ *  укладывается в запрошенный период). Это предотвращает сбор неполной
+ *  хвостовой недели, которая даёт заниженные метрики и ложную динамику. */
 export function getWeeksBetween(from: Date, to: Date): Array<{ start: Date; end: Date }> {
   const weeks: Array<{ start: Date; end: Date }> = [];
   let current = getMonday(from);
 
-  while (current <= to) {
+  // Нормализуем to до конца дня UTC, чтобы дата "2025-03-30" (полночь)
+  // корректно включала неделю, заканчивающуюся 30-го числа (23:59:59.999)
+  const toEndOfDay = new Date(to);
+  toEndOfDay.setUTCHours(23, 59, 59, 999);
+
+  while (current <= toEndOfDay) {
     const range = getWeekRange(current);
-    weeks.push(range);
+    if (range.end <= toEndOfDay) {
+      weeks.push(range);
+    }
     current = new Date(current);
     current.setUTCDate(current.getUTCDate() + 7);
   }

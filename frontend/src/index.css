@@ -15,6 +15,7 @@
   }
   body {
     @apply min-h-screen transition-colors duration-200;
+    overflow-anchor: none;
   }
 }
 

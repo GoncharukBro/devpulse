@@ -108,9 +108,13 @@ export class CollectionWorker {
     this.log.info('Collection worker started');
 
     await this.recoverStoppingCollections();
+    collectionState.updateWorkerHeartbeat('collection');
     await this.recoverLlmQueue();
+    collectionState.updateWorkerHeartbeat('collection');
     await this.recoverRunningCollections();
+    collectionState.updateWorkerHeartbeat('collection');
     await this.recoverPendingCollections();
+    collectionState.updateWorkerHeartbeat('collection');
     this.poll();
   }
 
@@ -239,14 +243,12 @@ export class CollectionWorker {
     const collectionLog = await em.findOneOrFail(CollectionLog, { id: logId });
 
     if (!resume) {
-      collectionLog.totalEmployees = activeEmployees.length;
+      collectionLog.totalEmployees = totalUnits;
       await em.flush();
     }
 
-    // Всегда обновлять totalEmployees в in-memory state (в т.ч. при resume,
-    // т.к. в БД хранится число сотрудников, а фронту нужны employee×weeks юниты)
     collectionState.updateProgress(logId, {
-      totalEmployees: totalUnits > activeEmployees.length ? totalUnits : activeEmployees.length,
+      totalEmployees: totalUnits,
       totalWeeks: totalWeeks > 1 ? totalWeeks : undefined,
     });
 
@@ -324,6 +326,7 @@ export class CollectionWorker {
             : `(${totalProgress + 1}/${activeEmployees.length})`),
         );
 
+        collectionState.updateWorkerHeartbeat('collection');
         collectionState.updateProgress(logId, {
           currentEmployee: employee.displayName || employee.youtrackLogin,
           processedEmployees: totalProgress,
@@ -598,6 +601,7 @@ export class CollectionWorker {
             `Retry ${attempt}/${RETRY_COUNT} for ${youtrackLogin}: ${lastError.message}, waiting ${delay}ms`,
           );
           await sleep(delay);
+          collectionState.updateWorkerHeartbeat('collection');
         }
       }
     }

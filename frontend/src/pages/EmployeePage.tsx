@@ -332,6 +332,9 @@ export default function EmployeePage() {
               loading={loading}
               llmStatus={report?.llmStatus}
               hasNoData={report != null && report.totalIssues === 0}
+              score={report?.score ?? summary?.avgScore}
+              scoreTrend={summary?.trends?.score.direction}
+              scoreDelta={summary?.trends?.score.delta}
             />
           </div>
 

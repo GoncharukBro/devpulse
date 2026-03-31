@@ -205,9 +205,7 @@ export default function SubscriptionCard({
               <Loader size={12} className="mr-1 animate-spin text-amber-400" />
               В очереди...
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
-              <div className="h-full w-1/4 animate-pulse rounded-full bg-amber-400/60" />
-            </div>
+            <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-surface-lighter" />
           </div>
         )}
 

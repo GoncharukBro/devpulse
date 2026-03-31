@@ -783,7 +783,7 @@ function LogRow({
         <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{getTypeLabel(log.type)}</td>
 
         {/* Статус */}
-        <td className="px-4 py-3">{getSmartStatusBadge(log)}</td>
+        <td className="px-4 py-3 whitespace-nowrap">{getSmartStatusBadge(log)}</td>
 
         {/* Обработано */}
         <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{getEmployeeSummary(log)}</td>

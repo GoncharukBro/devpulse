@@ -28,10 +28,12 @@ interface WeeklyChartProps {
 function buildWeekLabels(data: ChartDataItem[]): string[] {
   let prevYear: number | null = null;
   return data.map((item, i) => {
-    const d = new Date(item.periodStart);
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const year = d.getFullYear();
+    const start = new Date(item.periodStart);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6); // воскресенье (конец недели)
+    const day = end.getDate().toString().padStart(2, '0');
+    const month = (end.getMonth() + 1).toString().padStart(2, '0');
+    const year = end.getFullYear();
     const shortYear = String(year).slice(2);
     const showYear = i === 0 || year !== prevYear;
     prevYear = year;
