@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 796 520" font-family="'Inter','SF Pro Display','Segoe UI',system-ui,sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M1 2L7 5L1 8" fill="none" stroke="context-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <filter id="sh" x="-3%" y="-4%" width="106%" height="112%"><feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-opacity="0.05"/></filter>
+  </defs>
+
+  <!-- ═══ PROJECT TITLE ═══ -->
+  <text x="4" y="16" font-size="14" font-weight="700" fill="#2c2c2a">DevPulse</text>
+  <text x="4" y="32" font-size="9" fill="#78716c">Система мониторинга продуктивности специалистов</text>
+  <text x="4" y="44" font-size="9" fill="#a8a29e">Сбор метрик из YouTrack · KPI · LLM-анализ · отчёты</text>
+
+  <!-- ═══ КОНТУР КОМПАНИИ ═══ -->
+  <rect x="4" y="54" width="788" height="462" rx="16" fill="none" stroke="#a8a29e" stroke-width="1" stroke-dasharray="12 4"/>
+  <text x="16" y="70" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.5">КОНТУР КОМПАНИИ</text>
+
+  <g transform="translate(5, 72)">
+
+  <!-- ═══ USERS ═══ -->
+  <g filter="url(#sh)">
+    <rect x="170" y="4" width="170" height="42" rx="10" fill="#fff" stroke="#a8a29e" stroke-width="0.8"/>
+  </g>
+  <circle cx="204" cy="20" r="4.5" fill="none" stroke="#78716c" stroke-width="1"/>
+  <path d="M198 28 Q204 23 210 28" fill="none" stroke="#78716c" stroke-width="1" stroke-linecap="round"/>
+  <text x="226" y="20" font-size="12" font-weight="600" fill="#2c2c2a" dominant-baseline="central">Пользователи</text>
+  <text x="226" y="34" font-size="8" fill="#78716c" dominant-baseline="central">Сотрудники компании (ДБТ)</text>
+
+  <!-- ═══ LOAD BALANCER (outside cluster) ═══ -->
+  <g filter="url(#sh)">
+    <rect x="148" y="56" width="214" height="38" rx="8" fill="#fff" stroke="#d97706" stroke-width="0.9"/>
+  </g>
+  <text x="160" y="67" font-size="11" font-weight="600" fill="#92400e" dominant-baseline="central">Reverse Proxy</text>
+  <text x="160" y="82" font-size="8.5" fill="#d97706" dominant-baseline="central">Входная точка · TLS</text>
+
+  <!-- ═══ CLUSTER ═══ -->
+  <rect x="20" y="104" width="508" height="292" rx="14" fill="#fafaf8" stroke="#a8a29e" stroke-width="0.8"/>
+  <text x="34" y="120" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.5">KUBERNETES CLUSTER: k8s-cluster</text>
+
+  <!-- ─── Ingress ─── -->
+  <g filter="url(#sh)">
+    <rect x="36" y="132" width="476" height="38" rx="8" fill="none" stroke="#818cf8" stroke-width="0.8"/>
+  </g>
+  <text x="48" y="147" font-size="11" font-weight="600" fill="#4338ca" dominant-baseline="central">Ingress (NGINX)</text>
+  <text x="48" y="161" font-size="8.5" fill="#818cf8" dominant-baseline="central">TLS termination · path routing · /*</text>
+
+  <!-- ═══ NS: FRONTEND (y=184, h=94) ═══ -->
+  <rect x="36" y="184" width="476" height="94" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="0.8"/>
+  <text x="48" y="201" font-size="9" font-weight="600" fill="#15803d" letter-spacing="0">NS: devpulse-frontend-test</text>
+
+  <!-- App card -->
+  <g filter="url(#sh)">
+    <rect x="48" y="210" width="226" height="58" rx="8" fill="#fff" stroke="#86efac" stroke-width="0.8"/>
+  </g>
+  <path d="M69 226 L66.5 230.3 L61.5 230.3 L59 226 L61.5 221.7 L66.5 221.7 Z" fill="#16a34a" fill-opacity="0.15" stroke="#16a34a" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="74" y="226" font-size="11" font-weight="600" fill="#14532d" dominant-baseline="central">App</text>
+  <text x="60" y="242" font-size="8.5" fill="#059669" dominant-baseline="central">Статика React SPA · JS/CSS assets</text>
+  <rect x="60" y="252" width="36" height="13" rx="6" fill="#ecfdf5" stroke="#4ade80" stroke-width="0.5"/>
+  <text x="78" y="259" font-size="7.5" font-weight="600" fill="#16a34a" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">:8080</text>
+
+  <!-- API Proxy card -->
+  <g filter="url(#sh)">
+    <rect x="284" y="210" width="220" height="58" rx="8" fill="#fff" stroke="#86efac" stroke-width="0.8"/>
+  </g>
+  <path d="M305 226 L302.5 230.3 L297.5 230.3 L295 226 L297.5 221.7 L302.5 221.7 Z" fill="#16a34a" fill-opacity="0.15" stroke="#16a34a" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="310" y="226" font-size="11" font-weight="600" fill="#14532d" dominant-baseline="central">API proxy</text>
+  <text x="296" y="242" font-size="8.5" fill="#059669" dominant-baseline="central">Reverse proxy /api/* → Backend API</text>
+  <rect x="296" y="252" width="36" height="13" rx="6" fill="#ecfdf5" stroke="#4ade80" stroke-width="0.5"/>
+  <text x="314" y="259" font-size="7.5" font-weight="600" fill="#16a34a" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">:8080</text>
+
+  <!-- ═══ NS: BACKEND (y=292, h=116) ═══ -->
+  <rect x="36" y="292" width="476" height="96" rx="10" fill="#f5f3ff" stroke="#a78bfa" stroke-width="0.8"/>
+  <text x="48" y="309" font-size="9" font-weight="600" fill="#6d28d9" letter-spacing="0">NS: devpulse-backend-test</text>
+
+  <!-- Backend API card -->
+  <g filter="url(#sh)">
+    <rect x="48" y="320" width="152" height="58" rx="8" fill="#fff" stroke="#c4b5fd" stroke-width="0.8"/>
+  </g>
+  <path d="M69 336 L66.5 340.3 L61.5 340.3 L59 336 L61.5 331.7 L66.5 331.7 Z" fill="#8b5cf6" fill-opacity="0.15" stroke="#8b5cf6" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="74" y="336" font-size="11" font-weight="600" fill="#3b0764" dominant-baseline="central">Backend API</text>
+  <text x="60" y="352" font-size="8.5" fill="#7c3aed" dominant-baseline="central">Fastify · HTTP-роуты</text>
+  <rect x="60" y="362" width="36" height="13" rx="6" fill="#f5f3ff" stroke="#a78bfa" stroke-width="0.5"/>
+  <text x="78" y="369" font-size="7.5" font-weight="600" fill="#7c3aed" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">:8080</text>
+
+  <!-- LLM Worker card -->
+  <g filter="url(#sh)">
+    <rect x="210" y="320" width="152" height="58" rx="8" fill="#fff" stroke="#c4b5fd" stroke-width="0.8"/>
+  </g>
+  <path d="M231 336 L228.5 340.3 L223.5 340.3 L221 336 L223.5 331.7 L228.5 331.7 Z" fill="#8b5cf6" fill-opacity="0.15" stroke="#8b5cf6" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="236" y="336" font-size="11" font-weight="600" fill="#3b0764" dominant-baseline="central">LLM worker</text>
+  <text x="222" y="352" font-size="8.5" fill="#7c3aed" dominant-baseline="central">Анализ метрик через LLM API</text>
+  <rect x="222" y="362" width="36" height="13" rx="6" fill="#f5f3ff" stroke="#a78bfa" stroke-width="0.5"/>
+  <text x="240" y="369" font-size="7.5" font-weight="600" fill="#7c3aed" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">:8080</text>
+
+  <!-- YT Worker card -->
+  <g filter="url(#sh)">
+    <rect x="372" y="320" width="132" height="58" rx="8" fill="#fff" stroke="#c4b5fd" stroke-width="0.8"/>
+  </g>
+  <path d="M393 336 L390.5 340.3 L385.5 340.3 L383 336 L385.5 331.7 L390.5 331.7 Z" fill="#8b5cf6" fill-opacity="0.15" stroke="#8b5cf6" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="398" y="336" font-size="11" font-weight="600" fill="#3b0764" dominant-baseline="central">YT worker</text>
+  <text x="384" y="352" font-size="8.5" fill="#7c3aed" dominant-baseline="central">Сбор данных YouTrack</text>
+  <rect x="384" y="362" width="36" height="13" rx="6" fill="#f5f3ff" stroke="#a78bfa" stroke-width="0.5"/>
+  <text x="402" y="369" font-size="7.5" font-weight="600" fill="#7c3aed" text-anchor="middle" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">:8080</text>
+
+  <!-- ═══ ВНУТРЕННИЕ СЕРВИСЫ ═══ -->
+  <text x="572" y="96" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.5">ВНУТРЕННИЕ СЕРВИСЫ</text>
+
+  <!-- Keycloak: y=104, h=62 -->
+  <g filter="url(#sh)">
+    <rect x="570" y="104" width="196" height="62" rx="8" fill="#fff" stroke="#f472b6" stroke-width="0.8"/>
+  </g>
+  <rect x="584" y="124" width="8" height="6" rx="1.5" fill="#db2777" fill-opacity="0.15" stroke="#db2777" stroke-width="0.8" stroke-opacity="0.6"/>
+  <path d="M586 124 L586 121 Q586 118 588 118 Q590 118 590 121 L590 124" fill="none" stroke="#db2777" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="597" y="124" font-size="11" font-weight="600" fill="#831843" dominant-baseline="central">Keycloak</text>
+  <text x="582" y="140" font-size="8.5" fill="#78716c" dominant-baseline="central">Двухфакторная авторизация · OIDC</text>
+  <text x="582" y="155" font-size="8" fill="#db2777" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">keycloak.company.group</text>
+
+  <!-- YouTrack: y=178, h=62 -->
+  <g filter="url(#sh)">
+    <rect x="570" y="178" width="196" height="62" rx="8" fill="#fff" stroke="#fb923c" stroke-width="0.8"/>
+  </g>
+  <rect x="582" y="192" width="10" height="12" rx="2" fill="#ea580c" fill-opacity="0.15" stroke="#ea580c" stroke-width="0.8" stroke-opacity="0.6"/>
+  <path d="M588 192 L588 196 L592 196" fill="none" stroke="#ea580c" stroke-width="0.7" stroke-opacity="0.6" stroke-linejoin="round"/>
+  <text x="597" y="198" font-size="11" font-weight="600" fill="#9a3412" dominant-baseline="central">YouTrack</text>
+  <text x="582" y="214" font-size="8.5" fill="#78716c" dominant-baseline="central">Сбор issues и workItems</text>
+  <text x="582" y="229" font-size="8" fill="#ea580c" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">youtrack.company.group</text>
+
+  <!-- LLM API: y=252, h=62 -->
+  <g filter="url(#sh)">
+    <rect x="570" y="252" width="196" height="62" rx="8" fill="#fff" stroke="#a78bfa" stroke-width="0.8"/>
+  </g>
+  <circle cx="587" cy="272" r="6" fill="#7c3aed" fill-opacity="0.15" stroke="#7c3aed" stroke-width="0.8" stroke-opacity="0.6"/>
+  <circle cx="587" cy="272" r="2" fill="#7c3aed" opacity="0.4"/>
+  <text x="597" y="272" font-size="11" font-weight="600" fill="#3b0764" dominant-baseline="central">LLM API</text>
+  <text x="582" y="288" font-size="8.5" fill="#78716c" dominant-baseline="central">Анализ метрик, генерация отчётов</text>
+  <text x="582" y="303" font-size="8" fill="#7c3aed" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">llm.company.group</text>
+
+  <!-- PostgreSQL: y=326, h=48 -->
+  <g filter="url(#sh)">
+    <rect x="570" y="326" width="196" height="48" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="0.8"/>
+  </g>
+  <ellipse cx="587" cy="343" rx="6" ry="2.5" fill="#2563eb" fill-opacity="0.15" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
+  <path d="M581 343 L581 349 M593 343 L593 349" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
+  <ellipse cx="587" cy="349" rx="6" ry="2.5" fill="none" stroke="#2563eb" stroke-width="0.8" stroke-opacity="0.6"/>
+  <text x="597" y="346" font-size="11" font-weight="600" fill="#1e3a8a" dominant-baseline="central">PostgreSQL 16</text>
+  <text x="582" y="362" font-size="8" fill="#2563eb" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">postgresql.company.group</text>
+
+  <!-- Graylog: y=386, h=48 -->
+  <g filter="url(#sh)">
+    <rect x="570" y="386" width="196" height="48" rx="8" fill="#fff" stroke="#4ade80" stroke-width="0.8"/>
+  </g>
+  <rect x="582" y="400" width="10" height="12" rx="1.5" fill="#16a34a" fill-opacity="0.15" stroke="#16a34a" stroke-width="0.8" stroke-opacity="0.6"/>
+  <line x1="585" y1="404" x2="589" y2="404" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.5"/>
+  <line x1="585" y1="407" x2="589" y2="407" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.5"/>
+  <line x1="585" y1="410" x2="588" y2="410" stroke="#16a34a" stroke-width="0.6" stroke-opacity="0.4"/>
+  <text x="597" y="406" font-size="11" font-weight="600" fill="#14532d" dominant-baseline="central">Graylog</text>
+  <text x="582" y="422" font-size="8" fill="#16a34a" dominant-baseline="central" font-family="'SF Mono','Consolas',monospace">graylog.company.group</text>
+
+  <!-- ═══ ARROWS ═══ -->
+
+  <!-- Users → LB -->
+  <path d="M255 46 L255 54" fill="none" stroke="#a8a29e" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- LB → Ingress (enters cluster) -->
+  <path d="M255 94 L255 130" fill="none" stroke="#a8a29e" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- Ingress → FE NS -->
+  <path d="M255 170 L255 182" fill="none" stroke="#a8a29e" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- FE NS → BE NS (green proxy) -->
+  <path d="M255 278 L255 290" fill="none" stroke="#16a34a" stroke-width="1.3" marker-end="url(#a)"/>
+
+  <!-- BE → Keycloak: spine x=526, arrive y=142 -->
+  <path d="M512 334 L521 334 Q526 334 526 329 L526 147 Q526 142 531 142 L568 142" fill="none" stroke="#db2777" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- BE → YouTrack: spine x=534, arrive y=209 -->
+  <path d="M512 344 L529 344 Q534 344 534 339 L534 214 Q534 209 539 209 L568 209" fill="none" stroke="#ea580c" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- BE → LLM API: spine x=542, arrive y=283 -->
+  <path d="M512 354 L537 354 Q542 354 542 349 L542 288 Q542 283 547 283 L568 283" fill="none" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- BE → PostgreSQL: spine x=550, arrive y=350 -->
+  <path d="M512 364 L545 364 Q550 364 550 359 L550 355 Q550 350 555 350 L568 350" fill="none" stroke="#2563eb" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- BE → Graylog: spine x=558, arrive y=410 -->
+  <path d="M512 374 L553 374 Q558 374 558 379 L558 405 Q558 410 563 410 L568 410" fill="none" stroke="#16a34a" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- FE → Keycloak: spine x=518, arrive y=120 -->
+  <path d="M512 244 L513 244 Q518 244 518 239 L518 125 Q518 120 523 120 L568 120" fill="none" stroke="#db2777" stroke-width="1.2" marker-end="url(#a)"/>
+
+  <!-- Users → Keycloak (OIDC redirect) -->
+  <path d="M340 25 L770 25 Q775 25 775 30 L775 129 Q775 135 770 135 L766 135" fill="none" stroke="#db2777" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#a)"/>
+  <rect x="500" y="14" width="82" height="16" rx="8" fill="#fdf2f8" stroke="#f472b6" stroke-width="0.5"/>
+  <text x="541" y="23" font-size="7.5" font-weight="500" fill="#be185d" text-anchor="middle" dominant-baseline="central">OIDC redirect</text>
+  </g>
+</svg>
