@@ -208,7 +208,7 @@ export default function CollectionPage() {
       loadSubscriptions();
       fetchState();
     } catch {
-      toast.error('Не удалось удалить подписку');
+      toast.error('Не удалось удалить проект');
     } finally {
       setDeletingId(null);
       setDeleteTargetId(null);
@@ -468,7 +468,7 @@ export default function CollectionPage() {
       <Modal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
-        title="Удаление подписки"
+        title="Удаление проекта"
         footer={
           <>
             <Button variant="ghost" size="sm" onClick={() => setDeleteConfirmOpen(false)}>
@@ -481,7 +481,7 @@ export default function CollectionPage() {
         }
       >
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          Вы уверены, что хотите удалить подписку? Все собранные данные будут потеряны.
+          Все собранные метрики и отчёты по этому проекту будут удалены.
         </p>
         {deleteTargetId && (getActiveCollection(deleteTargetId) || getLlmItems(deleteTargetId).length > 0) && (
           <p className="mt-2 text-xs text-amber-500">

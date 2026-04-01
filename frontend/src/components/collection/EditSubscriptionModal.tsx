@@ -147,7 +147,7 @@ export default function EditSubscriptionModal({
       onUpdated();
       onClose();
     } catch {
-      toast.error('Не удалось удалить подписку');
+      toast.error('Не удалось удалить проект');
     } finally {
       setSaving(false);
     }

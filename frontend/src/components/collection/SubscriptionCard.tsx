@@ -250,9 +250,19 @@ export default function SubscriptionCard({
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
               <div
-                className="h-full rounded-full bg-brand-500 transition-all duration-500"
+                className="relative h-full overflow-hidden rounded-full bg-brand-500 transition-all duration-500"
                 style={{ width: isRunning ? `${collectionProgress}%` : '100%' }}
-              />
+              >
+                {isRunning && (
+                  <div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                      animation: 'progress-shine 1.5s ease-in-out infinite',
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -286,9 +296,17 @@ export default function SubscriptionCard({
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-surface-lighter">
               <div
-                className="h-full rounded-full bg-purple-500 transition-all duration-500"
+                className="relative h-full overflow-hidden rounded-full bg-purple-500 transition-all duration-500"
                 style={{ width: `${llmProgress}%` }}
-              />
+              >
+                <div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                    animation: 'progress-shine 1.5s ease-in-out infinite',
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}

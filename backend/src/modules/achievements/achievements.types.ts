@@ -140,15 +140,6 @@ export const ACHIEVEMENT_THRESHOLDS: Record<string, {
       legendary: { label: '84-86%', value: 0 },
     },
   },
-  ai_pioneer: {
-    description: 'Часы сэкономленные с помощью ИИ',
-    levels: {
-      common: { label: '≥2 часа', value: 2 },
-      rare: { label: '≥5 часов', value: 5 },
-      epic: { label: '≥10 часов', value: 10 },
-      legendary: { label: '≥20 часов', value: 20 },
-    },
-  },
   rising_star: {
     description: 'Рост оценки продуктивности за неделю',
     levels: {
@@ -200,7 +191,6 @@ export const ACHIEVEMENT_CATEGORIES = [
   { id: 'productivity', name: 'Продуктивность', icon: '⚡', types: ['speed_demon', 'task_crusher', 'marathon_runner'] },
   { id: 'quality', name: 'Качество', icon: '🎯', types: ['estimation_guru', 'zero_bugs', 'quick_closer'] },
   { id: 'focus', name: 'Фокус и баланс', icon: '⚖️', types: ['focus_master', 'balanced_warrior'] },
-  { id: 'ai', name: 'Искусственный интеллект', icon: '🤖', types: ['ai_pioneer'] },
   { id: 'growth', name: 'Рост и стабильность', icon: '📈', types: ['rising_star', 'consistency_king', 'top_performer'] },
   { id: 'special', name: 'Особые', icon: '🌟', types: ['overachiever', 'debt_slayer'] },
 ];
@@ -271,7 +261,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   },
   {
     type: 'zero_bugs',
-    title: 'Без багов',
+    title: 'Код-самурай',
     icon: 'Shield',
     description: 'Ноль багов после релиза и на тесте',
     check: (report) => {
@@ -285,7 +275,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   },
   {
     type: 'quick_closer',
-    title: 'Быстрый закрытчик',
+    title: 'Скорая помощь',
     icon: 'Rocket',
     description: 'Средний Cycle Time {value} часов',
     check: (report) => {
@@ -406,7 +396,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
   // === SPECIAL ===
   {
     type: 'overachiever',
-    title: 'Перевыполнил план',
+    title: 'Сверхурочный герой',
     icon: 'TrendingUp',
     description: 'Закрыл на {value}% больше задач чем обычно',
     check: (report, history) => {
