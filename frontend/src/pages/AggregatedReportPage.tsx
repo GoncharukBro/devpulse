@@ -204,7 +204,7 @@ export default function AggregatedReportPage() {
               </Button>
             </>
           )}
-          <ReportStatusBadge status={report.status} />
+          {report.status !== 'ready' && <ReportStatusBadge status={report.status} />}
         </div>
       </div>
 
