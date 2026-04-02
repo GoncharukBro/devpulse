@@ -214,10 +214,14 @@ export default function AggregatedReportPage() {
       )}
 
       {/* KPI Cards */}
-      <PeriodKpiCards metrics={report.aggregatedMetrics} overallTrend={report.overallTrend} />
+      {report.aggregatedMetrics && report.aggregatedMetrics.totalIssues > 0 && (
+        <PeriodKpiCards metrics={report.aggregatedMetrics} overallTrend={report.overallTrend} />
+      )}
 
-      {/* Charts */}
-      <PeriodWeeklyChart weeklyData={report.weeklyData} />
+      {/* Charts (only for legacy reports with weeklyData) */}
+      {report.weeklyData && report.weeklyData.length > 0 && (
+        <PeriodWeeklyChart weeklyData={report.weeklyData} />
+      )}
 
       {/* Employees table (project/team) */}
       {report.employeesData && report.employeesData.length > 0 && (
@@ -306,14 +310,16 @@ export default function AggregatedReportPage() {
       )}
 
       {/* LLM Summary */}
-      <PeriodLlmSummary
-        llmPeriodScore={report.llmPeriodScore}
-        llmPeriodSummary={report.llmPeriodSummary}
-        llmPeriodConcerns={report.llmPeriodConcerns}
-        llmPeriodRecommendations={report.llmPeriodRecommendations}
-        weeklyLlmSummaries={report.weeklyLlmSummaries}
-        status={report.status}
-      />
+      {(report.llmPeriodSummary || (report.weeklyLlmSummaries && report.weeklyLlmSummaries.length > 0)) && (
+        <PeriodLlmSummary
+          llmPeriodScore={report.llmPeriodScore}
+          llmPeriodSummary={report.llmPeriodSummary}
+          llmPeriodConcerns={report.llmPeriodConcerns}
+          llmPeriodRecommendations={report.llmPeriodRecommendations}
+          weeklyLlmSummaries={report.weeklyLlmSummaries}
+          status={report.status}
+        />
+      )}
 
       {/* Error message */}
       {report.errorMessage && (
