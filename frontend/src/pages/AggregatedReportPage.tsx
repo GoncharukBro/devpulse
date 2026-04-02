@@ -156,47 +156,6 @@ export default function AggregatedReportPage() {
 
   return (
     <div className="flex gap-6">
-      {/* Sidebar — related reports */}
-      {relatedReports.length > 0 && (
-        <aside className="hidden w-64 shrink-0 lg:block">
-          <div className="sticky top-6 space-y-2">
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Другие отчёты: {report.targetName}
-            </h4>
-            {relatedReports.map((r) => {
-              const fmtD = (iso: string) => {
-                const d = new Date(iso);
-                return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear().toString().slice(2)}`;
-              };
-              return (
-                <Link
-                  key={r.id}
-                  to={`/reports/${r.id}`}
-                  className="block rounded-lg border border-gray-200 dark:border-surface-border p-2.5 transition-colors hover:border-brand-500/50 hover:bg-brand-500/5"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {fmtD(r.periodStart)} — {fmtD(r.periodEnd)}
-                    </span>
-                    <ReportStatusBadge status={r.status} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
-                      {r.weeksCount} нед.
-                    </span>
-                    {r.avgScore != null ? (
-                      <span className="text-sm font-bold text-brand-500">{Math.round(r.avgScore)}</span>
-                    ) : (
-                      <span className="text-xs text-gray-400">—</span>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </aside>
-      )}
-
       {/* Main content */}
       <div className="min-w-0 flex-1 space-y-6">
       {/* Breadcrumb */}
@@ -414,6 +373,47 @@ export default function AggregatedReportPage() {
         />
       )}
       </div>{/* end main content */}
+
+      {/* Sidebar — related reports (right) */}
+      {relatedReports.length > 0 && (
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="sticky top-6 space-y-2">
+            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Другие отчёты: {report.targetName}
+            </h4>
+            {relatedReports.map((r) => {
+              const fmtD = (iso: string) => {
+                const d = new Date(iso);
+                return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear().toString().slice(2)}`;
+              };
+              return (
+                <Link
+                  key={r.id}
+                  to={`/reports/${r.id}`}
+                  className="block rounded-lg border border-gray-200 dark:border-surface-border p-2.5 transition-colors hover:border-brand-500/50 hover:bg-brand-500/5"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {fmtD(r.periodStart)} — {fmtD(r.periodEnd)}
+                    </span>
+                    <ReportStatusBadge status={r.status} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      {r.weeksCount} нед.
+                    </span>
+                    {r.avgScore != null ? (
+                      <span className="text-sm font-bold text-brand-500">{Math.round(r.avgScore)}</span>
+                    ) : (
+                      <span className="text-xs text-gray-400">—</span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </aside>
+      )}
     </div>
   );
 }
