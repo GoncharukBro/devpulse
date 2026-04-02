@@ -155,58 +155,64 @@ export default function AggregatedReportPage() {
   const Icon = typeIcons[report.type] ?? User;
 
   return (
-    <div className="flex gap-6">
-      {/* Main content */}
-      <div className="min-w-0 flex-1 space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => navigate('/reports')}
-          className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-gray-200"
-        >
-          <ArrowLeft size={14} />
-          Отчёты
-        </button>
-        <Link
-          to="/methodology#aggregated-reports"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
-        >
-          <HelpCircle className="h-4 w-4" />
-          Как это работает?
-        </Link>
+    <>
+      {/* Header — full width above the two-column layout */}
+      <div className="mb-6 space-y-4">
+        {/* Breadcrumb */}
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => navigate('/reports')}
+            className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-gray-200"
+          >
+            <ArrowLeft size={14} />
+            Отчёты
+          </button>
+          <Link
+            to="/methodology#aggregated-reports"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Как это работает?
+          </Link>
+        </div>
+
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10">
+              <Icon size={20} className="text-brand-400" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{report.targetName}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {formatDate(report.periodStart)} — {formatDate(report.periodEnd)} · {report.weeksCount} нед.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {report.status === 'ready' && (
+              <>
+                <CopyButton getText={getCopyText} />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  leftIcon={<Mail size={14} />}
+                  onClick={() => setEmailModalOpen(true)}
+                >
+                  На почту
+                </Button>
+              </>
+            )}
+            {report.status !== 'ready' && <ReportStatusBadge status={report.status} />}
+          </div>
+        </div>
       </div>
 
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10">
-            <Icon size={20} className="text-brand-400" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{report.targetName}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {formatDate(report.periodStart)} — {formatDate(report.periodEnd)} · {report.weeksCount} нед.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {report.status === 'ready' && (
-            <>
-              <CopyButton getText={getCopyText} />
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<Mail size={14} />}
-                onClick={() => setEmailModalOpen(true)}
-              >
-                На почту
-              </Button>
-            </>
-          )}
-          {report.status !== 'ready' && <ReportStatusBadge status={report.status} />}
-        </div>
-      </div>
+      {/* Two-column layout: content + sidebar */}
+      <div className="flex gap-6">
+        {/* Main content */}
+        <div className="min-w-0 flex-1 space-y-6">
 
       {/* Progress bar */}
       {report.progress && (
@@ -433,6 +439,7 @@ export default function AggregatedReportPage() {
           </div>
         </div>
       )}
-    </div>
+    </div>{/* end two-column layout */}
+    </>
   );
 }
