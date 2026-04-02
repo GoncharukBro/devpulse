@@ -57,14 +57,20 @@ export default function AggregatedReportPage() {
     load();
   }, [id]);
 
-  // Polling while generating
+  // Polling while generating/collecting/analyzing
   useEffect(() => {
-    if (report?.status === 'generating' && id) {
+    const isInProgress = report?.status === 'generating'
+      || report?.status === 'collecting'
+      || report?.status === 'analyzing';
+    if (isInProgress && id) {
       pollingRef.current = setInterval(async () => {
         try {
           const updated = await aggregatedReportsApi.getById(id);
           setReport(updated);
-          if (updated.status !== 'generating' && pollingRef.current) {
+          const stillInProgress = updated.status === 'generating'
+            || updated.status === 'collecting'
+            || updated.status === 'analyzing';
+          if (!stillInProgress && pollingRef.current) {
             clearInterval(pollingRef.current);
             pollingRef.current = null;
           }
@@ -184,6 +190,29 @@ export default function AggregatedReportPage() {
         </div>
       </div>
 
+      {/* Progress bar */}
+      {report.progress && (
+        <div className="mb-6 rounded-lg border border-gray-200 dark:border-surface-border p-4">
+          <div className="mb-2 flex items-center justify-between text-sm">
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              {report.progress.phase === 'collecting' ? 'Сбор данных с YouTrack' : 'LLM-анализ'}
+            </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {report.progress.completed}/{report.progress.total}
+            </span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-surface-lighter">
+            <div
+              className="h-2 rounded-full bg-brand-500 transition-all duration-300"
+              style={{ width: `${report.progress.total > 0 ? Math.round((report.progress.completed / report.progress.total) * 100) : 0}%` }}
+            />
+          </div>
+          {report.progress.currentStep && (
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{report.progress.currentStep}</p>
+          )}
+        </div>
+      )}
+
       {/* KPI Cards */}
       <PeriodKpiCards metrics={report.aggregatedMetrics} overallTrend={report.overallTrend} />
 
@@ -221,6 +250,59 @@ export default function AggregatedReportPage() {
             </table>
           </div>
         </Card>
+      )}
+
+      {/* Per-employee LLM analysis cards */}
+      {report.employeesData?.some((e: any) => e.llmScore != null) && (
+        <div className="mt-6">
+          <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Анализ по сотрудникам
+          </h3>
+          <div className="space-y-3">
+            {(report.employeesData as any[])
+              .filter((e) => e.llmScore != null)
+              .map((e) => (
+                <div
+                  key={e.youtrackLogin + (e.projectName ?? '')}
+                  className="rounded-lg border border-gray-200 dark:border-surface-border p-4"
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <div>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {e.displayName}
+                      </span>
+                      {e.projectName && e.projectName !== 'Итого' && (
+                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                          ({e.projectName})
+                        </span>
+                      )}
+                      {e.projectName === 'Итого' && (
+                        <span className="ml-2 rounded bg-gray-100 dark:bg-surface-lighter px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Итого
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-lg font-bold text-brand-500">{e.llmScore}</span>
+                  </div>
+                  {e.llmSummary && (
+                    <p className="mb-2 text-sm text-gray-600 dark:text-gray-300">{e.llmSummary}</p>
+                  )}
+                  {e.llmConcerns?.length > 0 && (
+                    <div className="text-sm">
+                      <span className="font-medium text-red-600 dark:text-red-400">Проблемы: </span>
+                      <span className="text-gray-600 dark:text-gray-300">{e.llmConcerns.join('; ')}</span>
+                    </div>
+                  )}
+                  {e.llmRecommendations?.length > 0 && (
+                    <div className="mt-1 text-sm">
+                      <span className="font-medium text-blue-600 dark:text-blue-400">Рекомендации: </span>
+                      <span className="text-gray-600 dark:text-gray-300">{e.llmRecommendations.join('; ')}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
       )}
 
       {/* LLM Summary */}

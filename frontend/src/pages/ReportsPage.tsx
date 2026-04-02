@@ -54,8 +54,10 @@ export default function ReportsPage() {
 
   // Polling for generating reports
   useEffect(() => {
-    const hasGenerating = data?.data.some(r => r.status === 'generating');
-    if (hasGenerating) {
+    const hasInProgress = data?.data.some(
+      r => r.status === 'generating' || r.status === 'collecting' || r.status === 'analyzing',
+    );
+    if (hasInProgress) {
       pollingRef.current = setInterval(loadData, 5000);
     } else if (pollingRef.current) {
       clearInterval(pollingRef.current);
