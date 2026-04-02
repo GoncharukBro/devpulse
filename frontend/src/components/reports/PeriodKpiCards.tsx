@@ -8,15 +8,16 @@ interface PeriodKpiCardsProps {
 }
 
 export default function PeriodKpiCards({ metrics, overallTrend, loading }: PeriodKpiCardsProps) {
+  const t = overallTrend ?? {} as Partial<OverallTrend>;
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <KpiCard title="Score" value={metrics.avgScore} metric="score" trend={overallTrend.score.direction} delta={overallTrend.score.delta} loading={loading} />
-      <KpiCard title="Загрузка" value={metrics.avgUtilization} suffix="%" metric="utilization" trend={overallTrend.utilization.direction} delta={overallTrend.utilization.delta} loading={loading} />
-      <KpiCard title="Точность" value={metrics.avgEstimationAccuracy} suffix="%" metric="estimationAccuracy" trend={overallTrend.estimationAccuracy.direction} delta={overallTrend.estimationAccuracy.delta} loading={loading} />
-      <KpiCard title="Закрытие" value={metrics.avgCompletionRate} suffix="%" metric="completionRate" trend={overallTrend.completionRate.direction} delta={overallTrend.completionRate.delta} loading={loading} />
-      <KpiCard title="Фокус" value={metrics.avgFocus} suffix="%" metric="focus" trend={overallTrend.focus?.direction} delta={overallTrend.focus?.delta} loading={loading} />
+      <KpiCard title="Score" value={metrics.avgScore} metric="score" trend={t.score?.direction} delta={t.score?.delta} loading={loading} />
+      <KpiCard title="Загрузка" value={metrics.avgUtilization} suffix="%" metric="utilization" trend={t.utilization?.direction} delta={t.utilization?.delta} loading={loading} />
+      <KpiCard title="Точность" value={metrics.avgEstimationAccuracy} suffix="%" metric="estimationAccuracy" trend={t.estimationAccuracy?.direction} delta={t.estimationAccuracy?.delta} loading={loading} />
+      <KpiCard title="Закрытие" value={metrics.avgCompletionRate} suffix="%" metric="completionRate" trend={t.completionRate?.direction} delta={t.completionRate?.delta} loading={loading} />
+      <KpiCard title="Фокус" value={metrics.avgFocus} suffix="%" metric="focus" trend={t.focus?.direction} delta={t.focus?.delta} loading={loading} />
       <KpiCard title="Cycle Time" value={metrics.avgCycleTimeHours} suffix="ч" metric="avgCycleTimeHours" loading={loading} />
-      <KpiCard title="Списано" value={metrics.totalSpentHours} suffix="ч" metric="totalSpentHours" trend={overallTrend.spentHours.direction} delta={overallTrend.spentHours.delta} loading={loading} />
+      <KpiCard title="Списано" value={metrics.totalSpentHours} suffix="ч" metric="totalSpentHours" trend={t.spentHours?.direction} delta={t.spentHours?.delta} loading={loading} />
     </div>
   );
 }
