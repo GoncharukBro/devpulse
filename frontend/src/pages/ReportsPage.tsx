@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Trash2, User, FolderKanban, Users, ChevronDown, ChevronRight, Database, Brain, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import {
+  FileText, Trash2, User, FolderKanban, Users, ChevronDown, ChevronRight,
+  Database, Brain, CheckCircle2, XCircle, AlertTriangle, Clock, BarChart3,
+  ExternalLink, ListChecks,
+} from 'lucide-react';
 import { aggregatedReportsApi } from '@/api/endpoints/aggregated-reports';
 import CreateReportModal from '@/components/reports/CreateReportModal';
 import ReportStatusBadge from '@/components/reports/ReportStatusBadge';
@@ -25,104 +29,223 @@ function formatDate(iso: string): string {
 
 // ─── Pipeline visualization for expanded row ───────────────────────────
 
-type PipelineStep = {
+type StepStatus = 'done' | 'active' | 'pending' | 'failed';
+
+interface PipelineStep {
   key: string;
   label: string;
   icon: React.ElementType;
-  status: 'done' | 'active' | 'pending' | 'failed';
+  status: StepStatus;
   detail?: string;
-};
+  progress?: { completed: number; total: number };
+}
+
+function resolveStepStatus(
+  reportStatus: string,
+  collectedData: unknown | null,
+  phase: 'collecting' | 'analyzing' | 'ready',
+): StepStatus {
+  const s = reportStatus;
+  if (phase === 'collecting') {
+    if (s === 'collecting') return 'active';
+    if (s === 'analyzing' || s === 'ready' || s === 'partial' || s === 'generating') return 'done';
+    if (s === 'failed' && !collectedData) return 'failed';
+    return 'pending';
+  }
+  if (phase === 'analyzing') {
+    if (s === 'analyzing' || s === 'generating') return 'active';
+    if (s === 'ready' || s === 'partial') return 'done';
+    if (s === 'failed' && collectedData) return 'failed';
+    return 'pending';
+  }
+  // ready
+  if (s === 'ready') return 'done';
+  if (s === 'partial') return 'done';
+  if (s === 'failed') return 'failed';
+  return 'pending';
+}
 
 function getPipelineSteps(report: AggregatedReportDTO): PipelineStep[] {
   const s = report.status;
   const p = report.progress;
+  const cd = report.collectedData as any;
 
   const collecting: PipelineStep = {
     key: 'collecting',
-    label: 'Сбор данных',
+    label: 'Сбор из YouTrack',
     icon: Database,
-    status: s === 'collecting' ? 'active'
-      : (s === 'analyzing' || s === 'ready' || s === 'partial') ? 'done'
-      : s === 'failed' && !report.collectedData ? 'failed'
-      : 'pending',
+    status: resolveStepStatus(s, cd, 'collecting'),
   };
   if (s === 'collecting' && p) {
-    collecting.detail = `${p.completed}/${p.total}${p.currentStep ? ` · ${p.currentStep}` : ''}`;
-  } else if (collecting.status === 'done' && report.collectedData) {
-    const empCount = (report.collectedData as any)?.employees?.length ?? 0;
-    collecting.detail = `${empCount} сотр.`;
+    collecting.progress = { completed: p.completed, total: p.total };
+    collecting.detail = p.currentStep ?? undefined;
+  } else if (collecting.status === 'done' && cd) {
+    const empCount = cd?.employees?.length ?? 0;
+    const totalIssues = report.aggregatedMetrics?.totalIssues ?? 0;
+    collecting.detail = `${empCount} сотр., ${totalIssues} задач`;
   }
 
   const analyzing: PipelineStep = {
     key: 'analyzing',
     label: 'LLM-анализ',
     icon: Brain,
-    status: s === 'analyzing' ? 'active'
-      : (s === 'ready' || s === 'partial') ? 'done'
-      : s === 'failed' && report.collectedData ? 'failed'
-      : 'pending',
+    status: resolveStepStatus(s, cd, 'analyzing'),
   };
-  if (s === 'analyzing' && p) {
-    analyzing.detail = `${p.completed}/${p.total}${p.currentStep ? ` · ${p.currentStep}` : ''}`;
+  if ((s === 'analyzing' || s === 'generating') && p) {
+    analyzing.progress = { completed: p.completed, total: p.total };
+    analyzing.detail = p.currentStep ?? undefined;
+  } else if (analyzing.status === 'done') {
+    const analyzed = (report.employeesData as any[])?.filter((e: any) => e.llmScore != null).length ?? 0;
+    analyzing.detail = analyzed > 0 ? `${analyzed} анализов` : undefined;
   }
 
   const ready: PipelineStep = {
     key: 'ready',
     label: s === 'partial' ? 'Частично готов' : s === 'failed' ? 'Ошибка' : 'Готов',
     icon: s === 'failed' ? XCircle : s === 'partial' ? AlertTriangle : CheckCircle2,
-    status: s === 'ready' ? 'done'
-      : s === 'partial' ? 'done'
-      : s === 'failed' ? 'failed'
-      : 'pending',
+    status: resolveStepStatus(s, cd, 'ready'),
   };
-  if (s === 'ready' && report.aggregatedMetrics.avgScore != null) {
+  if ((s === 'ready' || s === 'partial') && report.aggregatedMetrics?.avgScore != null) {
     ready.detail = `Score: ${Math.round(report.aggregatedMetrics.avgScore)}`;
-  }
-  if (report.errorMessage && s === 'failed') {
-    ready.detail = report.errorMessage;
   }
 
   return [collecting, analyzing, ready];
 }
 
-const stepColors: Record<PipelineStep['status'], { dot: string; line: string; text: string }> = {
-  done: { dot: 'bg-emerald-500', line: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400' },
-  active: { dot: 'bg-brand-500 animate-pulse', line: 'bg-gray-300 dark:bg-gray-600', text: 'text-brand-500' },
-  pending: { dot: 'bg-gray-300 dark:bg-gray-600', line: 'bg-gray-300 dark:bg-gray-600', text: 'text-gray-400 dark:text-gray-500' },
-  failed: { dot: 'bg-red-500', line: 'bg-red-300', text: 'text-red-600 dark:text-red-400' },
+const statusStyles: Record<StepStatus, { ring: string; bg: string; icon: string; label: string }> = {
+  done:    { ring: 'ring-emerald-500/20', bg: 'bg-emerald-500',               icon: 'text-white',   label: 'text-emerald-600 dark:text-emerald-400' },
+  active:  { ring: 'ring-brand-500/30',   bg: 'bg-brand-500 animate-pulse',   icon: 'text-white',   label: 'text-brand-500' },
+  pending: { ring: 'ring-gray-300/20 dark:ring-gray-600/20', bg: 'bg-gray-300 dark:bg-gray-600', icon: 'text-gray-500 dark:text-gray-400', label: 'text-gray-400 dark:text-gray-500' },
+  failed:  { ring: 'ring-red-500/20',     bg: 'bg-red-500',                   icon: 'text-white',   label: 'text-red-600 dark:text-red-400' },
 };
 
-function ReportPipeline({ report }: { report: AggregatedReportDTO }) {
+function ReportPipeline({ report, onOpen }: { report: AggregatedReportDTO; onOpen: () => void }) {
   const steps = getPipelineSteps(report);
+  const m = report.aggregatedMetrics;
+  const cd = report.collectedData as any;
+  const isFinished = report.status === 'ready' || report.status === 'partial' || report.status === 'failed';
+  const elapsed = report.createdAt
+    ? Math.round((Date.now() - new Date(report.createdAt).getTime()) / 1000)
+    : 0;
 
   return (
-    <div className="flex items-start gap-0">
-      {steps.map((step, i) => {
-        const colors = stepColors[step.status];
-        const StepIcon = step.icon;
-        return (
-          <React.Fragment key={step.key}>
-            {/* Step */}
-            <div className="flex flex-col items-center" style={{ minWidth: 120 }}>
-              <div className={`flex h-8 w-8 items-center justify-center rounded-full ${colors.dot}`}>
-                <StepIcon size={16} className="text-white" />
+    <div className="space-y-4">
+      {/* Pipeline steps */}
+      <div className="flex items-center gap-0">
+        {steps.map((step, i) => {
+          const st = statusStyles[step.status];
+          const StepIcon = step.icon;
+          return (
+            <React.Fragment key={step.key}>
+              <div className="flex flex-col items-center" style={{ minWidth: 140 }}>
+                <div className={`flex h-9 w-9 items-center justify-center rounded-full ring-4 ${st.ring} ${st.bg}`}>
+                  <StepIcon size={18} className={st.icon} />
+                </div>
+                <span className={`mt-2 text-xs font-semibold ${st.label}`}>{step.label}</span>
+                {step.progress && (
+                  <div className="mt-1.5 w-24">
+                    <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                      <div
+                        className="h-1.5 rounded-full bg-brand-500 transition-all duration-500"
+                        style={{ width: `${step.progress.total > 0 ? Math.round((step.progress.completed / step.progress.total) * 100) : 0}%` }}
+                      />
+                    </div>
+                    <span className="mt-0.5 block text-center text-[10px] text-gray-500 dark:text-gray-400">
+                      {step.progress.completed} / {step.progress.total}
+                    </span>
+                  </div>
+                )}
+                {!step.progress && step.detail && (
+                  <span className="mt-1 max-w-[160px] truncate text-center text-[11px] text-gray-500 dark:text-gray-400">
+                    {step.detail}
+                  </span>
+                )}
               </div>
-              <span className={`mt-1.5 text-xs font-medium ${colors.text}`}>{step.label}</span>
-              {step.detail && (
-                <span className="mt-0.5 max-w-[140px] truncate text-center text-[10px] text-gray-500 dark:text-gray-400">
-                  {step.detail}
-                </span>
+              {i < steps.length - 1 && (
+                <div className="mb-6 flex-1" style={{ minWidth: 32 }}>
+                  <div className={`h-0.5 w-full rounded ${
+                    step.status === 'done' ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'
+                  }`} />
+                </div>
               )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* Info cards row */}
+      <div className="flex flex-wrap items-stretch gap-3">
+        {/* Elapsed time */}
+        {!isFinished && elapsed > 0 && (
+          <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface px-3 py-2">
+            <Clock size={14} className="text-gray-400" />
+            <span className="text-xs text-gray-600 dark:text-gray-300">
+              {elapsed < 60 ? `${elapsed}с` : `${Math.floor(elapsed / 60)}м ${elapsed % 60}с`}
+            </span>
+          </div>
+        )}
+
+        {/* Collected metrics summary */}
+        {m && m.totalIssues > 0 && (
+          <div className="flex items-center gap-4 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface px-3 py-2">
+            <div className="flex items-center gap-1.5">
+              <ListChecks size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-600 dark:text-gray-300">
+                <span className="font-medium">{m.completedIssues}</span>/{m.totalIssues} задач
+              </span>
             </div>
-            {/* Connector */}
-            {i < steps.length - 1 && (
-              <div className="mt-3.5 flex-1" style={{ minWidth: 40 }}>
-                <div className={`h-0.5 w-full ${step.status === 'done' ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
+            {m.overdueIssues > 0 && (
+              <span className="text-xs text-red-500">
+                {m.overdueIssues} просроч.
+              </span>
+            )}
+            <div className="flex items-center gap-1.5">
+              <Clock size={14} className="text-gray-400" />
+              <span className="text-xs text-gray-600 dark:text-gray-300">
+                <span className="font-medium">{Math.round(m.totalSpentHours)}</span>ч
+              </span>
+            </div>
+            {m.avgUtilization != null && (
+              <div className="flex items-center gap-1.5">
+                <BarChart3 size={14} className="text-gray-400" />
+                <span className="text-xs text-gray-600 dark:text-gray-300">
+                  загр. <span className="font-medium">{Math.round(m.avgUtilization)}%</span>
+                </span>
               </div>
             )}
-          </React.Fragment>
-        );
-      })}
+          </div>
+        )}
+
+        {/* Employees collected */}
+        {cd?.employees?.length > 0 && (
+          <div className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface px-3 py-2">
+            <Users size={14} className="text-gray-400" />
+            <span className="text-xs text-gray-600 dark:text-gray-300">
+              <span className="font-medium">{cd.employees.length}</span> сотр. собрано
+            </span>
+          </div>
+        )}
+
+        {/* Error message */}
+        {report.errorMessage && (
+          <div className="flex items-center gap-1.5 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 px-3 py-2">
+            <XCircle size={14} className="text-red-500" />
+            <span className="text-xs text-red-600 dark:text-red-400">{report.errorMessage}</span>
+          </div>
+        )}
+
+        {/* Open report link (when finished) */}
+        {isFinished && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onOpen(); }}
+            className="ml-auto flex items-center gap-1.5 rounded-lg border border-brand-500/30 bg-brand-500/5 px-3 py-2 text-xs font-medium text-brand-500 transition-colors hover:bg-brand-500/10"
+          >
+            Открыть отчёт
+            <ExternalLink size={12} />
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -298,20 +421,15 @@ export default function ReportsPage() {
               {data.data.map((report) => {
                 const Icon = typeIcons[report.type] ?? FileText;
                 const isExpanded = expandedId === report.id;
-                const isInProgress = report.status === 'collecting' || report.status === 'analyzing' || report.status === 'generating';
                 return (
                   <React.Fragment key={report.id}>
                     <tr
-                      onClick={() => isInProgress ? toggleExpand(report.id) : navigate(`/reports/${report.id}`)}
+                      onClick={() => toggleExpand(report.id)}
                       className="cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-surface-lighter"
                     >
                       <td className="whitespace-nowrap px-4 py-3">
                         <div className="flex items-center gap-2">
-                          {isInProgress ? (
-                            isExpanded ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />
-                          ) : (
-                            <Icon size={16} className="text-gray-400" />
-                          )}
+                          {isExpanded ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
                           <span className="text-sm text-gray-600 dark:text-gray-300">{typeLabels[report.type]}</span>
                         </div>
                       </td>
@@ -351,7 +469,7 @@ export default function ReportsPage() {
                               Загрузка...
                             </div>
                           ) : expandedReport ? (
-                            <ReportPipeline report={expandedReport} />
+                            <ReportPipeline report={expandedReport} onOpen={() => navigate(`/reports/${report.id}`)} />
                           ) : (
                             <p className="text-sm text-gray-500">Не удалось загрузить</p>
                           )}
