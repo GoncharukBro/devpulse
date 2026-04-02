@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, User, FolderKanban, Users, HelpCircle, Mail } from 'lucide-react';
+import { ArrowLeft, User, FolderKanban, Users, HelpCircle, Mail, FileText, Clock } from 'lucide-react';
 import { aggregatedReportsApi } from '@/api/endpoints/aggregated-reports';
+import type { AggregatedReportListItem } from '@/types/aggregated-report';
 import ReportStatusBadge from '@/components/reports/ReportStatusBadge';
 import PeriodKpiCards from '@/components/reports/PeriodKpiCards';
 import PeriodWeeklyChart from '@/components/reports/PeriodWeeklyChart';
@@ -38,6 +39,7 @@ export default function AggregatedReportPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [relatedReports, setRelatedReports] = useState<AggregatedReportListItem[]>([]);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -56,6 +58,20 @@ export default function AggregatedReportPage() {
 
     load();
   }, [id]);
+
+  // Load related reports (same targetName)
+  useEffect(() => {
+    if (!report) return;
+    (async () => {
+      try {
+        const all = await aggregatedReportsApi.list({ limit: 100 });
+        const related = all.data
+          .filter(r => r.targetName === report.targetName && r.id !== report.id)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setRelatedReports(related);
+      } catch { /* ignore */ }
+    })();
+  }, [report?.id, report?.targetName]);
 
   // Polling while generating/collecting/analyzing
   useEffect(() => {
@@ -139,7 +155,50 @@ export default function AggregatedReportPage() {
   const Icon = typeIcons[report.type] ?? User;
 
   return (
-    <div className="space-y-6">
+    <div className="flex gap-6">
+      {/* Sidebar — related reports */}
+      {relatedReports.length > 0 && (
+        <aside className="hidden w-64 shrink-0 lg:block">
+          <div className="sticky top-6 space-y-2">
+            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Другие отчёты: {report.targetName}
+            </h4>
+            {relatedReports.map((r) => {
+              const fmtD = (iso: string) => {
+                const d = new Date(iso);
+                return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear().toString().slice(2)}`;
+              };
+              return (
+                <Link
+                  key={r.id}
+                  to={`/reports/${r.id}`}
+                  className="block rounded-lg border border-gray-200 dark:border-surface-border p-2.5 transition-colors hover:border-brand-500/50 hover:bg-brand-500/5"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {fmtD(r.periodStart)} — {fmtD(r.periodEnd)}
+                    </span>
+                    <ReportStatusBadge status={r.status} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      {r.weeksCount} нед.
+                    </span>
+                    {r.avgScore != null ? (
+                      <span className="text-sm font-bold text-brand-500">{Math.round(r.avgScore)}</span>
+                    ) : (
+                      <span className="text-xs text-gray-400">—</span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </aside>
+      )}
+
+      {/* Main content */}
+      <div className="min-w-0 flex-1 space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center justify-between">
         <button
@@ -354,6 +413,7 @@ export default function AggregatedReportPage() {
           reportId={id}
         />
       )}
+      </div>{/* end main content */}
     </div>
   );
 }
