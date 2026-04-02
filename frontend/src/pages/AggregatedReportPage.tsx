@@ -232,6 +232,9 @@ export default function AggregatedReportPage() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-surface-border">
                   <th className="pb-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Имя</th>
+                  {(report.employeesData as any[]).some((e: any) => e.projectName) && (
+                    <th className="pb-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Проект</th>
+                  )}
                   <th className="pb-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Score</th>
                   <th className="pb-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Загрузка</th>
                   <th className="pb-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Закрытие</th>
@@ -240,9 +243,14 @@ export default function AggregatedReportPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-surface-border">
-                {report.employeesData.map((emp) => (
-                  <tr key={emp.youtrackLogin}>
+                {report.employeesData.map((emp: any, idx: number) => (
+                  <tr key={emp.youtrackLogin + (emp.projectName ?? '') + idx} className={emp.projectName === 'Итого' ? 'bg-gray-50/50 dark:bg-surface-lighter/30 font-semibold' : ''}>
                     <td className="py-2 text-sm font-medium text-gray-900 dark:text-gray-100">{emp.displayName}</td>
+                    {(report.employeesData as any[]).some((e: any) => e.projectName) && (
+                      <td className="py-2 text-sm text-gray-500 dark:text-gray-400">
+                        {emp.projectName === 'Итого' ? <span className="rounded bg-gray-200 dark:bg-surface-lighter px-1.5 py-0.5 text-xs">Итого</span> : emp.projectName ?? '—'}
+                      </td>
+                    )}
                     <td className="py-2 text-center text-sm text-gray-600 dark:text-gray-300">{emp.avgScore !== null ? Math.round(emp.avgScore) : '—'}</td>
                     <td className="py-2 text-center text-sm text-gray-600 dark:text-gray-300">{emp.avgUtilization !== null ? `${Math.round(emp.avgUtilization)}%` : '—'}</td>
                     <td className="py-2 text-center text-sm text-gray-600 dark:text-gray-300">{emp.avgCompletionRate !== null ? `${Math.round(emp.avgCompletionRate)}%` : '—'}</td>
