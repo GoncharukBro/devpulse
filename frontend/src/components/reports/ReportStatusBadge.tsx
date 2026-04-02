@@ -25,6 +25,20 @@ const statusConfig: Record<string, { label: string; className: string; spinner?:
     label: 'Ошибка',
     className: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   },
+  collecting: {
+    label: 'Сбор данных',
+    className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    spinner: true,
+  },
+  analyzing: {
+    label: 'Анализ',
+    className: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+    spinner: true,
+  },
+  partial: {
+    label: 'Частично готов',
+    className: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  },
 };
 
 export default function ReportStatusBadge({ status }: ReportStatusBadgeProps) {
