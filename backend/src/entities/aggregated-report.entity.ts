@@ -95,6 +95,12 @@ export class AggregatedReport {
   @Property({ type: 'jsonb', nullable: true })
   employeesData?: object[];
 
+  @Property({ type: 'jsonb', nullable: true })
+  progress?: object | null;
+
+  @Property({ type: 'jsonb', nullable: true })
+  collectedData?: object | null;
+
   @Property({ length: 20, default: 'generating' })
   status: string = 'generating';
 
