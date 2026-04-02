@@ -32,7 +32,7 @@ function buildCards(status: SystemStatusResponse): IntegrationCard[] {
   }
 
   cards.push(
-    { key: 'ollama', label: 'Ollama (LLM)', icon: Brain, info: status.services.ollama },
+    { key: 'llm', label: 'LLM', icon: Brain, info: status.services.llm },
     { key: 'keycloak', label: 'Keycloak', icon: Shield, info: status.services.keycloak },
     { key: 'database', label: 'PostgreSQL', icon: Database, info: status.services.database },
     { key: 'smtp', label: 'SMTP', icon: Mail, info: status.services.smtp },

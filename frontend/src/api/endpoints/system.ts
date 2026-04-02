@@ -15,7 +15,7 @@ export interface SystemStatusResponse {
   authEnabled: boolean;
   services: {
     youtrack: ServiceInfo[];
-    ollama: ServiceInfo;
+    llm: ServiceInfo;
     keycloak: ServiceInfo;
     database: ServiceInfo;
     smtp: ServiceInfo;

@@ -1,6 +1,6 @@
 # DevPulse Backend
 
-Бэкенд-сервис DevPulse — сбор и анализ метрик разработчиков из YouTrack с LLM-анализом (Ollama).
+Бэкенд-сервис DevPulse — сбор и анализ метрик разработчиков из YouTrack с LLM-анализом.
 
 ## Стек
 
@@ -8,7 +8,7 @@
 - **Framework:** Fastify
 - **ORM:** MikroORM + PostgreSQL >= 14
 - **Auth:** Keycloak (опционально)
-- **LLM:** Ollama (локальная LLM)
+- **LLM:** OpenAI-совместимый API (Ollama, vLLM, cloud и др.)
 - **Планировщик:** node-cron
 - **Логирование:** Pino
 
@@ -113,11 +113,11 @@ YOUTRACK_2024_NAME=YouTrack 2024
 Чтобы добавить новый инстанс, достаточно добавить три переменные и перезапустить сервер.
 Поддерживаются YouTrack 2024.x и 2025.x (версия определяется автоматически).
 
-### LLM (Ollama)
+### LLM (OpenAI-совместимый API)
 
 | Переменная | По умолчанию | Описание |
 |---|---|---|
-| `LLM_BASE_URL` | — | URL Ollama API (OpenAI-совместимый) |
+| `LLM_BASE_URL` | — | URL LLM API (OpenAI-совместимый) |
 | `LLM_MODEL` | — | Модель (например, `gemma3:4b`) |
 | `LLM_TEMPERATURE` | `0.3` | Температура генерации |
 | `LLM_RATE_LIMIT` | `3` | Макс. параллельных запросов |

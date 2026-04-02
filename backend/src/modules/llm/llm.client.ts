@@ -1,5 +1,5 @@
 /**
- * OpenAI-совместимый HTTP-клиент для Ollama (или любого LLM-провайдера).
+ * OpenAI-совместимый HTTP-клиент для LLM-провайдера.
  */
 
 import { RateLimiter } from '../../common/utils/rate-limiter';

@@ -22,7 +22,7 @@ export interface SystemStatusResponse {
   authEnabled: boolean;
   services: {
     youtrack: ServiceInfo[];
-    ollama: ServiceInfo;
+    llm: ServiceInfo;
     keycloak: ServiceInfo;
     database: ServiceInfo;
     smtp: ServiceInfo;
@@ -93,7 +93,7 @@ async function checkYouTrack(): Promise<ServiceInfo[]> {
   );
 }
 
-async function checkOllama(): Promise<ServiceInfo> {
+async function checkLlm(): Promise<ServiceInfo> {
   const baseUrl = config.llm.baseUrl.replace(/\/v1\/?$/, '');
   try {
     const response = await fetchWithTimeout(`${baseUrl}/api/tags`, CHECK_TIMEOUT);
@@ -158,9 +158,9 @@ function checkSmtp(): ServiceInfo {
 }
 
 export async function getSystemStatus(orm: MikroORM<PostgreSqlDriver>): Promise<SystemStatusResponse> {
-  const [youtrack, ollama, keycloak, database] = await Promise.all([
+  const [youtrack, llm, keycloak, database] = await Promise.all([
     checkYouTrack(),
-    checkOllama(),
+    checkLlm(),
     checkKeycloak(),
     checkDatabase(orm),
   ]);
@@ -172,9 +172,9 @@ export async function getSystemStatus(orm: MikroORM<PostgreSqlDriver>): Promise<
     authEnabled: config.authEnabled,
     services: {
       youtrack,
-      ollama: !config.authEnabled
+      llm: !config.authEnabled
         ? { status: 'not_configured' as ServiceStatus, details: 'Отключён (требуется авторизация)' }
-        : ollama,
+        : llm,
       keycloak,
       database,
       smtp,

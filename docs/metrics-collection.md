@@ -48,7 +48,7 @@
   ├─ Очередь LLM-задач
   │    │
   │    ├─ Построение промпта (~700 символов)
-  │    ├─ Отправка в LLM (Ollama / внешний API)
+  │    ├─ Отправка в LLM (OpenAI-совместимый API)
   │    ├─ Парсинг JSON-ответа
   │    ├─ Сохранение: score, summary, achievements, ...
   │    └─ MetricReport → status='analyzed'

@@ -2,7 +2,7 @@ const STACK = [
   { label: 'Frontend', value: 'React 18 · TypeScript · Vite · Tailwind' },
   { label: 'Backend', value: 'Node.js · Fastify · MikroORM' },
   { label: 'База', value: 'PostgreSQL' },
-  { label: 'ИИ', value: 'Ollama' },
+  { label: 'ИИ', value: 'LLM (OpenAI-совместимый)' },
   { label: 'Авториз.', value: 'Keycloak' },
 ];
 
