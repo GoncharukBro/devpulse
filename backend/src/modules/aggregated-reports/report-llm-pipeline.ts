@@ -198,9 +198,29 @@ export class ReportLlmPipeline {
       finalStatus = 'partial';
     }
 
+    // Update avgScore from LLM results
+    const allScores = employeesData
+      .filter(e => e.projectName !== 'Итого' && e.llmScore != null)
+      .map(e => e.llmScore!);
+    if (allScores.length > 0) {
+      report.avgScore = Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length * 10) / 10;
+    }
+
+    // For employee type without Level 2, copy LLM summary to period fields
+    if (type === 'employee' && !report.llmPeriodSummary) {
+      const summaryItem = employeesData.find(e => e.projectName === 'Итого') ?? employeesData.find(e => e.llmScore != null);
+      if (summaryItem) {
+        report.llmPeriodScore = summaryItem.llmScore ?? undefined;
+        report.llmPeriodSummary = summaryItem.llmSummary ?? undefined;
+        report.llmPeriodConcerns = summaryItem.llmConcerns ?? undefined;
+        report.llmPeriodRecommendations = summaryItem.llmRecommendations ?? undefined;
+      }
+    }
+
     // Clear progress, set status, flush
     report.progress = null;
     report.status = finalStatus;
+    report.employeesData = employeesData as unknown as object[];
     await em.flush();
 
     this.log.info(
