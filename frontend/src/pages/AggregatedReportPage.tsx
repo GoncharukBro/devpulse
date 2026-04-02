@@ -374,9 +374,9 @@ export default function AggregatedReportPage() {
       )}
       </div>{/* end main content */}
 
-      {/* Sidebar — related reports (right), styled like ReportsSidebar */}
+      {/* Right sidebar — hidden below xl, matches EmployeePage layout */}
       {relatedReports.length > 0 && (
-        <aside className="hidden w-64 shrink-0 lg:block">
+        <div className="hidden w-[320px] shrink-0 xl:block">
           <div
             className="sticky top-6 flex flex-col rounded-xl border border-gray-200 bg-white dark:border-surface-border dark:bg-surface"
             style={{ maxHeight: 'calc(100vh - 120px)' }}
@@ -431,7 +431,7 @@ export default function AggregatedReportPage() {
               })}
             </div>
           </div>
-        </aside>
+        </div>
       )}
     </div>
   );
