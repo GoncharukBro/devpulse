@@ -151,6 +151,7 @@ export interface AggregatedReportDTO {
   employeesData: EmployeeAggItem[] | null;
 
   progress: ReportProgress | null;
+  collectedData: unknown | null;
 
   status: string;
   errorMessage: string | null;
