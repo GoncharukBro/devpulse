@@ -5,7 +5,7 @@
 import { FastifyInstance } from 'fastify';
 import { LlmService } from '../llm/llm.service';
 import { AggregatedReportsService } from './aggregated-reports.service';
-import { PreviewRequest, ListQuery } from './aggregated-reports.types';
+import { CreateRequest, ListQuery } from './aggregated-reports.types';
 
 let llmServiceRef: LlmService | null = null;
 
@@ -18,30 +18,8 @@ export function getLlmServiceRef(): LlmService | null {
 }
 
 export async function aggregatedReportsRoutes(app: FastifyInstance): Promise<void> {
-  // POST /api/aggregated-reports/preview
-  app.post<{ Body: PreviewRequest }>(
-    '/aggregated-reports/preview',
-    async (request, reply) => {
-      const { type, targetId, dateFrom, dateTo } = request.body;
-
-      if (!type || !targetId || !dateFrom || !dateTo) {
-        reply.status(400).send({ message: 'type, targetId, dateFrom, dateTo are required' });
-        return;
-      }
-
-      if (!['employee', 'project', 'team'].includes(type)) {
-        reply.status(400).send({ message: 'type must be employee, project, or team' });
-        return;
-      }
-
-      const em = request.orm.em.fork();
-      const service = new AggregatedReportsService(em, llmServiceRef, request.orm);
-      return service.preview({ type, targetId, dateFrom, dateTo, userId: request.user.id });
-    },
-  );
-
   // POST /api/aggregated-reports
-  app.post<{ Body: PreviewRequest }>(
+  app.post<{ Body: CreateRequest }>(
     '/aggregated-reports',
     async (request, reply) => {
       const { type, targetId, dateFrom, dateTo } = request.body;
