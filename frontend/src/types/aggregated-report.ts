@@ -70,28 +70,44 @@ export interface EmployeeAggItem {
   scoreTrend: ScoreTrend;
 }
 
-export interface PreviewRequest {
+export interface ReportProgress {
+  phase: 'collecting' | 'analyzing';
+  total: number;
+  completed: number;
+  currentStep?: string;
+}
+
+export interface PeriodBreakdownItem {
+  label: string;
+  totalIssues: number;
+  completedIssues: number;
+  overdueIssues: number;
+  totalSpentHours: number;
+  utilization: number | null;
+  estimationAccuracy: number | null;
+  completionRate: number | null;
+  issuesByType: Record<string, number>;
+}
+
+export interface EmployeeAggItemV2 extends EmployeeAggItem {
+  projectName?: string;
+  llmScore: number | null;
+  llmSummary: string | null;
+  llmConcerns: string[] | null;
+  llmRecommendations: string[] | null;
+  periodBreakdown: PeriodBreakdownItem[] | null;
+}
+
+export interface CreateRequest {
   type: 'employee' | 'project' | 'team';
   targetId: string;
   dateFrom: string;
   dateTo: string;
 }
 
-export interface PreviewResponse {
-  periodStart: string;
-  periodEnd: string;
-  weeksCount: number;
-  targetName: string;
-  availableWeeks: number;
-  aggregatedMetrics: AggregatedMetricsDTO;
-  weeklyData: WeeklyDataItem[];
-}
-
-export interface CreateRequest extends PreviewRequest {}
-
 export interface CreateResponse {
   id: string;
-  status: 'generating' | 'ready';
+  status: string;
 }
 
 export interface AggregatedReportListItem {
@@ -102,7 +118,7 @@ export interface AggregatedReportListItem {
   periodEnd: string;
   weeksCount: number;
   avgScore: number | null;
-  status: 'generating' | 'ready' | 'failed';
+  status: string;
   createdAt: string;
 }
 
@@ -133,6 +149,8 @@ export interface AggregatedReportDTO {
   llmPeriodRecommendations: string[] | null;
 
   employeesData: EmployeeAggItem[] | null;
+
+  progress: ReportProgress | null;
 
   status: string;
   errorMessage: string | null;

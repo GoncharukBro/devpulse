@@ -1,7 +1,5 @@
 import { apiClient } from '@/api/client';
 import type {
-  PreviewRequest,
-  PreviewResponse,
   CreateRequest,
   CreateResponse,
   ListResponse,
@@ -9,11 +7,6 @@ import type {
 } from '@/types/aggregated-report';
 
 export const aggregatedReportsApi = {
-  async preview(params: PreviewRequest): Promise<PreviewResponse> {
-    const response = await apiClient.post<PreviewResponse>('/aggregated-reports/preview', params);
-    return response.data;
-  },
-
   async create(params: CreateRequest): Promise<CreateResponse> {
     const response = await apiClient.post<CreateResponse>('/aggregated-reports', params);
     return response.data;
