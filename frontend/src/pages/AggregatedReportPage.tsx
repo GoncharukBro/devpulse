@@ -239,7 +239,7 @@ export default function AggregatedReportPage() {
 
       {/* KPI Cards */}
       {report.aggregatedMetrics && report.aggregatedMetrics.totalIssues > 0 && (
-        <PeriodKpiCards metrics={report.aggregatedMetrics} overallTrend={report.overallTrend} />
+        <PeriodKpiCards metrics={report.aggregatedMetrics} overallTrend={report.overallTrend} hideScore />
       )}
 
       {/* Charts (only for legacy reports with weeklyData) */}
