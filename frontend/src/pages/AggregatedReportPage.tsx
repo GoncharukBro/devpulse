@@ -280,18 +280,29 @@ export default function AggregatedReportPage() {
                 >
                   <div className="mb-2 flex items-center justify-between">
                     <div>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {e.displayName}
-                      </span>
-                      {e.projectName && e.projectName !== 'Итого' && (
-                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                          ({e.projectName})
-                        </span>
-                      )}
-                      {e.projectName === 'Итого' && (
-                        <span className="ml-2 rounded bg-gray-100 dark:bg-surface-lighter px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Итого
-                        </span>
+                      {report.type === 'employee' ? (
+                        // Для employee-отчёта: показываем только проект
+                        e.projectName === 'Итого' ? (
+                          <span className="rounded bg-gray-100 dark:bg-surface-lighter px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Итого
+                          </span>
+                        ) : (
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {e.projectName ?? e.displayName}
+                          </span>
+                        )
+                      ) : (
+                        // Для project/team: показываем имя сотрудника
+                        <>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {e.displayName}
+                          </span>
+                          {e.projectName && e.projectName !== 'Итого' && (
+                            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                              ({e.projectName})
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                     <span className="text-lg font-bold text-brand-500">{e.llmScore}</span>
