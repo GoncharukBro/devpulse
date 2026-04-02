@@ -223,8 +223,8 @@ export default function AggregatedReportPage() {
         <PeriodWeeklyChart weeklyData={report.weeklyData} />
       )}
 
-      {/* Employees table (project/team) */}
-      {report.employeesData && report.employeesData.length > 0 && (
+      {/* Employees table (project/team only — for employee type the LLM cards below are sufficient) */}
+      {report.type !== 'employee' && report.employeesData && report.employeesData.length > 0 && (
         <Card>
           <h4 className="mb-3 text-sm font-medium text-gray-600 dark:text-gray-300">Сотрудники</h4>
           <div className="overflow-x-auto">
