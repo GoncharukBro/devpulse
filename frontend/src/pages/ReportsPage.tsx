@@ -429,7 +429,8 @@ export default function ReportsPage() {
                     >
                       <td className="whitespace-nowrap px-4 py-3">
                         <div className="flex items-center gap-2">
-                          {isExpanded ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
+                          {isExpanded ? <ChevronDown size={14} className="text-gray-400 shrink-0" /> : <ChevronRight size={14} className="text-gray-400 shrink-0" />}
+                          <Icon size={16} className="text-gray-400 shrink-0" />
                           <span className="text-sm text-gray-600 dark:text-gray-300">{typeLabels[report.type]}</span>
                         </div>
                       </td>
