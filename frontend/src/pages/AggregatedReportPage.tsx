@@ -374,43 +374,62 @@ export default function AggregatedReportPage() {
       )}
       </div>{/* end main content */}
 
-      {/* Sidebar — related reports (right) */}
+      {/* Sidebar — related reports (right), styled like ReportsSidebar */}
       {relatedReports.length > 0 && (
         <aside className="hidden w-64 shrink-0 lg:block">
-          <div className="sticky top-6 space-y-2">
-            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Другие отчёты: {report.targetName}
-            </h4>
-            {relatedReports.map((r) => {
-              const fmtD = (iso: string) => {
-                const d = new Date(iso);
-                return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear().toString().slice(2)}`;
-              };
-              return (
-                <Link
-                  key={r.id}
-                  to={`/reports/${r.id}`}
-                  className="block rounded-lg border border-gray-200 dark:border-surface-border p-2.5 transition-colors hover:border-brand-500/50 hover:bg-brand-500/5"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {fmtD(r.periodStart)} — {fmtD(r.periodEnd)}
-                    </span>
-                    <ReportStatusBadge status={r.status} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">
+          <div
+            className="sticky top-6 flex flex-col rounded-xl border border-gray-200 bg-white dark:border-surface-border dark:bg-surface"
+            style={{ maxHeight: 'calc(100vh - 120px)' }}
+          >
+            {/* Header */}
+            <div className="shrink-0 border-b border-gray-200 px-4 py-3 dark:border-surface-border">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Отчёты</h3>
+                <span className="text-xs text-gray-400 dark:text-gray-500">{relatedReports.length}</span>
+              </div>
+            </div>
+
+            {/* Scrollable report list */}
+            <div className="flex-1 overflow-y-auto">
+              {relatedReports.map((r) => {
+                const isActive = r.id === id;
+                return (
+                  <Link
+                    key={r.id}
+                    to={`/reports/${r.id}`}
+                    className={`block w-full border-b border-gray-100 px-4 py-3 text-left transition-colors last:border-b-0 dark:border-surface-border ${
+                      isActive
+                        ? 'border-l-2 border-l-brand-500 bg-brand-500/5'
+                        : 'hover:bg-gray-50 dark:hover:bg-surface-lighter/50'
+                    }`}
+                  >
+                    {/* Row 1: period + status */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                        {formatDate(r.periodStart)} — {formatDate(r.periodEnd)}
+                      </span>
+                    </div>
+
+                    {/* Row 2: type label */}
+                    <div className="mt-0.5 truncate text-xs text-gray-400 dark:text-gray-500">
                       {r.weeksCount} нед.
-                    </span>
-                    {r.avgScore != null ? (
-                      <span className="text-sm font-bold text-brand-500">{Math.round(r.avgScore)}</span>
-                    ) : (
-                      <span className="text-xs text-gray-400">—</span>
-                    )}
-                  </div>
-                </Link>
-              );
-            })}
+                    </div>
+
+                    {/* Row 3: score + status badge */}
+                    <div className="mt-1 flex items-center justify-between text-xs">
+                      {r.avgScore != null ? (
+                        <span className="font-medium text-brand-500">
+                          Score: {Math.round(r.avgScore)}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                      <ReportStatusBadge status={r.status} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </aside>
       )}
