@@ -283,85 +283,87 @@ export default function MethodologyPage() {
           </Card>
         </section>
 
-        {/* 7. Агрегированные отчёты */}
+        {/* 7. Отчёты за произвольный период */}
         <section id="aggregated-reports">
-          <Card header={<SectionHeader emoji="📋" title="Агрегированные отчёты" />}>
+          <Card header={<SectionHeader emoji="📋" title="Отчёты за произвольный период" />}>
             <p className="mb-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-              Агрегированные отчёты позволяют проанализировать работу сотрудника, проекта или команды
-              за произвольный период — от нескольких недель до нескольких месяцев.
+              Отчёты позволяют проанализировать работу сотрудника, проекта или команды
+              за произвольный период — от нескольких дней до нескольких лет. Данные собираются
+              напрямую из YouTrack за точный указанный диапазон дат.
             </p>
 
-            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Как формируется период</p>
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Как это работает</p>
             <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-              Вы выбираете произвольные даты «от» и «до». Система автоматически округляет диапазон
-              до полных недель (понедельник — воскресенье) и собирает данные из еженедельных отчётов,
-              попадающих в этот период.
+              Вы выбираете произвольные даты «от» и «до» — без округления до недель. Система выполняет
+              трёхфазный pipeline:
             </p>
-
-            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Агрегация метрик</p>
-            <ul className="mb-3 space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
-              <li className="flex gap-2">
-                <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Score, Загрузка, Точность, Фокус, Закрытие</strong> — среднее за все недели периода</span>
+            <ol className="mb-3 space-y-2 text-sm text-gray-600 dark:text-gray-300 list-decimal list-inside">
+              <li>
+                <strong className="text-gray-700 dark:text-gray-200">Сбор данных</strong> — для каждого сотрудника запрашиваются метрики
+                из YouTrack за указанный период: задачи, время, статусы, типы работ
               </li>
-              <li className="flex gap-2">
-                <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Cycle Time</strong> — среднее по неделям, где есть данные</span>
+              <li>
+                <strong className="text-gray-700 dark:text-gray-200">Агрегация</strong> — собранные данные группируются, рассчитываются KPI,
+                формируется топ-20 задач (гибридная выборка: по времени, просроченные, бизнес-критичные)
               </li>
-              <li className="flex gap-2">
-                <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Задачи и часы</strong> — сумма за весь период</span>
+              <li>
+                <strong className="text-gray-700 dark:text-gray-200">AI-анализ</strong> — двухуровневый LLM-анализ: сначала по каждому
+                сотруднику (score, сводка, проблемы, рекомендации, классификация задач), затем
+                итоговая сводка по проекту/команде
               </li>
-              <li className="flex gap-2">
-                <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Типы работ</strong> — суммарные часы по каждому типу</span>
-              </li>
-            </ul>
-
-            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Тренды</p>
-            <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-              Для каждой недели отображается тренд относительно предыдущей недели.
-              Общий тренд показывает динамику за весь период — сравнивается первая и последняя неделя.
-            </p>
+            </ol>
 
             <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Уровни отчётов</p>
             <ul className="mb-3 space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Сотрудник</strong> — метрики одного человека за период</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Сотрудник</strong> — метрики одного человека, с разбивкой по проектам (если участвует в нескольких)</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Проект</strong> — средние метрики по всем сотрудникам проекта + таблица по каждому</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Проект</strong> — метрики по всем сотрудникам проекта + индивидуальный AI-анализ каждого</span>
               </li>
               <li className="flex gap-2">
                 <span className="text-gray-500">&bull;</span>
-                <span><strong className="text-gray-700 dark:text-gray-200">Команда</strong> — средние метрики по участникам команды + таблица по каждому</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Команда</strong> — метрики по участникам команды из всех их проектов</span>
               </li>
             </ul>
 
-            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Предпросмотр и генерация</p>
+            <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">AI-анализ</p>
             <p className="mb-3 text-sm text-gray-600 dark:text-gray-300">
-              Перед созданием отчёта можно выполнить предпросмотр — быструю агрегацию без AI-анализа.
-              При полной генерации AI-модель дополнительно анализирует динамику за период и формирует
-              текстовую сводку с оценкой, выявленными проблемами и рекомендациями.
+              Для каждого сотрудника AI получает: агрегированные метрики, таблицу динамики с типами задач
+              и топ-20 ключевых задач. На основе этого формируется оценка (score 0–100), текстовая сводка,
+              список проблем и рекомендаций. Для проектов и команд дополнительно формируется итоговая
+              сводка на основе индивидуальных анализов.
             </p>
 
             <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">Статусы</p>
             <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-                <span><strong className="text-gray-700 dark:text-gray-200">Генерация</strong> — AI-анализ выполняется, данные обновятся автоматически</span>
+                <span className="inline-block h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+                <span><strong className="text-gray-700 dark:text-gray-200">Сбор данных</strong> — идёт сбор метрик из YouTrack</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
+                <span><strong className="text-gray-700 dark:text-gray-200">Анализ</strong> — выполняется AI-анализ собранных данных</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
                 <span><strong className="text-gray-700 dark:text-gray-200">Готов</strong> — отчёт полностью сформирован</span>
               </div>
               <div className="flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-yellow-400" />
+                <span><strong className="text-gray-700 dark:text-gray-200">Частично готов</strong> — часть AI-анализов не удалась, метрики доступны</span>
+              </div>
+              <div className="flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-red-400" />
-                <span><strong className="text-gray-700 dark:text-gray-200">Ошибка</strong> — AI-анализ не удался, метрики доступны без AI-сводки</span>
+                <span><strong className="text-gray-700 dark:text-gray-200">Ошибка</strong> — сбор или анализ не удался</span>
               </div>
             </div>
+            <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+              В списке отчётов можно раскрыть любую строку, чтобы увидеть текущее состояние pipeline
+              и собранные метрики в реальном времени.
+            </p>
             <p className="mt-3 text-xs text-gray-400">
               Отчёты хранятся в системе. Вы можете просматривать, фильтровать и удалять их на странице{' '}
               <Link to="/reports" className="text-brand-400 hover:text-brand-300 transition-colors">
