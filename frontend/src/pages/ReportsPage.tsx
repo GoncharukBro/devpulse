@@ -362,9 +362,14 @@ export default function ReportsPage() {
     <div>
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <FileText size={24} className="text-brand-400" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Отчёты</h1>
+        <div>
+          <div className="flex items-center gap-3">
+            <FileText size={24} className="text-brand-400" />
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Отчёты</h1>
+          </div>
+          <p className="mt-1 ml-[36px] text-sm text-gray-500 dark:text-gray-400">
+            Формирование отчётов за произвольный период с AI-анализом
+          </p>
         </div>
         <button
           type="button"
