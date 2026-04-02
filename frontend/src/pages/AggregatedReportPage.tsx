@@ -268,7 +268,7 @@ export default function AggregatedReportPage() {
       {report.employeesData?.some((e: any) => e.llmScore != null) && (
         <div className="mt-6">
           <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Анализ по сотрудникам
+            {report.type === 'employee' ? 'AI-анализ по проектам' : 'AI-анализ по сотрудникам'}
           </h3>
           <div className="space-y-3">
             {(report.employeesData as any[])
