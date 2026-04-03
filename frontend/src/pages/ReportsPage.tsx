@@ -129,43 +129,31 @@ function ReportPipeline({ report, onOpen }: { report: AggregatedReportDTO; onOpe
     : 0;
 
   return (
-    <div className="space-y-4">
-      {/* Pipeline steps */}
-      <div className="flex items-center gap-0">
+    <div className="flex items-start gap-4">
+      {/* Pipeline steps — compact vertical-ish */}
+      <div className="flex items-center gap-0 shrink-0">
         {steps.map((step, i) => {
           const st = statusStyles[step.status];
           const StepIcon = step.icon;
+          const pct = step.progress && step.progress.total > 0
+            ? Math.round((step.progress.completed / step.progress.total) * 100) : null;
           return (
             <React.Fragment key={step.key}>
-              <div className="flex flex-col items-center" style={{ minWidth: 140 }}>
-                <div className={`flex h-9 w-9 items-center justify-center rounded-full ring-4 ${st.ring} ${st.bg}`}>
-                  <StepIcon size={18} className={st.icon} />
+              <div className="flex flex-col items-center" style={{ minWidth: 90 }}>
+                <div className={`flex h-7 w-7 items-center justify-center rounded-full ring-2 ${st.ring} ${st.bg}`}>
+                  <StepIcon size={14} className={st.icon} />
                 </div>
-                <span className={`mt-2 text-xs font-semibold ${st.label}`}>{step.label}</span>
-                {step.progress && (
-                  <div className="mt-1.5 w-24">
-                    <div className="h-1.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
-                      <div
-                        className="h-1.5 rounded-full bg-brand-500 transition-all duration-500"
-                        style={{ width: `${step.progress.total > 0 ? Math.round((step.progress.completed / step.progress.total) * 100) : 0}%` }}
-                      />
-                    </div>
-                    <span className="mt-0.5 block text-center text-[10px] text-gray-500 dark:text-gray-400">
-                      {step.progress.completed} / {step.progress.total}
-                    </span>
-                  </div>
+                <span className={`mt-1 text-[10px] font-semibold leading-tight ${st.label}`}>{step.label}</span>
+                {pct != null && (
+                  <span className="text-[10px] text-brand-500 font-medium">{pct}%</span>
                 )}
-                {!step.progress && step.detail && (
-                  <span className="mt-1 max-w-[160px] truncate text-center text-[11px] text-gray-500 dark:text-gray-400">
-                    {step.detail}
-                  </span>
+                {pct == null && step.detail && (
+                  <span className="max-w-[90px] truncate text-[10px] text-gray-500 dark:text-gray-400">{step.detail}</span>
                 )}
               </div>
               {i < steps.length - 1 && (
-                <div className="mb-6 flex-1" style={{ minWidth: 32 }}>
-                  <div className={`h-0.5 w-full rounded ${
-                    step.status === 'done' ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'
-                  }`} />
+                <div className="mb-5 w-8 shrink-0">
+                  <div className={`h-0.5 w-full rounded ${step.status === 'done' ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-700'}`} />
                 </div>
               )}
             </React.Fragment>
@@ -173,76 +161,65 @@ function ReportPipeline({ report, onOpen }: { report: AggregatedReportDTO; onOpe
         })}
       </div>
 
-      {/* Info cards row */}
-      <div className="flex flex-wrap items-stretch gap-3">
-        {/* Elapsed time */}
+      {/* Separator */}
+      <div className="h-12 w-px bg-gray-200 dark:bg-surface-border shrink-0 self-center" />
+
+      {/* Info — compact inline */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600 dark:text-gray-300 min-w-0">
+        {/* Active step detail */}
+        {report.progress?.currentStep && (
+          <span className="text-brand-500 font-medium">{report.progress.currentStep}</span>
+        )}
+
+        {/* Progress bar for active phase */}
+        {report.progress && report.progress.total > 0 && (
+          <div className="flex items-center gap-2 min-w-[140px]">
+            <div className="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-gray-700">
+              <div
+                className="h-1.5 rounded-full bg-brand-500 transition-all duration-500"
+                style={{ width: `${Math.round((report.progress.completed / report.progress.total) * 100)}%` }}
+              />
+            </div>
+            <span className="text-[10px] text-gray-500 shrink-0">{report.progress.completed}/{report.progress.total}</span>
+          </div>
+        )}
+
+        {/* Elapsed */}
         {!isFinished && elapsed > 0 && (
-          <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface px-3 py-2">
-            <Clock size={14} className="text-gray-400" />
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              {elapsed < 60 ? `${elapsed}с` : `${Math.floor(elapsed / 60)}м ${elapsed % 60}с`}
-            </span>
-          </div>
+          <span className="text-gray-400">
+            <Clock size={11} className="inline mr-0.5 -mt-px" />
+            {elapsed < 60 ? `${elapsed}с` : `${Math.floor(elapsed / 60)}м ${elapsed % 60}с`}
+          </span>
         )}
 
-        {/* Collected metrics summary */}
+        {/* Metrics summary */}
         {m && m.totalIssues > 0 && (
-          <div className="flex items-center gap-4 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface px-3 py-2">
-            <div className="flex items-center gap-1.5">
-              <ListChecks size={14} className="text-gray-400" />
-              <span className="text-xs text-gray-600 dark:text-gray-300">
-                <span className="font-medium">{m.completedIssues}</span>/{m.totalIssues} задач
-              </span>
-            </div>
-            {m.overdueIssues > 0 && (
-              <span className="text-xs text-red-500">
-                {m.overdueIssues} просроч.
-              </span>
-            )}
-            <div className="flex items-center gap-1.5">
-              <Clock size={14} className="text-gray-400" />
-              <span className="text-xs text-gray-600 dark:text-gray-300">
-                <span className="font-medium">{Math.round(m.totalSpentHours)}</span>ч
-              </span>
-            </div>
-            {m.avgUtilization != null && (
-              <div className="flex items-center gap-1.5">
-                <BarChart3 size={14} className="text-gray-400" />
-                <span className="text-xs text-gray-600 dark:text-gray-300">
-                  загр. <span className="font-medium">{Math.round(m.avgUtilization)}%</span>
-                </span>
-              </div>
-            )}
-          </div>
+          <>
+            <span><span className="font-medium">{m.completedIssues}</span>/{m.totalIssues} задач</span>
+            <span><span className="font-medium">{Math.round(m.totalSpentHours)}</span>ч</span>
+            {m.avgUtilization != null && <span>загр. <span className="font-medium">{Math.round(m.avgUtilization)}%</span></span>}
+            {m.overdueIssues > 0 && <span className="text-red-500">{m.overdueIssues} просроч.</span>}
+          </>
         )}
 
-        {/* Employees collected */}
-        {cd?.employees?.length > 0 && (
-          <div className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-surface px-3 py-2">
-            <Users size={14} className="text-gray-400" />
-            <span className="text-xs text-gray-600 dark:text-gray-300">
-              <span className="font-medium">{cd.employees.length}</span> сотр. собрано
-            </span>
-          </div>
+        {/* Employees count */}
+        {cd?.employees?.length > 0 && !m?.totalIssues && (
+          <span><span className="font-medium">{cd.employees.length}</span> сотр.</span>
         )}
 
-        {/* Error message */}
+        {/* Error */}
         {report.errorMessage && (
-          <div className="flex items-center gap-1.5 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 px-3 py-2">
-            <XCircle size={14} className="text-red-500" />
-            <span className="text-xs text-red-600 dark:text-red-400">{report.errorMessage}</span>
-          </div>
+          <span className="text-red-500 truncate max-w-[300px]">{report.errorMessage}</span>
         )}
 
-        {/* Open report link (when finished) */}
+        {/* Open report */}
         {isFinished && (
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); onOpen(); }}
-            className="ml-auto flex items-center gap-1.5 rounded-lg border border-brand-500/30 bg-brand-500/5 px-3 py-2 text-xs font-medium text-brand-500 transition-colors hover:bg-brand-500/10"
+            className="ml-auto flex items-center gap-1 text-brand-500 font-medium hover:text-brand-400 transition-colors"
           >
-            Открыть отчёт
-            <ExternalLink size={12} />
+            Открыть <ExternalLink size={11} />
           </button>
         )}
       </div>
