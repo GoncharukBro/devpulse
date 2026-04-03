@@ -198,7 +198,7 @@ function ReportPipeline({ report, onOpen }: { report: AggregatedReportDTO; onOpe
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
         <span>Создан: {formatDate(report.createdAt)}</span>
         {m && m.totalIssues > 0 && (
-          <span>{m.completedIssues}/{m.totalIssues} задач · {Math.round(m.totalSpentHours)}ч{m.avgUtilization != null ? ` · загр. ${Math.round(m.avgUtilization)}%` : ''}</span>
+          <span>{m.completedIssues}/{m.totalIssues} задач · {Math.round(m.totalSpentHours)}ч{m.avgUtilization != null ? ` · загрузка ${Math.round(m.avgUtilization)}%` : ''}</span>
         )}
         {report.errorMessage && (
           <span className="text-red-500">{report.errorMessage}</span>
