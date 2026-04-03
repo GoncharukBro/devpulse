@@ -183,7 +183,7 @@ function ReportPipeline({ report, onOpen }: { report: AggregatedReportDTO; onOpe
                   {emp.displayName}
                 </span>
                 {emp.projectName && (
-                  <span className="text-gray-400 dark:text-gray-500 w-32 truncate">{emp.projectName}</span>
+                  <span className="text-gray-400 dark:text-gray-500 w-48 truncate">{emp.projectName}</span>
                 )}
                 <span className="text-gray-400 dark:text-gray-500">
                   данные ✓ {hasLlm ? 'LLM ✓' : report.status === 'analyzing' ? 'LLM ⏳' : report.status === 'collecting' ? '' : 'LLM —'}
