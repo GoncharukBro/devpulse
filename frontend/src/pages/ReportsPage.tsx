@@ -179,11 +179,11 @@ function ReportPipeline({ report, onOpen }: { report: AggregatedReportDTO; onOpe
                 className="flex items-center gap-3 px-3 py-1.5 text-xs bg-white/50 dark:bg-surface-lighter/30"
               >
                 <CheckCircle size={12} className="text-emerald-500 shrink-0" />
-                <span className="font-medium text-gray-700 dark:text-gray-200 shrink-0">
+                <span className="font-medium text-gray-700 dark:text-gray-200 w-40 shrink-0 truncate">
                   {emp.displayName}
                 </span>
                 {emp.projectName && (
-                  <span className="text-gray-400 dark:text-gray-500">{emp.projectName}</span>
+                  <span className="text-gray-400 dark:text-gray-500 w-32 truncate">{emp.projectName}</span>
                 )}
                 <span className="text-gray-400 dark:text-gray-500">
                   данные ✓ {hasLlm ? 'LLM ✓' : report.status === 'analyzing' ? 'LLM ⏳' : report.status === 'collecting' ? '' : 'LLM —'}
