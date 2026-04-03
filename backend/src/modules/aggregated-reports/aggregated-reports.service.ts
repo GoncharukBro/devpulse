@@ -153,8 +153,8 @@ export class AggregatedReportsService {
       errorMessage: r.errorMessage ?? null,
       createdBy: r.createdBy ?? null,
       createdAt: r.createdAt.toISOString(),
-      progress: null,
-      collectedData: null,
+      progress: r.progress as any ?? null,
+      collectedData: r.collectedData as any ?? null,
     };
   }
 
