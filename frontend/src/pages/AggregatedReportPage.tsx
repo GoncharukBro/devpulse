@@ -190,7 +190,14 @@ export default function AggregatedReportPage() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            {/* Overall score */}
+            {report.aggregatedMetrics.avgScore != null && (
+              <div className="flex flex-col items-center rounded-lg bg-brand-500/10 px-3 py-1.5">
+                <span className="text-2xl font-bold text-brand-500">{Math.round(report.aggregatedMetrics.avgScore)}</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400">Score</span>
+              </div>
+            )}
             {report.status === 'ready' && (
               <>
                 <CopyButton getText={getCopyText} />
@@ -296,7 +303,7 @@ export default function AggregatedReportPage() {
           </h3>
           <div className="space-y-3">
             {(report.employeesData as any[])
-              .filter((e) => e.llmScore != null)
+              .filter((e) => e.llmScore != null && e.projectName !== 'Итого')
               .map((e) => (
                 <div
                   key={e.youtrackLogin + (e.projectName ?? '')}
