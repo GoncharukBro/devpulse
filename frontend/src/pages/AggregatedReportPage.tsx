@@ -397,9 +397,10 @@ export default function AggregatedReportPage() {
             {/* Header */}
             <div className="shrink-0 border-b border-gray-200 px-4 py-3 dark:border-surface-border">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Отчёты</h3>
+                <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">Другие отчёты</h3>
                 <span className="text-xs text-gray-400 dark:text-gray-500">{relatedReports.length}</span>
               </div>
+              <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500 truncate">{report.targetName}</p>
             </div>
 
             {/* Scrollable report list */}
