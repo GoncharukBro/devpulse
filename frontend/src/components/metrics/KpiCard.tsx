@@ -54,7 +54,7 @@ function AnimatedNumber({ value, suffix }: { value: number; suffix?: string }) {
   return (
     <span>
       {formatted}
-      {suffix && <span className="text-sm">{suffix}</span>}
+      {suffix && <span className="text-lg">{suffix}</span>}
     </span>
   );
 }
@@ -73,23 +73,24 @@ export default function KpiCard({
 
   if (loading) {
     return (
-      <Card className="!p-3">
+      <Card>
         <div className="animate-pulse">
-          <div className="mb-2 h-3 w-20 rounded bg-gray-200 dark:bg-gray-700/50" />
-          <div className="h-6 w-14 rounded bg-gray-200 dark:bg-gray-700/50" />
+          <div className="mb-3 h-4 w-24 rounded bg-gray-200 dark:bg-gray-700/50" />
+          <div className="mb-2 h-8 w-16 rounded bg-gray-200 dark:bg-gray-700/50" />
+          <div className="h-3 w-20 rounded bg-gray-200 dark:bg-gray-700/50" />
         </div>
       </Card>
     );
   }
 
   return (
-    <Card className="!p-3">
+    <Card>
       <div className="flex items-start justify-between">
-        <span className="text-xs text-gray-500 dark:text-gray-400">{title}</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">{title}</span>
         <MetricTooltip metric={metric} />
       </div>
-      <div className="mt-1 flex items-end justify-between">
-        <span className={`text-xl font-bold ${value !== null ? colors.text : 'text-gray-400 dark:text-gray-500'}`}>
+      <div className="mt-2 flex items-end justify-between">
+        <span className={`text-2xl font-bold ${value !== null ? colors.text : 'text-gray-400 dark:text-gray-500'}`}>
           {value !== null ? <AnimatedNumber value={value} suffix={suffix} /> : 'Н/Д'}
         </span>
         <TrendIndicator
