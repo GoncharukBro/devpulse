@@ -24,7 +24,13 @@ import {
 } from './aggregated-reports.types';
 import { ReportCollector } from './report-collector';
 import { ReportLlmPipeline } from './report-llm-pipeline';
-import { aggregateCollectedData, aggregateMetricsFromCollected } from './report-aggregator';
+import {
+  aggregateCollectedData,
+  aggregateMetricsFromCollected,
+  buildWeeklyData,
+  buildWeeklyTrends,
+  buildOverallTrend,
+} from './report-aggregator';
 
 export class AggregatedReportsService {
   private log = {
@@ -100,17 +106,22 @@ export class AggregatedReportsService {
       },
     );
 
-    const data: AggregatedReportListItem[] = items.map((r) => ({
-      id: r.id,
-      type: r.type,
-      targetName: r.targetName,
-      periodStart: formatYTDate(r.periodStart),
-      periodEnd: formatYTDate(r.periodEnd),
-      weeksCount: r.weeksCount,
-      avgScore: r.avgScore ?? null,
-      status: r.status,
-      createdAt: r.createdAt.toISOString(),
-    }));
+    const data: AggregatedReportListItem[] = items.map((r) => {
+      const trend = r.overallTrend as any;
+      const scoreTrend = trend?.score?.direction ?? null;
+      return {
+        id: r.id,
+        type: r.type,
+        targetName: r.targetName,
+        periodStart: formatYTDate(r.periodStart),
+        periodEnd: formatYTDate(r.periodEnd),
+        weeksCount: r.weeksCount,
+        avgScore: r.avgScore ?? null,
+        scoreTrend,
+        status: r.status,
+        createdAt: r.createdAt.toISOString(),
+      };
+    });
 
     return { data, total, page, limit };
   }
@@ -268,6 +279,13 @@ export class AggregatedReportsService {
       report.avgCompletionRate = metrics.avgCompletionRate ?? undefined;
       report.avgCycleTimeHours = metrics.avgCycleTimeHours ?? undefined;
       report.employeesData = employeesData as unknown as object[];
+
+      // Динамика по подпериодам
+      const weeklyData = buildWeeklyData(collected, dateFrom, dateTo);
+      report.weeklyData = weeklyData as unknown as object[];
+      report.weeklyTrends = buildWeeklyTrends(weeklyData) as unknown as object[];
+      report.overallTrend = buildOverallTrend(weeklyData) as unknown as object;
+
       await em.flush();
 
       // Phase 3: LLM

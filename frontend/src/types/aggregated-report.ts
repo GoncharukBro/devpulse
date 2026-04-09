@@ -118,6 +118,7 @@ export interface AggregatedReportListItem {
   periodEnd: string;
   weeksCount: number;
   avgScore: number | null;
+  scoreTrend: ScoreTrend;
   status: string;
   createdAt: string;
 }

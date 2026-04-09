@@ -17,6 +17,9 @@ export interface TaskSummary {
   summary: string;
   type: string;
   spent: number;
+  estimation: number;
+  created: number;
+  resolved: number | null;
 }
 
 export interface RawMetrics {
@@ -37,6 +40,10 @@ export interface RawMetrics {
   bugsAfterRelease: number;
   bugsOnTest: number;
   taskSummaries: TaskSummary[];
+  /** Списания времени по дням: ISO-дата → минуты */
+  spentByDay: Record<string, number>;
+  /** Списания по типам по дням: тип задачи → ISO-дата → минуты */
+  spentByDayByType: Record<string, Record<string, number>>;
 }
 
 const ISSUE_FIELDS = [
@@ -158,18 +165,32 @@ export class MetricsCollector {
         summary: issue.summary,
         type,
         spent,
+        estimation,
+        created: issue.created,
+        resolved: issue.resolved ?? null,
       });
     }
 
-    // Группировка work items по типам
+    // Списания по дням (для динамики)
+    const spentByDay: Record<string, number> = {};
+    for (const wi of workItems) {
+      const dayKey = new Date(wi.date).toISOString().slice(0, 10);
+      spentByDay[dayKey] = (spentByDay[dayKey] || 0) + wi.duration.minutes;
+    }
+
+    // Группировка work items по типам и по типам+дням
     const spentByType: Record<string, number> = {};
+    const spentByDayByType: Record<string, Record<string, number>> = {};
     const issueMap = new Map(issues.map((i) => [i.id, i]));
 
     for (const wi of workItems) {
-      // Определяем тип задачи для этого work item
       const parentIssue = issueMap.get(wi.issue.id);
       const type = parentIssue ? this.resolveIssueType(parentIssue) : 'other';
       spentByType[type] = (spentByType[type] || 0) + wi.duration.minutes;
+
+      const dayKey = new Date(wi.date).toISOString().slice(0, 10);
+      if (!spentByDayByType[type]) spentByDayByType[type] = {};
+      spentByDayByType[type][dayKey] = (spentByDayByType[type][dayKey] || 0) + wi.duration.minutes;
     }
 
     // C. Cycle Time (для закрытых задач)
@@ -197,6 +218,8 @@ export class MetricsCollector {
       bugsAfterRelease,
       bugsOnTest,
       taskSummaries,
+      spentByDay,
+      spentByDayByType,
     };
   }
 

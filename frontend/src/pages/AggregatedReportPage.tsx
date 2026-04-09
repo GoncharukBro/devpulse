@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, User, FolderKanban, Users, HelpCircle, Mail, FileText, Clock } from 'lucide-react';
+import { ArrowLeft, User, FolderKanban, Users, HelpCircle, Mail } from 'lucide-react';
 import { aggregatedReportsApi } from '@/api/endpoints/aggregated-reports';
 import type { AggregatedReportListItem } from '@/types/aggregated-report';
 import ReportStatusBadge from '@/components/reports/ReportStatusBadge';
@@ -249,7 +249,7 @@ export default function AggregatedReportPage() {
         <PeriodKpiCards metrics={report.aggregatedMetrics} overallTrend={report.overallTrend} hideScore />
       )}
 
-      {/* Charts (only for legacy reports with weeklyData) */}
+      {/* Графики динамики по подпериодам */}
       {report.weeklyData && report.weeklyData.length > 0 && (
         <PeriodWeeklyChart weeklyData={report.weeklyData} />
       )}

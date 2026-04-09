@@ -10,7 +10,7 @@ import { AggregatedReport } from '../../entities/aggregated-report.entity';
 import { MetricsCollector, RawMetrics, TaskSummary } from '../collection/metrics-collector';
 import { KpiCalculator, CalculatedKpi } from '../collection/kpi-calculator';
 import { getYouTrackService } from '../youtrack/youtrack.service';
-import {
+import type {
   CollectedData,
   CollectedEmployeeData,
   CollectedTaskItem,
@@ -86,6 +86,17 @@ export class ReportCollector {
 
         const topTasks = this.selectTopTasks(rawMetrics.taskSummaries);
 
+        // Все задачи с датами для построения динамики
+        const allTasks: CollectedTaskItem[] = rawMetrics.taskSummaries.map((t) => ({
+          id: t.id,
+          summary: t.summary,
+          type: t.type,
+          spentMinutes: t.spent,
+          estimationMinutes: t.estimation,
+          created: t.created,
+          resolved: t.resolved,
+        }));
+
         employees.push({
           login: target.login,
           displayName: target.displayName,
@@ -113,6 +124,9 @@ export class ReportCollector {
             avgCycleTimeHours: kpi.avgCycleTimeHours,
           },
           topTasks,
+          allTasks,
+          spentByDay: rawMetrics.spentByDay,
+          spentByDayByType: rawMetrics.spentByDayByType,
         });
 
         this.log.info(
@@ -153,6 +167,9 @@ export class ReportCollector {
       summary: t.summary,
       type: t.type,
       spentMinutes: t.spent,
+      estimationMinutes: t.estimation,
+      created: t.created,
+      resolved: t.resolved,
     });
 
     const bySpent = [...taskSummaries].sort((a, b) => b.spent - a.spent);
@@ -208,6 +225,18 @@ export class ReportCollector {
           dateTo,
         );
         const kpi = KpiCalculator.calculate(rawMetrics);
+
+        // KpiCalculator считает utilization на основе 40ч/неделю (2400 мин).
+        // Для произвольных периодов (>1 недели) пересчитываем по рабочим дням.
+        const periodDays = (dateTo.getTime() - dateFrom.getTime()) / 86400000;
+        if (periodDays > 8 && kpi.utilization !== null && rawMetrics.totalSpentMinutes > 0) {
+          const workingDays = this.countWorkingDays(dateFrom, dateTo);
+          const expectedMinutes = workingDays * 8 * 60;
+          kpi.utilization = expectedMinutes > 0
+            ? Math.round((rawMetrics.totalSpentMinutes / expectedMinutes) * 100 * 10) / 10
+            : null;
+        }
+
         return { rawMetrics, kpi };
       } catch (err) {
         lastError = err as Error;
@@ -222,6 +251,17 @@ export class ReportCollector {
     }
 
     throw lastError!;
+  }
+
+  private countWorkingDays(from: Date, to: Date): number {
+    let count = 0;
+    const cursor = new Date(from);
+    while (cursor <= to) {
+      const dow = cursor.getUTCDay();
+      if (dow !== 0 && dow !== 6) count++;
+      cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+    return count;
   }
 
   private async resolveProjectTargets(subscriptionId: string): Promise<CollectionTarget[]> {

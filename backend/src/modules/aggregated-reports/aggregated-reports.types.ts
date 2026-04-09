@@ -108,7 +108,10 @@ export interface CollectedTaskItem {
   summary: string;
   type: string;
   spentMinutes: number;
+  estimationMinutes: number;
   overdueDays?: number;
+  created: number;
+  resolved: number | null;
 }
 
 export interface CollectedEmployeeData {
@@ -120,6 +123,12 @@ export interface CollectedEmployeeData {
   metrics: CollectedEmployeeMetrics;
   kpi: CollectedEmployeeKpi;
   topTasks: CollectedTaskItem[];
+  /** Все задачи с датами (для построения динамики) */
+  allTasks: CollectedTaskItem[];
+  /** Списания по дням: ISO-дата → минуты */
+  spentByDay: Record<string, number>;
+  /** Списания по типам по дням: тип → ISO-дата → минуты */
+  spentByDayByType: Record<string, Record<string, number>>;
 }
 
 export interface CollectedData {
@@ -173,6 +182,7 @@ export interface AggregatedReportListItem {
   periodEnd: string;
   weeksCount: number;
   avgScore: number | null;
+  scoreTrend: ScoreTrend;
   status: string;
   createdAt: string;
 }

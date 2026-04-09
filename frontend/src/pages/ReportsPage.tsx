@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText, Trash2, User, FolderKanban, Users, ChevronDown, ChevronRight,
-  Database, Brain, CheckCircle2, XCircle, AlertTriangle, Clock,
+  XCircle, Clock,
   ExternalLink, ArrowRight, Loader2, CheckCircle,
 } from 'lucide-react';
 import { aggregatedReportsApi } from '@/api/endpoints/aggregated-reports';
@@ -409,7 +409,12 @@ export default function ReportsPage() {
                       </td>
                       <td className="px-4 py-3 text-center text-sm text-gray-600 dark:text-gray-300">{report.weeksCount}</td>
                       <td className="px-4 py-3 text-center text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {report.avgScore !== null ? Math.round(report.avgScore) : '—'}
+                        <span className="inline-flex items-center gap-1">
+                          {report.avgScore !== null ? Math.round(report.avgScore) : '—'}
+                          {report.scoreTrend === 'up' && <span className="text-emerald-500 text-xs">↑</span>}
+                          {report.scoreTrend === 'down' && <span className="text-red-500 text-xs">↓</span>}
+                          {report.scoreTrend === 'stable' && <span className="text-gray-400 text-xs">→</span>}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-center">
                         <ReportStatusBadge status={report.status} />

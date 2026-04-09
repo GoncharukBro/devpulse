@@ -29,8 +29,8 @@ function buildWeekLabels(data: ChartDataItem[]): string[] {
   let prevYear: number | null = null;
   return data.map((item, i) => {
     const start = new Date(item.periodStart);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 6); // воскресенье (конец недели)
+    // Используем periodEnd если есть, иначе +6 дней (обратная совместимость)
+    const end = item.periodEnd ? new Date(item.periodEnd as string) : new Date(start.getTime() + 6 * 86400000);
     const day = end.getDate().toString().padStart(2, '0');
     const month = (end.getMonth() + 1).toString().padStart(2, '0');
     const year = end.getFullYear();
@@ -53,12 +53,11 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-function formatTooltipDate(periodStart: string): string {
+function formatTooltipDate(periodStart: string, periodEnd?: string): string {
   const d = new Date(periodStart);
   const day = d.getDate().toString().padStart(2, '0');
   const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  const end = new Date(d);
-  end.setDate(end.getDate() + 6);
+  const end = periodEnd ? new Date(periodEnd) : new Date(d.getTime() + 6 * 86400000);
   const endDay = end.getDate().toString().padStart(2, '0');
   const endMonth = (end.getMonth() + 1).toString().padStart(2, '0');
   return `${day}.${month} — ${endDay}.${endMonth}.${end.getFullYear()}`;
@@ -68,7 +67,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
   const original = (payload[0] as unknown as { payload: ChartDataItem }).payload;
-  const tooltipLabel = original?.periodStart ? formatTooltipDate(original.periodStart) : '';
+  const tooltipLabel = original?.periodStart ? formatTooltipDate(original.periodStart, original.periodEnd as string | undefined) : '';
 
   return (
     <div className="rounded-lg border border-gray-200 dark:border-surface-border bg-white dark:bg-gray-800 px-3 py-2 shadow-xl">
