@@ -37,7 +37,7 @@ Expected: 0 результатов (всё использует `getYouTrackInst
   youtrack: {
     mainUrl: required('YOUTRACK_DRCS_URL'),
     mainToken: required('YOUTRACK_DRCS_TOKEN'),
-    mainName: optional('YOUTRACK_DRCS_NAME', 'YouTrack ДРКС'),
+    mainName: optional('YOUTRACK_DRCS_NAME', 'YouTrack ДРЦС'),
   },
 ```
 

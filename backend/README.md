@@ -102,7 +102,7 @@ bash scripts/setup-keycloak-realm.sh
 # Основной YouTrack
 YOUTRACK_DRCS_URL=http://localhost:8082
 YOUTRACK_DRCS_TOKEN=perm:...
-YOUTRACK_DRCS_NAME=YouTrack ДРКС
+YOUTRACK_DRCS_NAME=YouTrack ДРЦС
 
 # YouTrack 2024
 YOUTRACK_2024_URL=http://localhost:8084
