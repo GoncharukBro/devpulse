@@ -43,6 +43,7 @@ const mikroOrmConfig: Options<PostgreSqlDriver> = {
     pathTs: './src/migrations',
     glob: '!(*.d).{js,ts}',
     transactional: true,
+    tableName: 'devpulse_mikro_orm_migrations',
   },
   debug: config.server.nodeEnv === 'development',
 };
