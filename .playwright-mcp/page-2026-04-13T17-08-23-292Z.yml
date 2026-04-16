@@ -1,0 +1,394 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: DevPulse
+      - navigation "Основная навигация" [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Аналитика
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Обзор" [ref=e16] [cursor=pointer]:
+                - /url: /overview
+                - img [ref=e17]
+                - generic [ref=e19]: Обзор
+            - listitem [ref=e20]:
+              - link "Проекты" [ref=e21] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=e22]
+                - generic [ref=e24]: Проекты
+            - listitem [ref=e25]:
+              - link "Сотрудники" [ref=e26] [cursor=pointer]:
+                - /url: /employees
+                - img [ref=e28]
+                - generic [ref=e31]: Сотрудники
+            - listitem [ref=e32]:
+              - link "Команды" [ref=e33] [cursor=pointer]:
+                - /url: /teams
+                - img [ref=e34]
+                - generic [ref=e39]: Команды
+            - listitem [ref=e40]:
+              - link "Ачивки" [ref=e41] [cursor=pointer]:
+                - /url: /achievements
+                - img [ref=e42]
+                - generic [ref=e48]: Ачивки
+            - listitem [ref=e49]:
+              - link "Отчёты" [ref=e50] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e51]
+                - generic [ref=e54]: Отчёты
+        - generic [ref=e55]:
+          - paragraph [ref=e56]: Управление
+          - list [ref=e57]:
+            - listitem [ref=e58]:
+              - link "Сбор данных" [ref=e59] [cursor=pointer]:
+                - /url: /collection
+                - img [ref=e60]
+                - generic [ref=e64]: Сбор данных
+            - listitem [ref=e65]:
+              - link "Методология" [ref=e66] [cursor=pointer]:
+                - /url: /methodology
+                - img [ref=e67]
+                - generic [ref=e69]: Методология
+            - listitem [ref=e70]:
+              - link "Система" [ref=e71] [cursor=pointer]:
+                - /url: /system
+                - img [ref=e72]
+                - generic [ref=e74]: Система
+      - generic [ref=e76]:
+        - generic [ref=e77]: И
+        - paragraph [ref=e79]: Иван Руководителев
+        - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+          - img [ref=e81]
+    - main [ref=e85]:
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - link "Сотрудники" [ref=e88] [cursor=pointer]:
+            - /url: /employees
+            - img [ref=e89]
+            - text: Сотрудники
+          - link "Как считаются метрики?" [ref=e91] [cursor=pointer]:
+            - /url: /methodology#metrics
+            - img [ref=e92]
+            - text: Как считаются метрики?
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: В
+            - generic [ref=e98]:
+              - heading "Волкова Мария" [level=1] [ref=e180]
+              - generic [ref=e100]:
+                - text: volkovama
+                - generic [ref=e181]: • volkovama@supertech.ru
+              - generic [ref=e182]: "Проекты: Интернет-банк"
+              - generic [ref=e183]: "Показатели за неделю: 23–29 мар 2026"
+          - generic [ref=e101]:
+            - button "Копировать" [ref=e102] [cursor=pointer]:
+              - img [ref=e103]
+              - text: Копировать
+            - button "На почту" [ref=e106] [cursor=pointer]:
+              - img [ref=e107]
+              - text: На почту
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e115]:
+                - generic [ref=e116]:
+                  - generic [ref=e184]: Загрузка
+                  - button "Загрузка" [ref=e186]:
+                    - img [ref=e187]
+                - generic [ref=e117]:
+                  - generic [ref=e190]: 0%
+                  - generic [ref=e191]: —
+              - generic [ref=e120]:
+                - generic [ref=e121]:
+                  - generic [ref=e192]: Точность
+                  - button "Точность оценок" [ref=e194]:
+                    - img [ref=e195]
+                - generic [ref=e122]:
+                  - generic [ref=e197]: Н/Д
+                  - generic [ref=e198]: —
+              - generic [ref=e125]:
+                - generic [ref=e126]:
+                  - generic [ref=e199]: Фокус
+                  - button "Фокус" [ref=e201]:
+                    - img [ref=e202]
+                - generic [ref=e127]:
+                  - generic [ref=e204]: Н/Д
+                  - generic [ref=e205]: —
+              - generic [ref=e130]:
+                - generic [ref=e131]:
+                  - generic [ref=e206]: Закрытие
+                  - button "Скорость закрытия" [ref=e208]:
+                    - img [ref=e209]
+                - generic [ref=e132]:
+                  - generic [ref=e212]: 33.3%
+                  - generic [ref=e213]: —
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - generic [ref=e214]: Cycle Time
+                  - button "Средний Cycle Time" [ref=e216]:
+                    - img [ref=e217]
+                - generic [ref=e137]:
+                  - generic [ref=e219]: Н/Д
+                  - generic [ref=e220]: —
+              - generic [ref=e140]:
+                - generic [ref=e141]:
+                  - generic [ref=e221]: Списано часов
+                  - button "Списано часов" [ref=e223]:
+                    - img [ref=e224]
+                - generic [ref=e142]:
+                  - generic [ref=e227]: 0ч
+                  - generic [ref=e228]:
+                    - generic [ref=e229]: →
+                    - generic [ref=e230]: 0ч
+            - generic [ref=e145]:
+              - generic [ref=e146]:
+                - generic [ref=e147]:
+                  - heading "Динамика по неделям" [level=3] [ref=e148]
+                  - button "Динамика по неделям" [ref=e150]:
+                    - img [ref=e151]
+                - generic [ref=e153]:
+                  - button "4 нед." [ref=e154] [cursor=pointer]
+                  - button "8 нед." [ref=e155] [cursor=pointer]
+                  - button "12 нед." [ref=e156] [cursor=pointer]
+                  - button "24 нед." [ref=e157] [cursor=pointer]
+              - img [ref=e233]:
+                - generic [ref=e237]:
+                  - generic [ref=e239]: 11.01.26
+                  - generic [ref=e241]: "18.01"
+                  - generic [ref=e243]: "25.01"
+                  - generic [ref=e245]: "01.02"
+                  - generic [ref=e247]: "08.02"
+                  - generic [ref=e249]: "15.02"
+                  - generic [ref=e251]: "22.02"
+                  - generic [ref=e253]: "01.03"
+                  - generic [ref=e255]: "08.03"
+                  - generic [ref=e257]: "15.03"
+                  - generic [ref=e259]: "22.03"
+                  - generic [ref=e261]: "29.03"
+                - generic [ref=e263]:
+                  - generic [ref=e265]: "0"
+                  - generic [ref=e267]: "20"
+                  - generic [ref=e269]: "40"
+                  - generic [ref=e271]: "60"
+                  - generic [ref=e273]: "80"
+            - generic [ref=e282]:
+              - generic [ref=e284]:
+                - generic [ref=e285]:
+                  - heading "Разбивка по типам задач" [level=3] [ref=e286]
+                  - button "Разбивка по типам задач" [ref=e288]:
+                    - img [ref=e289]
+                - generic [ref=e292]:
+                  - img [ref=e293]:
+                    - generic [ref=e295]:
+                      - img [ref=e297]
+                      - img [ref=e299]
+                  - list [ref=e301]:
+                    - listitem [ref=e302]:
+                      - img [ref=e303]
+                      - generic [ref=e305]: Баги
+                    - listitem [ref=e306]:
+                      - img [ref=e307]
+                      - generic [ref=e309]: Фичи
+              - generic [ref=e311]:
+                - generic [ref=e312]:
+                  - heading "Списание по типам" [level=3] [ref=e313]
+                  - button "Списание по типам" [ref=e315]:
+                    - img [ref=e316]
+                - generic [ref=e318]: Нет данных
+            - generic [ref=e162]:
+              - generic [ref=e319]:
+                - generic [ref=e320]:
+                  - heading "LLM-сводка" [level=4] [ref=e321]
+                  - button "Оценка продуктивности" [ref=e323]:
+                    - img [ref=e324]
+                - generic [ref=e326]:
+                  - generic [ref=e327]: "45"
+                  - generic [ref=e328]: —
+              - generic [ref=e330]:
+                - paragraph [ref=e331]: Производительность Марии Волловой в период с 23 по 29 марта 2026 года характеризуется низкой загрузкой и низким уровнем завершения задач. Несмотря на небольшое количество задач, значительное время (40 часов) было списано без выполнения, а Completion Rate составляет всего 33.3%. Требуется более детальный анализ причин низкой продуктивности и улучшение планирования.
+                - generic [ref=e333]:
+                  - img [ref=e334]
+                  - generic [ref=e337]: Не было выявлено значительных достижений в период.
+                - generic [ref=e338]:
+                  - generic [ref=e339]:
+                    - img [ref=e340]
+                    - generic [ref=e342]: Низкая загрузка (0%) при списанных 40 часах.
+                  - generic [ref=e343]:
+                    - img [ref=e344]
+                    - generic [ref=e346]: Низкий Completion Rate (33.3%).
+                  - generic [ref=e347]:
+                    - img [ref=e348]
+                    - generic [ref=e350]: Отсутствие информации о фокусе и Cycle Time.
+                - generic [ref=e351]:
+                  - generic [ref=e352]:
+                    - img [ref=e353]
+                    - generic [ref=e355]: Провести интервью с Марией для выявления причин низкой загрузки и невыполненных задач.
+                  - generic [ref=e356]:
+                    - img [ref=e357]
+                    - generic [ref=e359]: Улучшить планирование задач и установить более реалистичные сроки.
+                  - generic [ref=e360]:
+                    - img [ref=e361]
+                    - generic [ref=e363]: Внедрить систему отслеживания фокуса и Cycle Time для более эффективного управления временем.
+            - generic [ref=e169]:
+              - generic [ref=e170]:
+                - img [ref=e171]
+                - generic [ref=e174]:
+                  - text: Ачивки
+                  - generic [ref=e364]: (6/13 типов • 11 уровней)
+              - generic [ref=e365]:
+                - 'button "⚡ ★ ★ ☆ ☆ Скоростной демон RARE Лучший: Закрыл 17 задач за неделю Рекорд: 1 нед." [ref=e366] [cursor=pointer]':
+                  - generic [ref=e367]:
+                    - generic [ref=e368]: ⚡
+                    - generic [ref=e369]:
+                      - generic [ref=e370]: ★
+                      - generic [ref=e371]: ★
+                      - generic [ref=e372]: ☆
+                      - generic [ref=e373]: ☆
+                  - heading "Скоростной демон" [level=4] [ref=e374]
+                  - generic [ref=e376]: RARE
+                  - paragraph [ref=e377]: "Лучший: Закрыл 17 задач за неделю"
+                  - paragraph [ref=e379]: "Рекорд: 1 нед."
+                - 'button "🔥 ★ ★ ☆ ☆ Сокрушитель задач RARE Лучший: Скорость закрытия 91% Рекорд: 3 нед." [ref=e380] [cursor=pointer]':
+                  - generic [ref=e381]:
+                    - generic [ref=e382]: 🔥
+                    - generic [ref=e383]:
+                      - generic [ref=e384]: ★
+                      - generic [ref=e385]: ★
+                      - generic [ref=e386]: ☆
+                      - generic [ref=e387]: ☆
+                  - heading "Сокрушитель задач" [level=4] [ref=e388]
+                  - generic [ref=e390]: RARE
+                  - paragraph [ref=e391]: "Лучший: Скорость закрытия 91%"
+                  - paragraph [ref=e393]: "Рекорд: 3 нед."
+                - 'button "🛡️ ★ ★ ★ ★ Код-самурай LEGENDARY Лучший: Закрыл 17 задач без единого бага 🔥 8 нед. подряд рекорд: 14" [ref=e394] [cursor=pointer]':
+                  - generic [ref=e395]:
+                    - generic [ref=e396]: 🛡️
+                    - generic [ref=e397]:
+                      - generic [ref=e398]: ★
+                      - generic [ref=e399]: ★
+                      - generic [ref=e400]: ★
+                      - generic [ref=e401]: ★
+                  - heading "Код-самурай" [level=4] [ref=e402]
+                  - generic [ref=e404]: LEGENDARY
+                  - paragraph [ref=e405]: "Лучший: Закрыл 17 задач без единого бага"
+                  - generic [ref=e407]:
+                    - paragraph [ref=e408]: 🔥 8 нед. подряд
+                    - paragraph [ref=e409]: "рекорд: 14"
+                - 'button "⭐ ★ ★ ★ ★ Восходящая звезда LEGENDARY Лучший: Score вырос на 50 пунктов Рекорд: 1 нед." [ref=e410] [cursor=pointer]':
+                  - generic [ref=e411]:
+                    - generic [ref=e412]: ⭐
+                    - generic [ref=e413]:
+                      - generic [ref=e414]: ★
+                      - generic [ref=e415]: ★
+                      - generic [ref=e416]: ★
+                      - generic [ref=e417]: ★
+                  - heading "Восходящая звезда" [level=4] [ref=e418]
+                  - generic [ref=e420]: LEGENDARY
+                  - paragraph [ref=e421]: "Лучший: Score вырос на 50 пунктов"
+                  - paragraph [ref=e423]: "Рекорд: 1 нед."
+                - 'button "🏆 ★ ☆ ☆ ☆ Топ-перформер COMMON Лучший: Score 78 — отличный результат Рекорд: 1 нед." [ref=e424] [cursor=pointer]':
+                  - generic [ref=e425]:
+                    - generic [ref=e426]: 🏆
+                    - generic [ref=e427]:
+                      - generic [ref=e428]: ★
+                      - generic [ref=e429]: ☆
+                      - generic [ref=e430]: ☆
+                      - generic [ref=e431]: ☆
+                  - heading "Топ-перформер" [level=4] [ref=e432]
+                  - generic [ref=e434]: COMMON
+                  - paragraph [ref=e435]: "Лучший: Score 78 — отличный результат"
+                  - paragraph [ref=e437]: "Рекорд: 1 нед."
+                - 'button "📈 ★ ★ ★ ★ Сверхурочный герой LEGENDARY Лучший: Закрыл на 4757% больше задач чем обычно 🔥 1 нед. подряд" [ref=e438] [cursor=pointer]':
+                  - generic [ref=e439]:
+                    - generic [ref=e440]: 📈
+                    - generic [ref=e441]:
+                      - generic [ref=e442]: ★
+                      - generic [ref=e443]: ★
+                      - generic [ref=e444]: ★
+                      - generic [ref=e445]: ★
+                  - heading "Сверхурочный герой" [level=4] [ref=e446]
+                  - generic [ref=e448]: LEGENDARY
+                  - paragraph [ref=e449]: "Лучший: Закрыл на 4757% больше задач чем обычно"
+                  - paragraph [ref=e452]: 🔥 1 нед. подряд
+          - generic [ref=e177]:
+            - generic [ref=e454]:
+              - heading "Отчёты" [level=3] [ref=e455]
+              - generic [ref=e456]: "52"
+            - generic [ref=e457]:
+              - button "23.03 — 29.03 Интернет-банк 45 0% 1/3" [ref=e458] [cursor=pointer]:
+                - generic [ref=e460]: 23.03 — 29.03
+                - generic [ref=e461]: Интернет-банк
+                - generic [ref=e462]:
+                  - generic [ref=e463]: "45"
+                  - generic [ref=e464]: 0%
+                  - generic [ref=e465]: 1/3
+              - button "16.03 — 22.03 Интернет-банк Н/Д Н/Д 0/0" [ref=e466] [cursor=pointer]:
+                - generic [ref=e468]: 16.03 — 22.03
+                - generic [ref=e469]: Интернет-банк
+                - generic [ref=e470]:
+                  - generic [ref=e471]: Н/Д
+                  - generic [ref=e472]: Н/Д
+                  - generic [ref=e473]: 0/0
+              - button "09.03 — 15.03 Интернет-банк Н/Д Н/Д 0/0" [ref=e474] [cursor=pointer]:
+                - generic [ref=e476]: 09.03 — 15.03
+                - generic [ref=e477]: Интернет-банк
+                - generic [ref=e478]:
+                  - generic [ref=e479]: Н/Д
+                  - generic [ref=e480]: Н/Д
+                  - generic [ref=e481]: 0/0
+              - button "02.03 — 08.03 Интернет-банк Н/Д Н/Д 0/0" [ref=e482] [cursor=pointer]:
+                - generic [ref=e484]: 02.03 — 08.03
+                - generic [ref=e485]: Интернет-банк
+                - generic [ref=e486]:
+                  - generic [ref=e487]: Н/Д
+                  - generic [ref=e488]: Н/Д
+                  - generic [ref=e489]: 0/0
+              - button "23.02 — 01.03 Интернет-банк Н/Д Н/Д 0/0" [ref=e490] [cursor=pointer]:
+                - generic [ref=e492]: 23.02 — 01.03
+                - generic [ref=e493]: Интернет-банк
+                - generic [ref=e494]:
+                  - generic [ref=e495]: Н/Д
+                  - generic [ref=e496]: Н/Д
+                  - generic [ref=e497]: 0/0
+              - button "16.02 — 22.02 Интернет-банк 65 40.6% 17/25" [ref=e498] [cursor=pointer]:
+                - generic [ref=e500]: 16.02 — 22.02
+                - generic [ref=e501]: Интернет-банк
+                - generic [ref=e502]:
+                  - generic [ref=e503]: "65"
+                  - generic [ref=e504]: 40.6%
+                  - generic [ref=e505]: 17/25
+              - button "09.02 — 15.02 Интернет-банк Н/Д 50.6% 9/11" [ref=e506] [cursor=pointer]:
+                - generic [ref=e508]: 09.02 — 15.02
+                - generic [ref=e509]: Интернет-банк
+                - generic [ref=e510]:
+                  - generic [ref=e511]: Н/Д
+                  - generic [ref=e512]: 50.6%
+                  - generic [ref=e513]: 9/11
+              - button "02.02 — 08.02 Интернет-банк Н/Д 51.2% 8/11" [ref=e514] [cursor=pointer]:
+                - generic [ref=e516]: 02.02 — 08.02
+                - generic [ref=e517]: Интернет-банк
+                - generic [ref=e518]:
+                  - generic [ref=e519]: Н/Д
+                  - generic [ref=e520]: 51.2%
+                  - generic [ref=e521]: 8/11
+              - button "26.01 — 01.02 Интернет-банк Н/Д 45.6% 6/7" [ref=e522] [cursor=pointer]:
+                - generic [ref=e524]: 26.01 — 01.02
+                - generic [ref=e525]: Интернет-банк
+                - generic [ref=e526]:
+                  - generic [ref=e527]: Н/Д
+                  - generic [ref=e528]: 45.6%
+                  - generic [ref=e529]: 6/7
+              - button "19.01 — 25.01 Интернет-банк Н/Д 49.4% 8/10" [ref=e530] [cursor=pointer]:
+                - generic [ref=e532]: 19.01 — 25.01
+                - generic [ref=e533]: Интернет-банк
+                - generic [ref=e534]:
+                  - generic [ref=e535]: Н/Д
+                  - generic [ref=e536]: 49.4%
+                  - generic [ref=e537]: 8/10
+            - generic [ref=e538]:
+              - button "← Новее" [disabled] [ref=e539]
+              - generic [ref=e540]: 1–10
+              - button "Старше →" [ref=e541] [cursor=pointer]
+  - generic [ref=e542]: "0"

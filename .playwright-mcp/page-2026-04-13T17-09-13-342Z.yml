@@ -1,0 +1,307 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e27]
+              - generic [ref=e30]: Сотрудники
+          - listitem [ref=e31]:
+            - link "Команды" [ref=e32] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e33]
+              - generic [ref=e38]: Команды
+          - listitem [ref=e39]:
+            - link "Ачивки" [ref=e40] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e42]
+              - generic [ref=e48]: Ачивки
+          - listitem [ref=e49]:
+            - link "Отчёты" [ref=e50] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e51]
+              - generic [ref=e54]: Отчёты
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: Управление
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Сбор данных" [ref=e59] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e60]
+              - generic [ref=e64]: Сбор данных
+          - listitem [ref=e65]:
+            - link "Методология" [ref=e66] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - heading "Достижения" [level=1] [ref=e90]
+          - paragraph [ref=e91]: Коллекция наград сотрудников за выдающиеся результаты по метрикам
+        - link "Как это работает?" [ref=e93] [cursor=pointer]:
+          - /url: /methodology#achievements
+          - img [ref=e94]
+          - text: Как это работает?
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - generic [ref=e99]: 🎖️
+          - generic [ref=e186]: 11/13
+          - generic [ref=e187]: Открыто
+        - generic [ref=e103]:
+          - generic [ref=e104]: 🏅
+          - generic [ref=e188]: "156"
+          - generic [ref=e189]: Получено
+        - generic [ref=e108]:
+          - generic [ref=e109]: 👑
+          - generic [ref=e190]: "46"
+          - generic [ref=e191]: Legendary
+        - generic [ref=e113]:
+          - generic [ref=e114]: ⚡
+          - generic [ref=e192]: "0"
+          - generic [ref=e193]: На неделе
+      - tablist "Разделы достижений" [ref=e118]:
+        - tab "Каталог" [selected] [ref=e119] [cursor=pointer]
+        - tab "Лента" [ref=e120] [cursor=pointer]
+      - tabpanel [ref=e121]:
+        - generic [ref=e122]:
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - generic [ref=e196]: ⚡
+              - heading "Продуктивность" [level=3] [ref=e197]
+              - generic [ref=e198]: (3/3)
+              - generic [ref=e199]: ✅
+            - generic [ref=e200]:
+              - 'button "⚡ ★ ★ ★ ☆ Скоростной демон Количество закрытых задач за неделю Лучший: 22 До Legendary: 88% 🔥 Макс. серия: 6 нед. 👤 9 получили" [ref=e201] [cursor=pointer]':
+                - generic [ref=e202]:
+                  - generic [ref=e203]: ⚡
+                  - generic [ref=e204]:
+                    - generic [ref=e205]: ★
+                    - generic [ref=e206]: ★
+                    - generic [ref=e207]: ★
+                    - generic [ref=e208]: ☆
+                - heading "Скоростной демон" [level=4] [ref=e209]
+                - paragraph [ref=e210]: Количество закрытых задач за неделю
+                - paragraph [ref=e211]: "Лучший: 22"
+                - paragraph [ref=e215]: "До Legendary: 88%"
+                - paragraph [ref=e216]: "🔥 Макс. серия: 6 нед."
+                - paragraph [ref=e217]: 👤 9 получили
+              - 'button "🔥 ★ ★ ★ ★ Сокрушитель задач Процент закрытых задач от общего количества Лучший: 100 Максимальный уровень 🔥 Макс. серия: 15 нед. 👤 23 получили" [ref=e218] [cursor=pointer]':
+                - generic [ref=e219]:
+                  - generic [ref=e220]: 🔥
+                  - generic [ref=e221]:
+                    - generic [ref=e222]: ★
+                    - generic [ref=e223]: ★
+                    - generic [ref=e224]: ★
+                    - generic [ref=e225]: ★
+                - heading "Сокрушитель задач" [level=4] [ref=e226]
+                - paragraph [ref=e227]: Процент закрытых задач от общего количества
+                - paragraph [ref=e228]: "Лучший: 100"
+                - paragraph [ref=e229]: Максимальный уровень
+                - paragraph [ref=e230]: "🔥 Макс. серия: 15 нед."
+                - paragraph [ref=e231]: 👤 23 получили
+              - 'button "🏃 ★ ☆ ☆ ☆ Марафонец Списанные часы за неделю Лучший: 38.25 До Rare: 96% 🔥 Макс. серия: 12 нед. 👤 3 получили" [ref=e232] [cursor=pointer]':
+                - generic [ref=e233]:
+                  - generic [ref=e234]: 🏃
+                  - generic [ref=e235]:
+                    - generic [ref=e236]: ★
+                    - generic [ref=e237]: ☆
+                    - generic [ref=e238]: ☆
+                    - generic [ref=e239]: ☆
+                - heading "Марафонец" [level=4] [ref=e240]
+                - paragraph [ref=e241]: Списанные часы за неделю
+                - paragraph [ref=e242]: "Лучший: 38.25"
+                - paragraph [ref=e246]: "До Rare: 96%"
+                - paragraph [ref=e247]: "🔥 Макс. серия: 12 нед."
+                - paragraph [ref=e248]: 👤 3 получили
+          - generic [ref=e249]:
+            - generic [ref=e250]:
+              - generic [ref=e251]: 🎯
+              - heading "Качество" [level=3] [ref=e252]
+              - generic [ref=e253]: (2/3)
+            - generic [ref=e254]:
+              - 'button "🎯 ★ ★ ★ ★ Гуру оценок Точность оценки задач Лучший: 96% Максимальный уровень 🔥 Макс. серия: 1 нед. 👤 6 получили" [ref=e255] [cursor=pointer]':
+                - generic [ref=e256]:
+                  - generic [ref=e257]: 🎯
+                  - generic [ref=e258]:
+                    - generic [ref=e259]: ★
+                    - generic [ref=e260]: ★
+                    - generic [ref=e261]: ★
+                    - generic [ref=e262]: ★
+                - heading "Гуру оценок" [level=4] [ref=e263]
+                - paragraph [ref=e264]: Точность оценки задач
+                - paragraph [ref=e265]: "Лучший: 96%"
+                - paragraph [ref=e266]: Максимальный уровень
+                - paragraph [ref=e267]: "🔥 Макс. серия: 1 нед."
+                - paragraph [ref=e268]: 👤 6 получили
+              - 'button "🛡️ ★ ★ ★ ★ Код-самурай Ноль багов при значительном количестве закрытых задач Лучший: 22 Максимальный уровень 🔥 Макс. серия: 14 нед. 👤 9 получили" [ref=e269] [cursor=pointer]':
+                - generic [ref=e270]:
+                  - generic [ref=e271]: 🛡️
+                  - generic [ref=e272]:
+                    - generic [ref=e273]: ★
+                    - generic [ref=e274]: ★
+                    - generic [ref=e275]: ★
+                    - generic [ref=e276]: ★
+                - heading "Код-самурай" [level=4] [ref=e277]
+                - paragraph [ref=e278]: Ноль багов при значительном количестве закрытых задач
+                - paragraph [ref=e279]: "Лучший: 22"
+                - paragraph [ref=e280]: Максимальный уровень
+                - paragraph [ref=e281]: "🔥 Макс. серия: 14 нед."
+                - paragraph [ref=e282]: 👤 9 получили
+              - 'button "🚀 🔒 ☆ ☆ ☆ ☆ Скорая помощь Средний Cycle Time (часы) — чем меньше тем лучше Для Common: ≤72 часа" [ref=e283] [cursor=pointer]':
+                - generic [ref=e284]:
+                  - generic [ref=e285]: 🚀
+                  - generic [ref=e286]:
+                    - generic [ref=e287]: 🔒
+                    - generic [ref=e288]:
+                      - generic [ref=e289]: ☆
+                      - generic [ref=e290]: ☆
+                      - generic [ref=e291]: ☆
+                      - generic [ref=e292]: ☆
+                - heading "Скорая помощь" [level=4] [ref=e293]
+                - paragraph [ref=e294]: Средний Cycle Time (часы) — чем меньше тем лучше
+                - paragraph [ref=e295]: "Для Common: ≤72 часа"
+          - generic [ref=e296]:
+            - generic [ref=e297]:
+              - generic [ref=e298]: ⚖️
+              - heading "Фокус и баланс" [level=3] [ref=e299]
+              - generic [ref=e300]: (2/2)
+              - generic [ref=e301]: ✅
+            - generic [ref=e302]:
+              - 'button "🔭 ★ ★ ★ ★ Мастер фокуса Процент времени на продуктовую работу Лучший: 100% Максимальный уровень 🔥 Макс. серия: 5 нед. 👤 11 получили" [ref=e303] [cursor=pointer]':
+                - generic [ref=e304]:
+                  - generic [ref=e305]: 🔭
+                  - generic [ref=e306]:
+                    - generic [ref=e307]: ★
+                    - generic [ref=e308]: ★
+                    - generic [ref=e309]: ★
+                    - generic [ref=e310]: ★
+                - heading "Мастер фокуса" [level=4] [ref=e311]
+                - paragraph [ref=e312]: Процент времени на продуктовую работу
+                - paragraph [ref=e313]: "Лучший: 100%"
+                - paragraph [ref=e314]: Максимальный уровень
+                - paragraph [ref=e315]: "🔥 Макс. серия: 5 нед."
+                - paragraph [ref=e316]: 👤 11 получили
+              - 'button "⚖️ ★ ★ ★ ☆ Сбалансированный воин Загрузка в идеальном диапазоне Лучший: 94 До Legendary: 0% 🔥 Макс. серия: 13 нед. 👤 17 получили" [ref=e317] [cursor=pointer]':
+                - generic [ref=e318]:
+                  - generic [ref=e319]: ⚖️
+                  - generic [ref=e320]:
+                    - generic [ref=e321]: ★
+                    - generic [ref=e322]: ★
+                    - generic [ref=e323]: ★
+                    - generic [ref=e324]: ☆
+                - heading "Сбалансированный воин" [level=4] [ref=e325]
+                - paragraph [ref=e326]: Загрузка в идеальном диапазоне
+                - paragraph [ref=e327]: "Лучший: 94"
+                - paragraph [ref=e330]: "До Legendary: 0%"
+                - paragraph [ref=e331]: "🔥 Макс. серия: 13 нед."
+                - paragraph [ref=e332]: 👤 17 получили
+          - generic [ref=e333]:
+            - generic [ref=e334]:
+              - generic [ref=e335]: 📈
+              - heading "Рост и стабильность" [level=3] [ref=e336]
+              - generic [ref=e337]: (3/3)
+              - generic [ref=e338]: ✅
+            - generic [ref=e339]:
+              - 'button "⭐ ★ ★ ★ ★ Восходящая звезда Рост оценки продуктивности за неделю Лучший: 50 Максимальный уровень 🔥 Макс. серия: 1 нед. 👤 26 получили" [ref=e340] [cursor=pointer]':
+                - generic [ref=e341]:
+                  - generic [ref=e342]: ⭐
+                  - generic [ref=e343]:
+                    - generic [ref=e344]: ★
+                    - generic [ref=e345]: ★
+                    - generic [ref=e346]: ★
+                    - generic [ref=e347]: ★
+                - heading "Восходящая звезда" [level=4] [ref=e348]
+                - paragraph [ref=e349]: Рост оценки продуктивности за неделю
+                - paragraph [ref=e350]: "Лучший: 50"
+                - paragraph [ref=e351]: Максимальный уровень
+                - paragraph [ref=e352]: "🔥 Макс. серия: 1 нед."
+                - paragraph [ref=e353]: 👤 26 получили
+              - 'button "👑 ★ ★ ★ ☆ Король стабильности Стабильно высокая оценка на протяжении недель подряд Лучший: 75 До Legendary: 100% 🔥 Макс. серия: 1 нед. 👤 13 получили" [ref=e354] [cursor=pointer]':
+                - generic [ref=e355]:
+                  - generic [ref=e356]: 👑
+                  - generic [ref=e357]:
+                    - generic [ref=e358]: ★
+                    - generic [ref=e359]: ★
+                    - generic [ref=e360]: ★
+                    - generic [ref=e361]: ☆
+                - heading "Король стабильности" [level=4] [ref=e362]
+                - paragraph [ref=e363]: Стабильно высокая оценка на протяжении недель подряд
+                - paragraph [ref=e364]: "Лучший: 75"
+                - paragraph [ref=e368]: "До Legendary: 100%"
+                - paragraph [ref=e369]: "🔥 Макс. серия: 1 нед."
+                - paragraph [ref=e370]: 👤 13 получили
+              - 'button "🏆 ★ ★ ★ ☆ Топ-перформер Оценка продуктивности за неделю Лучший: 85 До Legendary: 94% 🔥 Макс. серия: 6 нед. 👤 18 получили" [ref=e371] [cursor=pointer]':
+                - generic [ref=e372]:
+                  - generic [ref=e373]: 🏆
+                  - generic [ref=e374]:
+                    - generic [ref=e375]: ★
+                    - generic [ref=e376]: ★
+                    - generic [ref=e377]: ★
+                    - generic [ref=e378]: ☆
+                - heading "Топ-перформер" [level=4] [ref=e379]
+                - paragraph [ref=e380]: Оценка продуктивности за неделю
+                - paragraph [ref=e381]: "Лучший: 85"
+                - paragraph [ref=e385]: "До Legendary: 94%"
+                - paragraph [ref=e386]: "🔥 Макс. серия: 6 нед."
+                - paragraph [ref=e387]: 👤 18 получили
+          - generic [ref=e388]:
+            - generic [ref=e389]:
+              - generic [ref=e390]: 🌟
+              - heading "Особые" [level=3] [ref=e391]
+              - generic [ref=e392]: (1/2)
+            - generic [ref=e393]:
+              - 'button "📈 ★ ★ ★ ★ Сверхурочный герой Закрытых задач больше чем обычно (vs среднее за 4 недели) Лучший: 8060 Максимальный уровень 🔥 Макс. серия: 1 нед. 👤 21 получили" [ref=e394] [cursor=pointer]':
+                - generic [ref=e395]:
+                  - generic [ref=e396]: 📈
+                  - generic [ref=e397]:
+                    - generic [ref=e398]: ★
+                    - generic [ref=e399]: ★
+                    - generic [ref=e400]: ★
+                    - generic [ref=e401]: ★
+                - heading "Сверхурочный герой" [level=4] [ref=e402]
+                - paragraph [ref=e403]: Закрытых задач больше чем обычно (vs среднее за 4 недели)
+                - paragraph [ref=e404]: "Лучший: 8060"
+                - paragraph [ref=e405]: Максимальный уровень
+                - paragraph [ref=e406]: "🔥 Макс. серия: 1 нед."
+                - paragraph [ref=e407]: 👤 21 получили
+              - 'button "⚔️ 🔒 ☆ ☆ ☆ ☆ Истребитель техдолга Процент времени посвящённый техдолгу Для Common: ≥20% времени" [ref=e408] [cursor=pointer]':
+                - generic [ref=e409]:
+                  - generic [ref=e410]: ⚔️
+                  - generic [ref=e411]:
+                    - generic [ref=e412]: 🔒
+                    - generic [ref=e413]:
+                      - generic [ref=e414]: ☆
+                      - generic [ref=e415]: ☆
+                      - generic [ref=e416]: ☆
+                      - generic [ref=e417]: ☆
+                - heading "Истребитель техдолга" [level=4] [ref=e418]
+                - paragraph [ref=e419]: Процент времени посвящённый техдолгу
+                - paragraph [ref=e420]: "Для Common: ≥20% времени"

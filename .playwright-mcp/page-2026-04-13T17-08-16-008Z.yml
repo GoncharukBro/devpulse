@@ -1,0 +1,106 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e28]
+              - generic [ref=e31]: Сотрудники
+          - listitem [ref=e32]:
+            - link "Команды" [ref=e33] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e34]
+              - generic [ref=e39]: Команды
+          - listitem [ref=e40]:
+            - link "Ачивки" [ref=e41] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e42]
+              - generic [ref=e48]: Ачивки
+          - listitem [ref=e49]:
+            - link "Отчёты" [ref=e50] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e51]
+              - generic [ref=e54]: Отчёты
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: Управление
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Сбор данных" [ref=e59] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e60]
+              - generic [ref=e64]: Сбор данных
+          - listitem [ref=e65]:
+            - link "Методология" [ref=e66] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e87]:
+        - link "Сотрудники" [ref=e88] [cursor=pointer]:
+          - /url: /employees
+          - img [ref=e89]
+          - text: Сотрудники
+        - link "Как считаются метрики?" [ref=e91] [cursor=pointer]:
+          - /url: /methodology#metrics
+          - img [ref=e92]
+          - text: Как считаются метрики?
+      - generic [ref=e95]:
+        - generic [ref=e96]:
+          - generic [ref=e97]: "?"
+          - generic [ref=e98]:
+            - heading "Загрузка..." [level=1] [ref=e99]
+            - generic [ref=e100]: volkovama
+        - generic [ref=e101]:
+          - button "Копировать" [ref=e102] [cursor=pointer]:
+            - img [ref=e103]
+            - text: Копировать
+          - button "На почту" [ref=e106] [cursor=pointer]:
+            - img [ref=e107]
+            - text: На почту
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - heading "Динамика по неделям" [level=3] [ref=e148]
+              - button "Динамика по неделям" [ref=e150]:
+                - img [ref=e151]
+            - generic [ref=e153]:
+              - button "4 нед." [ref=e154] [cursor=pointer]
+              - button "8 нед." [ref=e155] [cursor=pointer]
+              - button "12 нед." [ref=e156] [cursor=pointer]
+              - button "24 нед." [ref=e157] [cursor=pointer]
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - img [ref=e171]
+              - generic [ref=e174]: Ачивки
+            - paragraph [ref=e175]: Пока нет ачивок
+        - generic [ref=e177]:
+          - heading "Отчёты" [level=3] [ref=e178]
+          - paragraph [ref=e179]: Загрузка...

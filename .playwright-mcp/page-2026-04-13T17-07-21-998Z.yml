@@ -1,0 +1,184 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e23]
+              - generic [ref=e25]: Проекты
+          - listitem [ref=e26]:
+            - link "Сотрудники" [ref=e27] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e28]
+              - generic [ref=e31]: Сотрудники
+          - listitem [ref=e32]:
+            - link "Команды" [ref=e33] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e34]
+              - generic [ref=e39]: Команды
+          - listitem [ref=e40]:
+            - link "Ачивки" [ref=e41] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e42]
+              - generic [ref=e48]: Ачивки
+          - listitem [ref=e49]:
+            - link "Отчёты" [ref=e50] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e51]
+              - generic [ref=e54]: Отчёты
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: Управление
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Сбор данных" [ref=e59] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e60]
+              - generic [ref=e64]: Сбор данных
+          - listitem [ref=e65]:
+            - link "Методология" [ref=e66] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - heading "Проекты" [level=1] [ref=e90]
+          - paragraph [ref=e91]: Динамика и эффективность по каждому проекту под мониторингом
+        - button "Добавить проект" [ref=e93] [cursor=pointer]:
+          - img [ref=e94]
+          - text: Добавить проект
+      - generic [ref=e95]:
+        - generic [ref=e98] [cursor=pointer]:
+          - generic [ref=e99]:
+            - generic [ref=e128]:
+              - heading "Интернет-банк" [level=3] [ref=e129]
+              - generic [ref=e130]:
+                - generic [ref=e131]: IB
+                - generic [ref=e132]: ·
+                - generic "YouTrack 2024" [ref=e133]
+            - generic [ref=e134]:
+              - 'generic "Score: 75" [ref=e135]': "75"
+              - generic [ref=e137]: →
+          - img [ref=e138]
+          - generic [ref=e141]:
+            - img [ref=e142]
+            - generic [ref=e147]: 3 сотрудник(ов)
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - generic [ref=e150]: Загрузка
+              - generic [ref=e151]: 63.3%
+            - generic [ref=e152]:
+              - generic [ref=e153]: Точность
+              - generic [ref=e154]: Н/Д
+            - generic [ref=e155]:
+              - generic [ref=e156]: Закрытие
+              - generic [ref=e157]: 100.0%
+          - generic [ref=e158]:
+            - text: Подробнее
+            - img [ref=e159]
+        - generic [ref=e106] [cursor=pointer]:
+          - generic [ref=e107]:
+            - generic [ref=e161]:
+              - heading "Платёжный шлюз" [level=3] [ref=e162]
+              - generic [ref=e163]:
+                - generic [ref=e164]: PS
+                - generic [ref=e165]: ·
+                - generic "YouTrack ДРЦС" [ref=e166]
+            - generic [ref=e167]:
+              - 'generic "Score: 48" [ref=e168]': "48"
+              - generic [ref=e169]: —
+          - img [ref=e170]
+          - generic [ref=e173]:
+            - img [ref=e174]
+            - generic [ref=e179]: 3 сотрудник(ов)
+          - generic [ref=e180]:
+            - generic [ref=e181]:
+              - generic [ref=e182]: Загрузка
+              - generic [ref=e183]: 0.0%
+            - generic [ref=e184]:
+              - generic [ref=e185]: Точность
+              - generic [ref=e186]: Н/Д
+            - generic [ref=e187]:
+              - generic [ref=e188]: Закрытие
+              - generic [ref=e189]: 22.2%
+          - generic [ref=e190]:
+            - text: Подробнее
+            - img [ref=e191]
+        - generic [ref=e114] [cursor=pointer]:
+          - generic [ref=e115]:
+            - generic [ref=e193]:
+              - heading "Интернет-банк" [level=3] [ref=e194]
+              - generic [ref=e195]:
+                - generic [ref=e196]: IB
+                - generic [ref=e197]: ·
+                - generic "YouTrack ДРЦС" [ref=e198]
+            - generic [ref=e199]:
+              - 'generic "Score: 65" [ref=e200]': "65"
+              - generic [ref=e202]: →
+          - img [ref=e203]
+          - generic [ref=e206]:
+            - img [ref=e207]
+            - generic [ref=e212]: 3 сотрудник(ов)
+          - generic [ref=e213]:
+            - generic [ref=e214]:
+              - generic [ref=e215]: Загрузка
+              - generic [ref=e216]: 31.5%
+            - generic [ref=e217]:
+              - generic [ref=e218]: Точность
+              - generic [ref=e219]: Н/Д
+            - generic [ref=e220]:
+              - generic [ref=e221]: Закрытие
+              - generic [ref=e222]: 66.7%
+          - generic [ref=e223]:
+            - text: Подробнее
+            - img [ref=e224]
+        - generic [ref=e122] [cursor=pointer]:
+          - generic [ref=e123]:
+            - generic [ref=e226]:
+              - heading "Мобильное приложение" [level=3] [ref=e227]
+              - generic [ref=e228]:
+                - generic [ref=e229]: MP
+                - generic [ref=e230]: ·
+                - generic "YouTrack ДРЦС" [ref=e231]
+            - generic [ref=e232]:
+              - 'generic "Score: 68" [ref=e233]': "68"
+              - generic [ref=e235]: →
+          - img [ref=e236]
+          - generic [ref=e239]:
+            - img [ref=e240]
+            - generic [ref=e245]: 3 сотрудник(ов)
+          - generic [ref=e246]:
+            - generic [ref=e247]:
+              - generic [ref=e248]: Загрузка
+              - generic [ref=e249]: 3.9%
+            - generic [ref=e250]:
+              - generic [ref=e251]: Точность
+              - generic [ref=e252]: Н/Д
+            - generic [ref=e253]:
+              - generic [ref=e254]: Закрытие
+              - generic [ref=e255]: 100.0%
+          - generic [ref=e256]:
+            - text: Подробнее
+            - img [ref=e257]

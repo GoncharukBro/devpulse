@@ -1,0 +1,436 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e27]
+              - generic [ref=e30]: Сотрудники
+          - listitem [ref=e31]:
+            - link "Команды" [ref=e32] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e33]
+              - generic [ref=e38]: Команды
+          - listitem [ref=e39]:
+            - link "Ачивки" [ref=e40] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e41]
+              - generic [ref=e47]: Ачивки
+          - listitem [ref=e48]:
+            - link "Отчёты" [ref=e49] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e50]
+              - generic [ref=e53]: Отчёты
+      - generic [ref=e54]:
+        - paragraph [ref=e55]: Управление
+        - list [ref=e56]:
+          - listitem [ref=e57]:
+            - link "Сбор данных" [ref=e58] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e59]
+              - generic [ref=e63]: Сбор данных
+          - listitem [ref=e64]:
+            - link "Методология" [ref=e65] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e89]:
+        - heading "Методология" [level=1] [ref=e90]
+        - paragraph [ref=e91]: Как работает DevPulse — источники данных, метрики и их расчёт
+      - generic [ref=e92]:
+        - generic [ref=e94]:
+          - heading "⚙️ Как работает система" [level=2] [ref=e96]:
+            - generic [ref=e97]: ⚙️
+            - text: Как работает система
+          - generic [ref=e98]:
+            - paragraph [ref=e99]: "DevPulse автоматически собирает данные из YouTrack раз в неделю: задачи, списания времени, статусы. На основе этих данных рассчитываются ключевые показатели по каждому сотруднику и проекту."
+            - paragraph [ref=e100]: AI-модель анализирует метрики и формирует текстовую сводку с оценкой, достижениями и рекомендациями.
+        - generic [ref=e102]:
+          - heading "🔌 Источники данных" [level=2] [ref=e104]:
+            - generic [ref=e105]: 🔌
+            - text: Источники данных
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: "Все данные берутся из YouTrack через API:"
+            - list [ref=e108]:
+              - listitem [ref=e109]:
+                - generic [ref=e110]: •
+                - generic [ref=e111]:
+                  - strong [ref=e112]: Задачи
+                  - text: — тип, статус, исполнитель, оценка, даты создания и закрытия
+              - listitem [ref=e113]:
+                - generic [ref=e114]: •
+                - generic [ref=e115]:
+                  - strong [ref=e116]: Списания времени
+                  - text: (work items) — кто, сколько, когда, тип работы
+              - listitem [ref=e117]:
+                - generic [ref=e118]: •
+                - generic [ref=e119]:
+                  - strong [ref=e120]: Участники проекта
+                  - text: — для определения состава команды
+            - paragraph [ref=e121]: DevPulse только читает данные. Система не создаёт, не изменяет и не удаляет задачи в YouTrack.
+        - generic [ref=e123]:
+          - heading "📊 Ключевые метрики" [level=2] [ref=e125]:
+            - generic [ref=e126]: 📊
+            - text: Ключевые метрики
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - heading "Загрузка (Utilization)" [level=3] [ref=e130]
+              - paragraph [ref=e131]: Насколько загружен сотрудник относительно 40-часовой рабочей недели.
+              - paragraph [ref=e132]: "Формула: (списанное время / 40 часов) × 100%"
+              - generic [ref=e133]:
+                - generic [ref=e134]: 🟢 60–100%
+                - generic [ref=e135]: 🟡 40–59% или 101–120%
+                - generic [ref=e136]: 🔴 < 40% или > 120%
+              - paragraph [ref=e137]: "Н/Д: если нет списаний — 0% (валидное значение)"
+            - generic [ref=e138]:
+              - heading "Точность оценок (Estimation Accuracy)" [level=3] [ref=e139]
+              - paragraph [ref=e140]: Насколько точно сотрудник оценивает сроки задач.
+              - paragraph [ref=e141]: "Формула: min(оценка, факт) / max(оценка, факт) × 100%"
+              - generic [ref=e142]:
+                - generic [ref=e143]: 🟢 ≥ 75%
+                - generic [ref=e144]: 🟡 55–74%
+                - generic [ref=e145]: 🔴 < 55%
+              - paragraph [ref=e146]: "Н/Д: если нет задач с оценкой и фактом"
+            - generic [ref=e147]:
+              - heading "Фокус (Focus)" [level=3] [ref=e148]
+              - paragraph [ref=e149]: Доля времени на продуктовые задачи (фичи, техдолг, документация) от общего списанного времени.
+              - paragraph [ref=e150]: "Формула: (время на фичи + техдолг + docs) / общее время × 100%"
+              - generic [ref=e151]:
+                - generic [ref=e152]: 🟢 ≥ 65%
+                - generic [ref=e153]: 🟡 45–64%
+                - generic [ref=e154]: 🔴 < 45%
+              - paragraph [ref=e155]: "Н/Д: если нет списаний"
+            - generic [ref=e156]:
+              - heading "Закрытие (Completion Rate)" [level=3] [ref=e157]
+              - paragraph [ref=e158]: Процент завершённых задач от общего количества за период.
+              - paragraph [ref=e159]: "Формула: завершённые / всего × 100%"
+              - generic [ref=e160]:
+                - generic [ref=e161]: 🟢 ≥ 70%
+                - generic [ref=e162]: 🟡 50–69%
+                - generic [ref=e163]: 🔴 < 50%
+              - paragraph [ref=e164]: "Н/Д: если нет задач"
+            - generic [ref=e165]:
+              - heading "Cycle Time" [level=3] [ref=e166]
+              - paragraph [ref=e167]: Среднее время от взятия задачи в работу до её закрытия.
+              - paragraph [ref=e168]: "Формула: среднее(дата закрытия − дата начала работы)"
+              - generic [ref=e169]:
+                - generic [ref=e170]: 🟢 ≤ 48 ч
+                - generic [ref=e171]: 🟡 49–96 ч
+                - generic [ref=e172]: 🔴 > 96 ч
+              - paragraph [ref=e173]: "Н/Д: если нет закрытых задач с историей статусов"
+            - generic [ref=e174]:
+              - heading "Списано часов" [level=3] [ref=e175]
+              - paragraph [ref=e176]: Суммарное время, списанное сотрудником за неделю (work items из YouTrack).
+              - paragraph [ref=e177]: "Формула: сумма всех списаний за период"
+              - generic [ref=e178]:
+                - generic [ref=e179]: 🟢 30–45 ч
+                - generic [ref=e180]: 🟡 20–29 ч или 46–55 ч
+                - generic [ref=e181]: 🔴 < 20 ч или > 55 ч
+              - paragraph [ref=e182]: "Н/Д: если нет списаний времени"
+            - generic [ref=e183]:
+              - heading "Score (AI-оценка)" [level=3] [ref=e184]
+              - paragraph [ref=e185]: Общая оценка продуктивности от AI-модели (0–100). Рассчитывается на основе всех метрик с учётом контекста.
+              - paragraph [ref=e186]: "Формула: LLM-оценка (0–100)"
+              - generic [ref=e187]:
+                - generic [ref=e188]: 🟢 ≥ 70
+                - generic [ref=e189]: 🟡 50–69
+                - generic [ref=e190]: 🔴 < 50
+              - paragraph [ref=e191]: "Н/Д: если AI-анализ не выполнен или нет данных"
+        - generic [ref=e193]:
+          - heading "📈 Тренды метрик" [level=2] [ref=e195]:
+            - generic [ref=e196]: 📈
+            - text: Тренды метрик
+          - generic [ref=e197]:
+            - paragraph [ref=e198]: Рядом с каждой метрикой отображается индикатор тренда — стрелка и числовая дельта. Тренд показывает, как изменилась метрика по сравнению с предыдущей неделей.
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - generic [ref=e201]: ↑ +5.2%
+                - generic [ref=e202]: — значение выросло (выше порога чувствительности)
+              - generic [ref=e203]:
+                - generic [ref=e204]: ↓ -3.1%
+                - generic [ref=e205]: — значение снизилось (ниже порога)
+              - generic [ref=e206]:
+                - generic [ref=e207]: → 0.8%
+                - generic [ref=e208]: — значение стабильно (изменение в пределах порога)
+              - generic [ref=e209]:
+                - generic [ref=e210]: —
+                - generic [ref=e211]: — нет данных за предыдущий период для сравнения
+            - paragraph [ref=e212]: Пороги чувствительности
+            - paragraph [ref=e213]: "Чтобы стрелка не реагировала на незначительные колебания, для каждого типа метрики задан свой порог:"
+            - generic [ref=e214]:
+              - generic [ref=e215]:
+                - generic [ref=e216]: •
+                - generic [ref=e217]:
+                  - strong [ref=e218]: Score, Загрузка, Точность, Фокус, Закрытие
+                  - text: — ±5 пунктов
+              - generic [ref=e219]:
+                - generic [ref=e220]: •
+                - generic [ref=e221]:
+                  - strong [ref=e222]: Cycle Time
+                  - text: — ±2 часа
+              - generic [ref=e223]:
+                - generic [ref=e224]: •
+                - generic [ref=e225]:
+                  - strong [ref=e226]: Списано часов
+                  - text: — ±10 часов
+            - paragraph [ref=e227]: Числовая дельта показывается всегда (включая стабильный тренд), чтобы видеть точное изменение.
+        - generic [ref=e229]:
+          - heading "🤖 AI-анализ" [level=2] [ref=e231]:
+            - generic [ref=e232]: 🤖
+            - text: AI-анализ
+          - generic [ref=e233]:
+            - paragraph [ref=e234]: "После сбора метрик AI-модель получает агрегированные показатели и формирует:"
+            - list [ref=e235]:
+              - listitem [ref=e236]:
+                - generic [ref=e237]: •
+                - generic [ref=e238]:
+                  - strong [ref=e239]: Score (0–100)
+                  - text: — общая оценка продуктивности
+              - listitem [ref=e240]:
+                - generic [ref=e241]: •
+                - generic [ref=e242]:
+                  - strong [ref=e243]: Сводка
+                  - text: — краткое описание результатов за период
+              - listitem [ref=e244]:
+                - generic [ref=e245]: •
+                - generic [ref=e246]:
+                  - strong [ref=e247]: Достижения
+                  - text: — что сделано хорошо
+              - listitem [ref=e248]:
+                - generic [ref=e249]: •
+                - generic [ref=e250]:
+                  - strong [ref=e251]: Внимание
+                  - text: — проблемы и риски
+              - listitem [ref=e252]:
+                - generic [ref=e253]: •
+                - generic [ref=e254]:
+                  - strong [ref=e255]: Рекомендации
+                  - text: — что можно улучшить
+            - paragraph [ref=e256]: AI анализирует названия задач и определяет их бизнес-значимость. Оценка учитывает не только цифры, но и характер работы.
+        - generic [ref=e258]:
+          - heading "🏆 Система достижений" [level=2] [ref=e260]:
+            - generic [ref=e261]: 🏆
+            - text: Система достижений
+          - generic [ref=e262]:
+            - paragraph [ref=e263]: Достижения — это автоматические награды, которые сотрудники получают за результаты работы. Система анализирует еженедельные метрики из YouTrack и присваивает награды тем, кто достиг определённых показателей.
+            - paragraph [ref=e264]: Как это работает
+            - list [ref=e265]:
+              - listitem [ref=e266]: Каждую неделю система собирает метрики по задачам и списаниям времени
+              - listitem [ref=e267]: По результатам автоматически проверяются условия каждого достижения
+              - listitem [ref=e268]: Если сотрудник выполнил условие — он получает награду соответствующего уровня
+              - listitem [ref=e269]: Лучшие результаты фиксируются как рекорды
+            - paragraph [ref=e270]: Уровни наград
+            - generic [ref=e271]:
+              - generic [ref=e272]:
+                - generic [ref=e273]: Common
+                - generic [ref=e274]: ★☆☆☆
+                - generic [ref=e275]: — базовый результат
+              - generic [ref=e276]:
+                - generic [ref=e277]: Rare
+                - generic [ref=e278]: ★★☆☆
+                - generic [ref=e279]: — хороший результат
+              - generic [ref=e280]:
+                - generic [ref=e281]: Epic
+                - generic [ref=e282]: ★★★☆
+                - generic [ref=e283]: — отличный результат
+              - generic [ref=e284]:
+                - generic [ref=e285]: Legendary
+                - generic [ref=e286]: ★★★★
+                - generic [ref=e287]: — выдающийся результат
+            - paragraph [ref=e288]: Чем выше показатель — тем выше уровень награды. Пороги индивидуальны для каждого типа достижения.
+            - paragraph [ref=e289]: Серии (стрики)
+            - paragraph [ref=e290]: Если сотрудник получает одно и то же достижение несколько недель подряд — формируется серия. Длинные серии показывают стабильность результатов.
+            - paragraph [ref=e291]: Категории
+            - list [ref=e292]:
+              - listitem [ref=e293]:
+                - generic [ref=e294]: ⚡
+                - generic [ref=e295]:
+                  - strong [ref=e296]: Продуктивность
+                  - text: — объём и скорость выполнения задач
+              - listitem [ref=e297]:
+                - generic [ref=e298]: 🎯
+                - generic [ref=e299]:
+                  - strong [ref=e300]: Качество
+                  - text: — точность оценок, отсутствие багов, скорость закрытия
+              - listitem [ref=e301]:
+                - generic [ref=e302]: ⚖️
+                - generic [ref=e303]:
+                  - strong [ref=e304]: Баланс
+                  - text: — оптимальная загрузка, фокус на продуктовых задачах
+              - listitem [ref=e305]:
+                - generic [ref=e306]: 📈
+                - generic [ref=e307]:
+                  - strong [ref=e308]: Рост
+                  - text: — положительная динамика показателей
+            - paragraph [ref=e309]:
+              - text: Все достижения — на странице
+              - link "Достижений" [ref=e310] [cursor=pointer]:
+                - /url: /achievements
+              - text: .
+        - generic [ref=e312]:
+          - heading "📋 Отчёты за произвольный период" [level=2] [ref=e314]:
+            - generic [ref=e315]: 📋
+            - text: Отчёты за произвольный период
+          - generic [ref=e316]:
+            - paragraph [ref=e317]: Отчёты позволяют проанализировать работу сотрудника, проекта или команды за произвольный период — от нескольких дней до нескольких лет. Данные собираются напрямую из YouTrack за точный указанный диапазон дат.
+            - paragraph [ref=e318]: Как это работает
+            - paragraph [ref=e319]: "Вы выбираете произвольные даты «от» и «до» — без округления до недель. Система выполняет трёхфазный pipeline:"
+            - list [ref=e320]:
+              - listitem [ref=e321]:
+                - strong [ref=e322]: Сбор данных
+                - text: "— для каждого сотрудника запрашиваются метрики из YouTrack за указанный период: задачи, время, статусы, типы работ"
+              - listitem [ref=e323]:
+                - strong [ref=e324]: Агрегация
+                - text: "— собранные данные группируются, рассчитываются KPI, формируется топ-20 задач (гибридная выборка: по времени, просроченные, бизнес-критичные)"
+              - listitem [ref=e325]:
+                - strong [ref=e326]: AI-анализ
+                - text: "— двухуровневый LLM-анализ: сначала по каждому сотруднику (score, сводка, проблемы, рекомендации, классификация задач), затем итоговая сводка по проекту/команде"
+            - paragraph [ref=e327]: Уровни отчётов
+            - list [ref=e328]:
+              - listitem [ref=e329]:
+                - generic [ref=e330]: •
+                - generic [ref=e331]:
+                  - strong [ref=e332]: Сотрудник
+                  - text: — метрики одного человека, с разбивкой по проектам (если участвует в нескольких)
+              - listitem [ref=e333]:
+                - generic [ref=e334]: •
+                - generic [ref=e335]:
+                  - strong [ref=e336]: Проект
+                  - text: — метрики по всем сотрудникам проекта + индивидуальный AI-анализ каждого
+              - listitem [ref=e337]:
+                - generic [ref=e338]: •
+                - generic [ref=e339]:
+                  - strong [ref=e340]: Команда
+                  - text: — метрики по участникам команды из всех их проектов
+            - paragraph [ref=e341]: AI-анализ
+            - paragraph [ref=e342]: "Для каждого сотрудника AI получает: агрегированные метрики, таблицу динамики с типами задач и топ-20 ключевых задач. На основе этого формируется оценка (score 0–100), текстовая сводка, список проблем и рекомендаций. Для проектов и команд дополнительно формируется итоговая сводка на основе индивидуальных анализов."
+            - paragraph [ref=e343]: Статусы
+            - generic [ref=e344]:
+              - generic [ref=e347]:
+                - strong [ref=e348]: Сбор данных
+                - text: — идёт сбор метрик из YouTrack
+              - generic [ref=e351]:
+                - strong [ref=e352]: Анализ
+                - text: — выполняется AI-анализ собранных данных
+              - generic [ref=e355]:
+                - strong [ref=e356]: Готов
+                - text: — отчёт полностью сформирован
+              - generic [ref=e359]:
+                - strong [ref=e360]: Частично готов
+                - text: — часть AI-анализов не удалась, метрики доступны
+              - generic [ref=e363]:
+                - strong [ref=e364]: Ошибка
+                - text: — сбор или анализ не удался
+            - paragraph [ref=e365]: В списке отчётов можно раскрыть любую строку, чтобы увидеть текущее состояние pipeline и собранные метрики в реальном времени.
+            - paragraph [ref=e366]:
+              - text: Отчёты хранятся в системе. Вы можете просматривать, фильтровать и удалять их на странице
+              - link "Отчётов" [ref=e367] [cursor=pointer]:
+                - /url: /reports
+              - text: .
+        - generic [ref=e369]:
+          - heading "🔗 Совместный доступ" [level=2] [ref=e371]:
+            - generic [ref=e372]: 🔗
+            - text: Совместный доступ
+          - generic [ref=e373]:
+            - paragraph [ref=e374]: Владелец подписки может предоставить доступ другим пользователям по логину с одной из двух ролей. Это позволяет коллегам работать с метриками без необходимости создавать собственную подписку на тот же проект.
+            - paragraph [ref=e375]: Роли
+            - table [ref=e377]:
+              - rowgroup [ref=e378]:
+                - row "Действие Владелец Редактор Просмотр" [ref=e379]:
+                  - columnheader "Действие" [ref=e380]
+                  - columnheader "Владелец" [ref=e381]
+                  - columnheader "Редактор" [ref=e382]
+                  - columnheader "Просмотр" [ref=e383]
+              - rowgroup [ref=e384]:
+                - row "Просмотр метрик и отчётов ✓ ✓ ✓" [ref=e385]:
+                  - cell "Просмотр метрик и отчётов" [ref=e386]
+                  - cell "✓" [ref=e387]
+                  - cell "✓" [ref=e388]
+                  - cell "✓" [ref=e389]
+                - row "Запуск и остановка сбора ✓ ✓ —" [ref=e390]:
+                  - cell "Запуск и остановка сбора" [ref=e391]
+                  - cell "✓" [ref=e392]
+                  - cell "✓" [ref=e393]
+                  - cell "—" [ref=e394]
+                - row "Редактирование сотрудников ✓ ✓ —" [ref=e395]:
+                  - cell "Редактирование сотрудников" [ref=e396]
+                  - cell "✓" [ref=e397]
+                  - cell "✓" [ref=e398]
+                  - cell "—" [ref=e399]
+                - row "Настройка маппинга полей ✓ ✓ —" [ref=e400]:
+                  - cell "Настройка маппинга полей" [ref=e401]
+                  - cell "✓" [ref=e402]
+                  - cell "✓" [ref=e403]
+                  - cell "—" [ref=e404]
+                - row "Управление доступом ✓ — —" [ref=e405]:
+                  - cell "Управление доступом" [ref=e406]
+                  - cell "✓" [ref=e407]
+                  - cell "—" [ref=e408]
+                  - cell "—" [ref=e409]
+                - row "Включение/исключение из автосбора ✓ — —" [ref=e410]:
+                  - cell "Включение/исключение из автосбора" [ref=e411]
+                  - cell "✓" [ref=e412]
+                  - cell "—" [ref=e413]
+                  - cell "—" [ref=e414]
+                - row "Удаление подписки ✓ — —" [ref=e415]:
+                  - cell "Удаление подписки" [ref=e416]
+                  - cell "✓" [ref=e417]
+                  - cell "—" [ref=e418]
+                  - cell "—" [ref=e419]
+            - paragraph [ref=e420]: Как управлять доступом
+            - paragraph [ref=e421]: Откройте меню подписки (три точки) и выберите «Доступ». В открывшемся окне введите логин пользователя, выберите роль и нажмите «Добавить». Роль можно изменить в любой момент через выпадающий список рядом с логином. Для отзыва доступа нажмите кнопку удаления.
+            - paragraph [ref=e422]: Индикация
+            - paragraph [ref=e423]:
+              - text: "Подписки, к которым вам предоставлен доступ, отмечены бейджем роли на карточке проекта:"
+              - generic [ref=e424]: Просмотр
+              - text: или
+              - generic [ref=e425]: Редактор
+              - text: .
+        - generic [ref=e427]:
+          - heading "❓ Что означает \"Нет данных\"" [level=2] [ref=e429]:
+            - generic [ref=e430]: ❓
+            - text: Что означает "Нет данных"
+          - generic [ref=e431]:
+            - paragraph [ref=e432]: "Метрика показывает «Н/Д» если:"
+            - list [ref=e433]:
+              - listitem [ref=e434]:
+                - generic [ref=e435]: •
+                - generic [ref=e436]: За период нет задач в YouTrack → все метрики = Н/Д
+              - listitem [ref=e437]:
+                - generic [ref=e438]: •
+                - generic [ref=e439]: Нет списаний времени → загрузка = 0% (это валидно, не Н/Д)
+              - listitem [ref=e440]:
+                - generic [ref=e441]: •
+                - generic [ref=e442]: Нет задач с оценкой → точность = Н/Д
+              - listitem [ref=e443]:
+                - generic [ref=e444]: •
+                - generic [ref=e445]: AI-анализ не выполнен → score = Н/Д
+            - paragraph [ref=e446]: Если все метрики = Н/Д, проверьте настройки маппинга полей проекта.

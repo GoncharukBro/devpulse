@@ -1,0 +1,290 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: DevPulse
+      - navigation "Основная навигация" [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Аналитика
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Обзор" [ref=e16] [cursor=pointer]:
+                - /url: /overview
+                - img [ref=e17]
+                - generic [ref=e19]: Обзор
+            - listitem [ref=e20]:
+              - link "Проекты" [ref=e21] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=e23]
+                - generic [ref=e25]: Проекты
+            - listitem [ref=e26]:
+              - link "Сотрудники" [ref=e27] [cursor=pointer]:
+                - /url: /employees
+                - img [ref=e28]
+                - generic [ref=e31]: Сотрудники
+            - listitem [ref=e32]:
+              - link "Команды" [ref=e33] [cursor=pointer]:
+                - /url: /teams
+                - img [ref=e34]
+                - generic [ref=e39]: Команды
+            - listitem [ref=e40]:
+              - link "Ачивки" [ref=e41] [cursor=pointer]:
+                - /url: /achievements
+                - img [ref=e42]
+                - generic [ref=e48]: Ачивки
+            - listitem [ref=e49]:
+              - link "Отчёты" [ref=e50] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e51]
+                - generic [ref=e54]: Отчёты
+        - generic [ref=e55]:
+          - paragraph [ref=e56]: Управление
+          - list [ref=e57]:
+            - listitem [ref=e58]:
+              - link "Сбор данных" [ref=e59] [cursor=pointer]:
+                - /url: /collection
+                - img [ref=e60]
+                - generic [ref=e64]: Сбор данных
+            - listitem [ref=e65]:
+              - link "Методология" [ref=e66] [cursor=pointer]:
+                - /url: /methodology
+                - img [ref=e67]
+                - generic [ref=e69]: Методология
+            - listitem [ref=e70]:
+              - link "Система" [ref=e71] [cursor=pointer]:
+                - /url: /system
+                - img [ref=e72]
+                - generic [ref=e74]: Система
+      - generic [ref=e76]:
+        - generic [ref=e77]: И
+        - paragraph [ref=e79]: Иван Руководителев
+        - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+          - img [ref=e81]
+    - main [ref=e85]:
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - link "Проекты" [ref=e89] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e90]
+              - text: Проекты
+            - link "Как считаются метрики?" [ref=e92] [cursor=pointer]:
+              - /url: /methodology#metrics
+              - img [ref=e93]
+              - text: Как считаются метрики?
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - heading "Интернет-банк" [level=1] [ref=e196]
+              - paragraph [ref=e99]:
+                - text: Метрики команды, тренды по неделям и рекомендации по проекту
+                - generic [ref=e197]: "3 сотрудника · Показатели за неделю: 23–29 мар 2026"
+            - generic [ref=e199]:
+              - button "Копировать" [ref=e200] [cursor=pointer]:
+                - img [ref=e201]
+                - text: Копировать
+              - button "На почту" [ref=e204] [cursor=pointer]:
+                - img [ref=e205]
+                - text: На почту
+        - generic [ref=e100]:
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - generic [ref=e208]: Score
+              - button "Оценка продуктивности" [ref=e210]:
+                - img [ref=e211]
+            - generic [ref=e105]:
+              - generic [ref=e213]: "75"
+              - generic [ref=e214]:
+                - generic [ref=e215]: →
+                - generic [ref=e216]: "+2"
+          - generic [ref=e108]:
+            - generic [ref=e109]:
+              - generic [ref=e217]: Загрузка
+              - button "Загрузка" [ref=e219]:
+                - img [ref=e220]
+            - generic [ref=e110]:
+              - generic [ref=e223]: 63.3%
+              - generic [ref=e224]:
+                - generic [ref=e225]: →
+                - generic [ref=e226]: +1.4%
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - generic [ref=e227]: Точность
+              - button "Точность оценок" [ref=e229]:
+                - img [ref=e230]
+            - generic [ref=e115]:
+              - generic [ref=e232]: Н/Д
+              - generic [ref=e233]: —
+          - generic [ref=e118]:
+            - generic [ref=e119]:
+              - generic [ref=e234]: Закрытие
+              - button "Скорость закрытия" [ref=e236]:
+                - img [ref=e237]
+            - generic [ref=e120]:
+              - generic [ref=e240]: 100%
+              - generic [ref=e241]:
+                - generic [ref=e242]: →
+                - generic [ref=e243]: 0%
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e244]: Cycle Time
+              - button "Средний Cycle Time" [ref=e246]:
+                - img [ref=e247]
+            - generic [ref=e125]:
+              - generic [ref=e249]: Н/Д
+              - generic [ref=e250]: —
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - generic [ref=e251]: Списано часов
+              - button "Списано часов" [ref=e253]:
+                - img [ref=e254]
+            - generic [ref=e130]:
+              - generic [ref=e257]: 76.0ч
+              - generic [ref=e258]:
+                - generic [ref=e259]: ↑
+                - generic [ref=e260]: +26.4ч
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - generic [ref=e135]:
+              - heading "Динамика по неделям" [level=3] [ref=e136]
+              - button "Динамика по неделям" [ref=e138]:
+                - img [ref=e139]
+            - generic [ref=e141]:
+              - button "4 нед." [ref=e142] [cursor=pointer]
+              - button "8 нед." [ref=e143] [cursor=pointer]
+              - button "12 нед." [ref=e144] [cursor=pointer]
+              - button "24 нед." [ref=e145] [cursor=pointer]
+          - img [ref=e263]:
+            - generic [ref=e267]:
+              - generic [ref=e269]: 11.01.26
+              - generic [ref=e271]: "18.01"
+              - generic [ref=e273]: "25.01"
+              - generic [ref=e275]: "01.02"
+              - generic [ref=e277]: "08.02"
+              - generic [ref=e279]: "15.02"
+              - generic [ref=e281]: "22.02"
+              - generic [ref=e283]: "01.03"
+              - generic [ref=e285]: "08.03"
+              - generic [ref=e287]: "15.03"
+              - generic [ref=e289]: "22.03"
+              - generic [ref=e291]: "29.03"
+            - generic [ref=e293]:
+              - generic [ref=e295]: "0"
+              - generic [ref=e297]: "20"
+              - generic [ref=e299]: "40"
+              - generic [ref=e301]: "60"
+              - generic [ref=e303]: "80"
+        - generic [ref=e150]:
+          - generic [ref=e151]:
+            - img [ref=e312]
+            - generic [ref=e314]:
+              - text: Обратите внимание
+              - generic [ref=e315]: (3)
+          - generic [ref=e154]:
+            - button "Перейти к профилю Сидоров Дмитрий" [ref=e316] [cursor=pointer]:
+              - generic [ref=e317]: С
+              - generic [ref=e318]:
+                - generic [ref=e319]:
+                  - generic [ref=e320]: Сидоров Дмитрий
+                  - generic [ref=e321]: ●
+                - paragraph [ref=e322]: Замечания от LLM
+            - button "Перейти к профилю Иванов Артём" [ref=e323] [cursor=pointer]:
+              - generic [ref=e324]: И
+              - generic [ref=e325]:
+                - generic [ref=e326]:
+                  - generic [ref=e327]: Иванов Артём
+                  - generic [ref=e328]: ●
+                - paragraph [ref=e329]: Низкая загрузка (22%) · Замечания от LLM
+            - button "Перейти к профилю Кузнецова Екатерина" [ref=e330] [cursor=pointer]:
+              - generic [ref=e331]: К
+              - generic [ref=e332]:
+                - generic [ref=e333]:
+                  - generic [ref=e334]: Кузнецова Екатерина
+                  - generic [ref=e335]: ●
+                - paragraph [ref=e336]: Замечания от LLM
+        - generic [ref=e338]:
+          - generic [ref=e339]:
+            - generic [ref=e340]:
+              - img [ref=e341]
+              - heading "LLM-рекомендации по проекту" [level=3] [ref=e343]
+              - button "LLM-рекомендации" [ref=e345]:
+                - img [ref=e346]
+            - button "Копировать" [ref=e348] [cursor=pointer]:
+              - img [ref=e349]
+              - text: Копировать
+          - list [ref=e352]:
+            - listitem [ref=e353]:
+              - generic [ref=e354]: •
+              - text: Продолжать поддерживать высокий уровень концентрации и эффективности
+            - listitem [ref=e355]:
+              - generic [ref=e356]: •
+              - text: Изучить и оптимизировать Cycle Time для повышения скорости разработки
+            - listitem [ref=e357]:
+              - generic [ref=e358]: •
+              - text: Провести анализ причин низкой загрузки и пересмотреть оценку времени на будущие задачи
+            - listitem [ref=e359]:
+              - generic [ref=e360]: •
+              - text: Внедрить систему отслеживания времени с указанием точности оценки для каждого разработчика
+            - listitem [ref=e361]:
+              - generic [ref=e362]: •
+              - text: Внедрить более точную систему оценки времени, возможно, с использованием исторических данных или экспертных оценок
+            - listitem [ref=e363]:
+              - generic [ref=e364]: •
+              - text: Собрать данные о Cycle Time для более глубокого анализа эффективности работы
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - heading "Сотрудники" [level=3] [ref=e184]
+            - button "Сотрудники проекта" [ref=e186]:
+              - img [ref=e187]
+          - table [ref=e365]:
+            - rowgroup [ref=e366]:
+              - row "Имя Score Загрузка Точность Закрыто Тренд" [ref=e367]:
+                - columnheader "Имя" [ref=e368] [cursor=pointer]:
+                  - generic [ref=e369]: Имя
+                - columnheader "Score" [ref=e370] [cursor=pointer]:
+                  - generic [ref=e371]:
+                    - text: Score
+                    - img [ref=e372]
+                - columnheader "Загрузка" [ref=e374] [cursor=pointer]:
+                  - generic [ref=e375]: Загрузка
+                - columnheader "Точность" [ref=e376]:
+                  - generic [ref=e377]: Точность
+                - columnheader "Закрыто" [ref=e378]:
+                  - generic [ref=e379]: Закрыто
+                - columnheader "Тренд" [ref=e380]:
+                  - generic [ref=e381]: Тренд
+                - columnheader [ref=e382]
+            - rowgroup [ref=e383]:
+              - row "Сидоров Дмитрий 85 81.3% Н/Д 3/3 ↑" [ref=e384] [cursor=pointer]:
+                - cell "Сидоров Дмитрий" [ref=e385]
+                - cell "85" [ref=e386]:
+                  - 'generic "Score: 85" [ref=e387]': "85"
+                - cell "81.3%" [ref=e388]
+                - cell "Н/Д" [ref=e389]
+                - cell "3/3" [ref=e390]
+                - cell "↑" [ref=e391]:
+                  - generic [ref=e393]: ↑
+                - cell [ref=e394]:
+                  - img [ref=e395]
+              - row "Кузнецова Екатерина 75 86.7% Н/Д 3/3 ↑" [ref=e397] [cursor=pointer]:
+                - cell "Кузнецова Екатерина" [ref=e398]
+                - cell "75" [ref=e399]:
+                  - 'generic "Score: 75" [ref=e400]': "75"
+                - cell "86.7%" [ref=e401]
+                - cell "Н/Д" [ref=e402]
+                - cell "3/3" [ref=e403]
+                - cell "↑" [ref=e404]:
+                  - generic [ref=e406]: ↑
+                - cell [ref=e407]:
+                  - img [ref=e408]
+              - row "Иванов Артём 65 22.0% Н/Д 3/3 —" [ref=e410] [cursor=pointer]:
+                - cell "Иванов Артём" [ref=e411]
+                - cell "65" [ref=e412]:
+                  - 'generic "Score: 65" [ref=e413]': "65"
+                - cell "22.0%" [ref=e414]
+                - cell "Н/Д" [ref=e415]
+                - cell "3/3" [ref=e416]
+                - cell "—" [ref=e417]
+                - cell [ref=e418]:
+                  - img [ref=e419]
+  - generic [ref=e421]: "0"

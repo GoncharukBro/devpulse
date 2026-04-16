@@ -1,0 +1,76 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e27]
+              - generic [ref=e30]: Сотрудники
+          - listitem [ref=e31]:
+            - link "Команды" [ref=e32] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e33]
+              - generic [ref=e38]: Команды
+          - listitem [ref=e39]:
+            - link "Ачивки" [ref=e40] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e42]
+              - generic [ref=e48]: Ачивки
+          - listitem [ref=e49]:
+            - link "Отчёты" [ref=e50] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e51]
+              - generic [ref=e54]: Отчёты
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: Управление
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Сбор данных" [ref=e59] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e60]
+              - generic [ref=e64]: Сбор данных
+          - listitem [ref=e65]:
+            - link "Методология" [ref=e66] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - heading "Достижения" [level=1] [ref=e90]
+          - paragraph [ref=e91]: Коллекция наград сотрудников за выдающиеся результаты по метрикам
+        - link "Как это работает?" [ref=e93] [cursor=pointer]:
+          - /url: /methodology#achievements
+          - img [ref=e94]
+          - text: Как это работает?
+      - tablist "Разделы достижений" [ref=e118]:
+        - tab "Каталог" [selected] [ref=e119] [cursor=pointer]
+        - tab "Лента" [ref=e120] [cursor=pointer]
+      - tabpanel [ref=e121]

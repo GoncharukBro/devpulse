@@ -1,0 +1,271 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e7]:
+    - complementary [ref=e8]:
+      - generic [ref=e10]:
+        - img [ref=e12]
+        - generic [ref=e14]: DevPulse
+      - navigation "Основная навигация" [ref=e15]:
+        - generic [ref=e16]:
+          - paragraph [ref=e17]: Аналитика
+          - list [ref=e18]:
+            - listitem [ref=e19]:
+              - link "Обзор" [ref=e20] [cursor=pointer]:
+                - /url: /overview
+                - img [ref=e22]
+                - generic [ref=e24]: Обзор
+            - listitem [ref=e25]:
+              - link "Проекты" [ref=e26] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=e27]
+                - generic [ref=e29]: Проекты
+            - listitem [ref=e30]:
+              - link "Сотрудники" [ref=e31] [cursor=pointer]:
+                - /url: /employees
+                - img [ref=e32]
+                - generic [ref=e35]: Сотрудники
+            - listitem [ref=e36]:
+              - link "Команды" [ref=e37] [cursor=pointer]:
+                - /url: /teams
+                - img [ref=e38]
+                - generic [ref=e43]: Команды
+            - listitem [ref=e44]:
+              - link "Ачивки" [ref=e45] [cursor=pointer]:
+                - /url: /achievements
+                - img [ref=e46]
+                - generic [ref=e52]: Ачивки
+            - listitem [ref=e53]:
+              - link "Отчёты" [ref=e54] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e55]
+                - generic [ref=e58]: Отчёты
+        - generic [ref=e59]:
+          - paragraph [ref=e60]: Управление
+          - list [ref=e61]:
+            - listitem [ref=e62]:
+              - link "Сбор данных" [ref=e63] [cursor=pointer]:
+                - /url: /collection
+                - img [ref=e64]
+                - generic [ref=e68]: Сбор данных
+            - listitem [ref=e69]:
+              - link "Методология" [ref=e70] [cursor=pointer]:
+                - /url: /methodology
+                - img [ref=e71]
+                - generic [ref=e73]: Методология
+            - listitem [ref=e74]:
+              - link "Система" [ref=e75] [cursor=pointer]:
+                - /url: /system
+                - img [ref=e76]
+                - generic [ref=e78]: Система
+      - generic [ref=e80]:
+        - generic [ref=e81]: И
+        - paragraph [ref=e83]: Иван Руководителев
+        - button "Выйти из аккаунта" [ref=e84] [cursor=pointer]:
+          - img [ref=e85]
+    - main [ref=e89]:
+      - generic [ref=e90]:
+        - generic [ref=e92]:
+          - generic [ref=e93]:
+            - heading "Обзор" [level=1] [ref=e94]
+            - paragraph [ref=e95]:
+              - text: Общая картина по всем сотрудникам — ключевые показатели, тренды и точки внимания
+              - generic [ref=e96]: "9 сотрудников · Показатели за неделю: 23–29 мар 2026"
+          - link "Как считаются метрики?" [ref=e98] [cursor=pointer]:
+            - /url: /methodology#metrics
+            - img [ref=e99]
+            - text: Как считаются метрики?
+        - generic [ref=e102]:
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e107]: Средний Score
+              - button "Оценка продуктивности" [ref=e109]:
+                - img [ref=e110]
+            - generic [ref=e112]:
+              - generic [ref=e113]: "61.1"
+              - generic [ref=e114]:
+                - generic [ref=e115]: ↓
+                - generic [ref=e116]: "-6.3"
+          - generic [ref=e119]:
+            - generic [ref=e120]:
+              - generic [ref=e121]: Средняя загрузка
+              - button "Загрузка" [ref=e123]:
+                - img [ref=e124]
+            - generic [ref=e126]:
+              - generic [ref=e128]: 17.4%
+              - generic [ref=e129]:
+                - generic [ref=e130]: ↓
+                - generic [ref=e131]: "-10.3%"
+          - generic [ref=e134]:
+            - generic [ref=e135]:
+              - generic [ref=e136]: Точность
+              - button "Точность оценок" [ref=e138]:
+                - img [ref=e139]
+            - generic [ref=e141]:
+              - generic [ref=e142]: Н/Д
+              - generic [ref=e143]: —
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - generic [ref=e148]: Закрытие
+              - button "Скорость закрытия" [ref=e150]:
+                - img [ref=e151]
+            - generic [ref=e153]:
+              - generic [ref=e155]: 63.0%
+              - generic [ref=e156]:
+                - generic [ref=e157]: ↓
+                - generic [ref=e158]: "-37%"
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - generic [ref=e163]: Списано часов
+              - button "Списано часов" [ref=e165]:
+                - img [ref=e166]
+            - generic [ref=e168]:
+              - generic [ref=e170]: 118.6ч
+              - generic [ref=e171]:
+                - generic [ref=e172]: ↑
+                - generic [ref=e173]: +57.4ч
+        - generic [ref=e176]:
+          - generic [ref=e177]:
+            - img [ref=e178]
+            - heading "Динамика по неделям" [level=3] [ref=e181]
+            - button "Динамика по неделям" [ref=e183]:
+              - img [ref=e184]
+          - img [ref=e188]:
+            - generic [ref=e192]:
+              - generic [ref=e194]: 11.01.26
+              - generic [ref=e196]: "18.01"
+              - generic [ref=e198]: "25.01"
+              - generic [ref=e200]: "01.02"
+              - generic [ref=e202]: "08.02"
+              - generic [ref=e204]: "15.02"
+              - generic [ref=e206]: "22.02"
+              - generic [ref=e208]: "01.03"
+              - generic [ref=e210]: "08.03"
+              - generic [ref=e212]: "15.03"
+              - generic [ref=e214]: "22.03"
+              - generic [ref=e216]: "29.03"
+            - generic [ref=e218]:
+              - generic [ref=e220]: "0"
+              - generic [ref=e222]: "20"
+              - generic [ref=e224]: "40"
+              - generic [ref=e226]: "60"
+              - generic [ref=e228]: "80"
+        - generic [ref=e239]:
+          - generic [ref=e240]:
+            - img [ref=e241]
+            - generic [ref=e243]:
+              - text: Обратите внимание
+              - generic [ref=e244]: (11)
+          - generic [ref=e245]:
+            - button "Перейти к профилю Кузнецова Екатерина" [ref=e246] [cursor=pointer]:
+              - generic [ref=e247]: К
+              - generic [ref=e248]:
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Кузнецова Екатерина
+                  - generic [ref=e251]: ●
+                - paragraph [ref=e252]: Интернет-банк
+                - paragraph [ref=e253]: Замечания от LLM
+            - button "Перейти к профилю Иванов Артём" [ref=e254] [cursor=pointer]:
+              - generic [ref=e255]: И
+              - generic [ref=e256]:
+                - generic [ref=e257]:
+                  - generic [ref=e258]: Иванов Артём
+                  - generic [ref=e259]: ●
+                - paragraph [ref=e260]: Интернет-банк
+                - paragraph [ref=e261]: Замечания от LLM · Низкая загрузка (22%) · Замечания от LLM
+            - button "Перейти к профилю Волкова Мария" [ref=e262] [cursor=pointer]:
+              - generic [ref=e263]: В
+              - generic [ref=e264]:
+                - generic [ref=e265]:
+                  - generic [ref=e266]: Волкова Мария
+                  - generic [ref=e267]: ●
+                - paragraph [ref=e268]: Интернет-банк
+                - paragraph [ref=e269]: Низкая загрузка (0%) · Замечания от LLM
+            - button "Перейти к профилю Смирнова Ольга" [ref=e270] [cursor=pointer]:
+              - generic [ref=e271]: С
+              - generic [ref=e272]:
+                - generic [ref=e273]:
+                  - generic [ref=e274]: Смирнова Ольга
+                  - generic [ref=e275]: ●
+                - paragraph [ref=e276]: Интернет-банк
+                - paragraph [ref=e277]: Низкая загрузка (17%) · Замечания от LLM
+            - button "Перейти к профилю Сидоров Дмитрий" [ref=e278] [cursor=pointer]:
+              - generic [ref=e279]: С
+              - generic [ref=e280]:
+                - generic [ref=e281]:
+                  - generic [ref=e282]: Сидоров Дмитрий
+                  - generic [ref=e283]: ●
+                - paragraph [ref=e284]: Мобильное приложение
+                - paragraph [ref=e285]: Низкая загрузка (4%) · Замечания от LLM
+          - button "Показать все (11)" [ref=e286] [cursor=pointer]:
+            - text: Показать все (11)
+            - img [ref=e287]
+        - generic [ref=e290]:
+          - generic [ref=e291]:
+            - img [ref=e292]
+            - generic [ref=e298]: Последние ачивки
+          - generic [ref=e299]:
+            - 'button "👑 ★ ☆ ☆ ☆ Король стабильности COMMON Score >70 на протяжении 3 недель подряд Рекорд: 1 нед. Мобильное приложение • 2 февр." [ref=e300] [cursor=pointer]':
+              - generic [ref=e301]:
+                - generic [ref=e302]: 👑
+                - generic [ref=e303]:
+                  - generic [ref=e304]: ★
+                  - generic [ref=e305]: ☆
+                  - generic [ref=e306]: ☆
+                  - generic [ref=e307]: ☆
+              - heading "Король стабильности" [level=4] [ref=e308]
+              - generic [ref=e310]: COMMON
+              - paragraph [ref=e311]: Score >70 на протяжении 3 недель подряд
+              - paragraph [ref=e312]: "Рекорд: 1 нед."
+              - paragraph [ref=e313]: Мобильное приложение • 2 февр.
+            - 'button "👑 ★ ☆ ☆ ☆ Король стабильности COMMON Score >70 на протяжении 3 недель подряд Рекорд: 1 нед. Платёжный шлюз • 12 янв." [ref=e314] [cursor=pointer]':
+              - generic [ref=e315]:
+                - generic [ref=e316]: 👑
+                - generic [ref=e317]:
+                  - generic [ref=e318]: ★
+                  - generic [ref=e319]: ☆
+                  - generic [ref=e320]: ☆
+                  - generic [ref=e321]: ☆
+              - heading "Король стабильности" [level=4] [ref=e322]
+              - generic [ref=e324]: COMMON
+              - paragraph [ref=e325]: Score >70 на протяжении 3 недель подряд
+              - paragraph [ref=e326]: "Рекорд: 1 нед."
+              - paragraph [ref=e327]: Платёжный шлюз • 12 янв.
+            - 'button "⭐ ★ ☆ ☆ ☆ Восходящая звезда COMMON Score вырос на 7 пунктов Рекорд: 1 нед. Интернет-банк • 23 мар." [ref=e328] [cursor=pointer]':
+              - generic [ref=e329]:
+                - generic [ref=e330]: ⭐
+                - generic [ref=e331]:
+                  - generic [ref=e332]: ★
+                  - generic [ref=e333]: ☆
+                  - generic [ref=e334]: ☆
+                  - generic [ref=e335]: ☆
+              - heading "Восходящая звезда" [level=4] [ref=e336]
+              - generic [ref=e338]: COMMON
+              - paragraph [ref=e339]: Score вырос на 7 пунктов
+              - paragraph [ref=e340]: "Рекорд: 1 нед."
+              - paragraph [ref=e341]: Интернет-банк • 23 мар.
+            - 'button "🏆 ★ ★ ★ ☆ Топ-перформер EPIC Score 85 — отличный результат Рекорд: 3 нед. Платёжный шлюз • 29 дек." [ref=e342] [cursor=pointer]':
+              - generic [ref=e343]:
+                - generic [ref=e344]: 🏆
+                - generic [ref=e345]:
+                  - generic [ref=e346]: ★
+                  - generic [ref=e347]: ★
+                  - generic [ref=e348]: ★
+                  - generic [ref=e349]: ☆
+              - heading "Топ-перформер" [level=4] [ref=e350]
+              - generic [ref=e352]: EPIC
+              - paragraph [ref=e353]: Score 85 — отличный результат
+              - paragraph [ref=e354]: "Рекорд: 3 нед."
+              - paragraph [ref=e355]: Платёжный шлюз • 29 дек.
+            - 'button "👑 ★ ★ ☆ ☆ Король стабильности RARE Score >70 на протяжении 5 недель подряд Рекорд: 1 нед. Платёжный шлюз • 29 дек." [ref=e356] [cursor=pointer]':
+              - generic [ref=e357]:
+                - generic [ref=e358]: 👑
+                - generic [ref=e359]:
+                  - generic [ref=e360]: ★
+                  - generic [ref=e361]: ★
+                  - generic [ref=e362]: ☆
+                  - generic [ref=e363]: ☆
+              - heading "Король стабильности" [level=4] [ref=e364]
+              - generic [ref=e366]: RARE
+              - paragraph [ref=e367]: Score >70 на протяжении 5 недель подряд
+              - paragraph [ref=e368]: "Рекорд: 1 нед."
+              - paragraph [ref=e369]: Платёжный шлюз • 29 дек.
+  - generic [ref=e370]: "0"

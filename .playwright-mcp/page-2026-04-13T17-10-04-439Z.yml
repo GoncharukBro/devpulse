@@ -1,0 +1,355 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e27]
+              - generic [ref=e30]: Сотрудники
+          - listitem [ref=e31]:
+            - link "Команды" [ref=e32] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e33]
+              - generic [ref=e38]: Команды
+          - listitem [ref=e39]:
+            - link "Ачивки" [ref=e40] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e41]
+              - generic [ref=e47]: Ачивки
+          - listitem [ref=e48]:
+            - link "Отчёты" [ref=e49] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e50]
+              - generic [ref=e53]: Отчёты
+      - generic [ref=e54]:
+        - paragraph [ref=e55]: Управление
+        - list [ref=e56]:
+          - listitem [ref=e57]:
+            - link "Сбор данных" [ref=e58] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e60]
+              - generic [ref=e64]: Сбор данных
+          - listitem [ref=e65]:
+            - link "Методология" [ref=e66] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - heading "Сбор данных" [level=1] [ref=e90]
+          - paragraph [ref=e91]: Управление проектами, запуск сборов и мониторинг процессов
+        - button "Добавить проект" [ref=e97] [cursor=pointer]:
+          - img [ref=e98]
+          - text: Добавить проект
+      - generic [ref=e92]:
+        - generic [ref=e99]:
+          - img [ref=e100]
+          - generic [ref=e103]: "Автосбор:"
+          - generic [ref=e104]: Активен (пн 00:00)
+          - button "Приостановить" [ref=e106] [cursor=pointer]:
+            - img [ref=e107]
+            - text: Приостановить
+        - button "Запустить всё" [ref=e111] [cursor=pointer]:
+          - img [ref=e112]
+          - text: Запустить всё
+      - generic [ref=e114]:
+        - generic [ref=e116]:
+          - generic [ref=e117]:
+            - button "Интернет-банк" [ref=e120] [cursor=pointer]:
+              - text: Интернет-банк
+              - img [ref=e121]
+            - button [ref=e124] [cursor=pointer]:
+              - img [ref=e125]
+          - paragraph [ref=e129]: YouTrack 2024 • IB
+          - generic [ref=e130]:
+            - generic [ref=e131]:
+              - img [ref=e132]
+              - generic [ref=e137]: 3 сотрудников
+            - generic [ref=e138]:
+              - img [ref=e139]
+              - generic [ref=e141]: "Последний сбор: 01.04.2026, 07:24"
+          - button "Запустить сбор" [ref=e143] [cursor=pointer]:
+            - img [ref=e144]
+            - text: Запустить сбор
+        - generic [ref=e147]:
+          - generic [ref=e148]:
+            - button "Платёжный шлюз" [ref=e151] [cursor=pointer]:
+              - text: Платёжный шлюз
+              - img [ref=e152]
+            - button [ref=e155] [cursor=pointer]:
+              - img [ref=e156]
+          - paragraph [ref=e160]: YouTrack ДРЦС • PS
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - img [ref=e163]
+              - generic [ref=e168]: 3 сотрудников
+            - generic [ref=e169]:
+              - img [ref=e170]
+              - generic [ref=e172]: "Последний сбор: 31.03.2026, 08:41"
+          - button "Запустить сбор" [ref=e174] [cursor=pointer]:
+            - img [ref=e175]
+            - text: Запустить сбор
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - button "Интернет-банк" [ref=e182] [cursor=pointer]:
+              - text: Интернет-банк
+              - img [ref=e183]
+            - button [ref=e186] [cursor=pointer]:
+              - img [ref=e187]
+          - paragraph [ref=e191]: YouTrack ДРЦС • IB
+          - generic [ref=e192]:
+            - generic [ref=e193]:
+              - img [ref=e194]
+              - generic [ref=e199]: 3 сотрудников
+            - generic [ref=e200]:
+              - img [ref=e201]
+              - generic [ref=e203]: "Последний сбор: 31.03.2026, 11:49"
+          - button "Запустить сбор" [ref=e205] [cursor=pointer]:
+            - img [ref=e206]
+            - text: Запустить сбор
+        - generic [ref=e209]:
+          - generic [ref=e210]:
+            - button "Мобильное приложение" [ref=e213] [cursor=pointer]:
+              - text: Мобильное приложение
+              - img [ref=e214]
+            - button [ref=e217] [cursor=pointer]:
+              - img [ref=e218]
+          - paragraph [ref=e222]: YouTrack ДРЦС • MP
+          - generic [ref=e223]:
+            - generic [ref=e224]:
+              - img [ref=e225]
+              - generic [ref=e230]: 3 сотрудников
+            - generic [ref=e231]:
+              - img [ref=e232]
+              - generic [ref=e234]: "Последний сбор: 31.03.2026, 11:36"
+          - button "Запустить сбор" [ref=e236] [cursor=pointer]:
+            - img [ref=e237]
+            - text: Запустить сбор
+      - button "Запустить всё" [ref=e240] [cursor=pointer]:
+        - img [ref=e241]
+        - text: Запустить всё
+      - generic [ref=e243]:
+        - generic [ref=e244]:
+          - generic [ref=e245]:
+            - heading "Логи сборов" [level=3] [ref=e246]
+            - button "Очистить логи" [ref=e247] [cursor=pointer]:
+              - img [ref=e248]
+              - text: Очистить логи
+          - generic [ref=e251]:
+            - generic [ref=e252]:
+              - button "По дате" [ref=e253] [cursor=pointer]
+              - button "По периоду" [ref=e254] [cursor=pointer]
+            - combobox [ref=e255]:
+              - option "Все проекты" [selected]
+              - option "Интернет-банк"
+              - option "Платёжный шлюз"
+              - option "Интернет-банк"
+              - option "Мобильное приложение"
+            - combobox [ref=e256]:
+              - option "Все статусы" [selected]
+              - option "Успешно"
+              - option "Частично"
+              - option "Остановлен"
+              - option "Отменён"
+              - option "Ошибка"
+              - option "Без изменений"
+            - combobox [ref=e257]:
+              - option "Все типы" [selected]
+              - option "Ручной"
+              - option "Cron"
+        - generic [ref=e258]:
+          - generic [ref=e261]: 1 апреля 2026 г.
+          - table [ref=e264]:
+            - rowgroup [ref=e265]:
+              - row "Проект Период Тип Статус Обработано" [ref=e266]:
+                - columnheader [ref=e267]
+                - columnheader "Проект" [ref=e268]
+                - columnheader "Период" [ref=e269]
+                - columnheader "Тип" [ref=e270]
+                - columnheader "Статус" [ref=e271]
+                - columnheader "Обработано" [ref=e272]
+                - columnheader [ref=e273]
+            - rowgroup [ref=e274]:
+              - row "Интернет-банк 01.03–01.04 ручной 9/15" [ref=e275] [cursor=pointer]:
+                - cell [ref=e276]:
+                  - img [ref=e277]
+                - cell "Интернет-банк" [ref=e279]
+                - cell "01.03–01.04" [ref=e280]
+                - cell "ручной" [ref=e281]
+                - cell [ref=e282]:
+                  - status [ref=e283]: Остановлен
+                - cell "9/15" [ref=e284]
+                - cell [ref=e285]:
+                  - button [ref=e286]:
+                    - img [ref=e287]
+        - generic [ref=e290]:
+          - generic [ref=e293]: 31 марта 2026 г.
+          - table [ref=e296]:
+            - rowgroup [ref=e297]:
+              - row "Проект Период Тип Статус Обработано" [ref=e298]:
+                - columnheader [ref=e299]
+                - columnheader "Проект" [ref=e300]
+                - columnheader "Период" [ref=e301]
+                - columnheader "Тип" [ref=e302]
+                - columnheader "Статус" [ref=e303]
+                - columnheader "Обработано" [ref=e304]
+                - columnheader [ref=e305]
+            - rowgroup [ref=e306]:
+              - row "Интернет-банк 01.04–31.03 ручной 156/156" [ref=e307] [cursor=pointer]:
+                - cell [ref=e308]:
+                  - img [ref=e309]
+                - cell "Интернет-банк" [ref=e311]
+                - cell "01.04–31.03" [ref=e312]
+                - cell "ручной" [ref=e313]
+                - cell [ref=e314]:
+                  - status [ref=e315]: Успешно
+                - cell "156/156" [ref=e316]
+                - cell [ref=e317]:
+                  - button [ref=e318]:
+                    - img [ref=e319]
+              - row "Мобильное приложение 01.04–31.03 ручной 156/156" [ref=e322] [cursor=pointer]:
+                - cell [ref=e323]:
+                  - img [ref=e324]
+                - cell "Мобильное приложение" [ref=e326]
+                - cell "01.04–31.03" [ref=e327]
+                - cell "ручной" [ref=e328]
+                - cell [ref=e329]:
+                  - status [ref=e330]: Успешно
+                - cell "156/156" [ref=e331]
+                - cell [ref=e332]:
+                  - button [ref=e333]:
+                    - img [ref=e334]
+              - row "Платёжный шлюз 01.04–31.03 ручной 156/156" [ref=e337] [cursor=pointer]:
+                - cell [ref=e338]:
+                  - img [ref=e339]
+                - cell "Платёжный шлюз" [ref=e341]
+                - cell "01.04–31.03" [ref=e342]
+                - cell "ручной" [ref=e343]
+                - cell [ref=e344]:
+                  - status [ref=e345]: Успешно
+                - cell "156/156" [ref=e346]
+                - cell [ref=e347]:
+                  - button [ref=e348]:
+                    - img [ref=e349]
+              - row "Интернет-банк 01.04–31.03 ручной 156/156" [ref=e352] [cursor=pointer]:
+                - cell [ref=e353]:
+                  - img [ref=e354]
+                - cell "Интернет-банк" [ref=e356]
+                - cell "01.04–31.03" [ref=e357]
+                - cell "ручной" [ref=e358]
+                - cell [ref=e359]:
+                  - status [ref=e360]: Успешно
+                - cell "156/156" [ref=e361]
+                - cell [ref=e362]:
+                  - button [ref=e363]:
+                    - img [ref=e364]
+              - row "Интернет-банк 01.04–31.03 ручной 117/156" [ref=e367] [cursor=pointer]:
+                - cell [ref=e368]:
+                  - img [ref=e369]
+                - cell "Интернет-банк" [ref=e371]
+                - cell "01.04–31.03" [ref=e372]
+                - cell "ручной" [ref=e373]
+                - cell [ref=e374]:
+                  - status [ref=e375]: Остановлен
+                - cell "117/156" [ref=e376]
+                - cell [ref=e377]:
+                  - button [ref=e378]:
+                    - img [ref=e379]
+              - row "Мобильное приложение 01.04–31.03 ручной 156/156" [ref=e382] [cursor=pointer]:
+                - cell [ref=e383]:
+                  - img [ref=e384]
+                - cell "Мобильное приложение" [ref=e386]
+                - cell "01.04–31.03" [ref=e387]
+                - cell "ручной" [ref=e388]
+                - cell [ref=e389]:
+                  - status [ref=e390]: Успешно
+                - cell "156/156" [ref=e391]
+                - cell [ref=e392]:
+                  - button [ref=e393]:
+                    - img [ref=e394]
+              - row "Платёжный шлюз 01.04–31.03 ручной 156/156" [ref=e397] [cursor=pointer]:
+                - cell [ref=e398]:
+                  - img [ref=e399]
+                - cell "Платёжный шлюз" [ref=e401]
+                - cell "01.04–31.03" [ref=e402]
+                - cell "ручной" [ref=e403]
+                - cell [ref=e404]:
+                  - status [ref=e405]: Успешно
+                - cell "156/156" [ref=e406]
+                - cell [ref=e407]:
+                  - button [ref=e408]:
+                    - img [ref=e409]
+              - row "Интернет-банк 01.04–31.03 ручной 156/156" [ref=e412] [cursor=pointer]:
+                - cell [ref=e413]:
+                  - img [ref=e414]
+                - cell "Интернет-банк" [ref=e416]
+                - cell "01.04–31.03" [ref=e417]
+                - cell "ручной" [ref=e418]
+                - cell [ref=e419]:
+                  - status [ref=e420]: Успешно
+                - cell "156/156" [ref=e421]
+                - cell [ref=e422]:
+                  - button [ref=e423]:
+                    - img [ref=e424]
+        - generic [ref=e427]:
+          - generic [ref=e430]: 30 марта 2026 г.
+          - table [ref=e433]:
+            - rowgroup [ref=e434]:
+              - row "Проект Период Тип Статус Обработано" [ref=e435]:
+                - columnheader [ref=e436]
+                - columnheader "Проект" [ref=e437]
+                - columnheader "Период" [ref=e438]
+                - columnheader "Тип" [ref=e439]
+                - columnheader "Статус" [ref=e440]
+                - columnheader "Обработано" [ref=e441]
+                - columnheader [ref=e442]
+            - rowgroup [ref=e443]:
+              - row "Интернет-банк 16.03–30.03 ручной 6/6" [ref=e444] [cursor=pointer]:
+                - cell [ref=e445]:
+                  - img [ref=e446]
+                - cell "Интернет-банк" [ref=e448]
+                - cell "16.03–30.03" [ref=e449]
+                - cell "ручной" [ref=e450]
+                - cell [ref=e451]:
+                  - status [ref=e452]: Успешно
+                - cell "6/6" [ref=e453]
+                - cell [ref=e454]:
+                  - button [ref=e455]:
+                    - img [ref=e456]
+        - generic [ref=e459]:
+          - button [disabled] [ref=e460]:
+            - img [ref=e461]
+          - button "1" [ref=e463] [cursor=pointer]
+          - button "2" [ref=e464] [cursor=pointer]
+          - button "3" [ref=e465] [cursor=pointer]
+          - button "4" [ref=e466] [cursor=pointer]
+          - button [ref=e467] [cursor=pointer]:
+            - img [ref=e468]

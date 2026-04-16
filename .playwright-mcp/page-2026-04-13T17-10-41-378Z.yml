@@ -1,0 +1,158 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e27]
+              - generic [ref=e30]: Сотрудники
+          - listitem [ref=e31]:
+            - link "Команды" [ref=e32] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e33]
+              - generic [ref=e38]: Команды
+          - listitem [ref=e39]:
+            - link "Ачивки" [ref=e40] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e41]
+              - generic [ref=e47]: Ачивки
+          - listitem [ref=e48]:
+            - link "Отчёты" [ref=e49] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e50]
+              - generic [ref=e53]: Отчёты
+      - generic [ref=e54]:
+        - paragraph [ref=e55]: Управление
+        - list [ref=e56]:
+          - listitem [ref=e57]:
+            - link "Сбор данных" [ref=e58] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e59]
+              - generic [ref=e63]: Сбор данных
+          - listitem [ref=e64]:
+            - link "Методология" [ref=e65] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e66]
+              - generic [ref=e68]: Методология
+          - listitem [ref=e69]:
+            - link "Система" [ref=e70] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - generic [ref=e89]:
+        - heading "Система" [level=1] [ref=e90]
+        - paragraph [ref=e91]: Интеграции, персонализация и информация о приложении
+      - generic [ref=e92]:
+        - generic [ref=e93]:
+          - generic [ref=e95]:
+            - img [ref=e96]
+            - heading "Персонализация" [level=2] [ref=e102]
+          - generic [ref=e104]:
+            - heading "Тема оформления" [level=3] [ref=e105]
+            - generic [ref=e106]:
+              - button "Тёмная" [ref=e107] [cursor=pointer]:
+                - img [ref=e108]
+                - text: Тёмная
+              - button "Светлая" [ref=e110] [cursor=pointer]:
+                - img [ref=e111]
+                - text: Светлая
+              - button "Системная" [ref=e117] [cursor=pointer]:
+                - img [ref=e118]
+                - text: Системная
+        - generic [ref=e120]:
+          - generic [ref=e122]:
+            - img [ref=e123]
+            - heading "Интеграции" [level=2] [ref=e126]
+          - generic [ref=e128]:
+            - generic [ref=e164]:
+              - generic [ref=e165]:
+                - generic [ref=e166]:
+                  - img [ref=e168]
+                  - generic [ref=e171]: YouTrack 2024
+                - generic [ref=e174]: Подключено
+                - paragraph [ref=e175]: localhost:8084 · v2024.3
+              - generic [ref=e176]:
+                - generic [ref=e177]:
+                  - img [ref=e179]
+                  - generic [ref=e182]: YouTrack ДРЦС
+                - generic [ref=e185]: Подключено
+                - paragraph [ref=e186]: localhost:8082 · v2025.3
+              - generic [ref=e187]:
+                - generic [ref=e188]:
+                  - img [ref=e190]
+                  - generic [ref=e200]: LLM
+                - generic [ref=e203]: Подключено
+                - paragraph [ref=e204]: localhost:11434 · gemma3:4b
+              - generic [ref=e205]:
+                - generic [ref=e206]:
+                  - img [ref=e208]
+                  - generic [ref=e210]: Keycloak
+                - generic [ref=e213]: Подключено
+                - paragraph [ref=e214]: "localhost:8083 · Realm: office"
+              - generic [ref=e215]:
+                - generic [ref=e216]:
+                  - img [ref=e218]
+                  - generic [ref=e222]: PostgreSQL
+                - generic [ref=e225]: Подключено
+                - paragraph [ref=e226]: PostgreSQL
+              - generic [ref=e227]:
+                - generic [ref=e228]:
+                  - img [ref=e230]
+                  - generic [ref=e233]: SMTP
+                - generic [ref=e236]: Не настроен
+                - paragraph [ref=e237]: Не настроен
+            - button "Проверить подключения" [ref=e239] [cursor=pointer]:
+              - img [ref=e240]
+              - text: Проверить подключения
+        - generic [ref=e132]:
+          - generic [ref=e134]:
+            - img [ref=e135]
+            - heading "О приложении" [level=2] [ref=e137]
+          - generic [ref=e139]:
+            - generic [ref=e140]:
+              - generic [ref=e141]:
+                - heading "DevPulse" [level=4] [ref=e142]
+                - paragraph [ref=e143]: Система сбора и анализа метрик разработчиков
+              - generic [ref=e144]: v0.1.0
+            - generic [ref=e145]:
+              - paragraph [ref=e146]: Стек
+              - generic [ref=e147]:
+                - generic [ref=e148]:
+                  - generic [ref=e149]: Frontend
+                  - generic [ref=e150]: React 18 · TypeScript · Vite · Tailwind
+                - generic [ref=e151]:
+                  - generic [ref=e152]: Backend
+                  - generic [ref=e153]: Node.js · Fastify · MikroORM
+                - generic [ref=e154]:
+                  - generic [ref=e155]: База
+                  - generic [ref=e156]: PostgreSQL
+                - generic [ref=e157]:
+                  - generic [ref=e158]: ИИ
+                  - generic [ref=e159]: LLM (OpenAI-совместимый)
+                - generic [ref=e160]:
+                  - generic [ref=e161]: Авториз.
+                  - generic [ref=e162]: Keycloak
+            - paragraph [ref=e163]: © 2025–2026 DevPulse

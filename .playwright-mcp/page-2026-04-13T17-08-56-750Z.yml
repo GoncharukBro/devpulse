@@ -1,0 +1,240 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e6]:
+        - img [ref=e8]
+        - generic [ref=e10]: DevPulse
+      - navigation "Основная навигация" [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Аналитика
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Обзор" [ref=e16] [cursor=pointer]:
+                - /url: /overview
+                - img [ref=e17]
+                - generic [ref=e19]: Обзор
+            - listitem [ref=e20]:
+              - link "Проекты" [ref=e21] [cursor=pointer]:
+                - /url: /projects
+                - img [ref=e22]
+                - generic [ref=e24]: Проекты
+            - listitem [ref=e25]:
+              - link "Сотрудники" [ref=e26] [cursor=pointer]:
+                - /url: /employees
+                - img [ref=e27]
+                - generic [ref=e30]: Сотрудники
+            - listitem [ref=e31]:
+              - link "Команды" [ref=e32] [cursor=pointer]:
+                - /url: /teams
+                - img [ref=e34]
+                - generic [ref=e39]: Команды
+            - listitem [ref=e40]:
+              - link "Ачивки" [ref=e41] [cursor=pointer]:
+                - /url: /achievements
+                - img [ref=e42]
+                - generic [ref=e48]: Ачивки
+            - listitem [ref=e49]:
+              - link "Отчёты" [ref=e50] [cursor=pointer]:
+                - /url: /reports
+                - img [ref=e51]
+                - generic [ref=e54]: Отчёты
+        - generic [ref=e55]:
+          - paragraph [ref=e56]: Управление
+          - list [ref=e57]:
+            - listitem [ref=e58]:
+              - link "Сбор данных" [ref=e59] [cursor=pointer]:
+                - /url: /collection
+                - img [ref=e60]
+                - generic [ref=e64]: Сбор данных
+            - listitem [ref=e65]:
+              - link "Методология" [ref=e66] [cursor=pointer]:
+                - /url: /methodology
+                - img [ref=e67]
+                - generic [ref=e69]: Методология
+            - listitem [ref=e70]:
+              - link "Система" [ref=e71] [cursor=pointer]:
+                - /url: /system
+                - img [ref=e72]
+                - generic [ref=e74]: Система
+      - generic [ref=e76]:
+        - generic [ref=e77]: И
+        - paragraph [ref=e79]: Иван Руководителев
+        - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+          - img [ref=e81]
+    - main [ref=e85]:
+      - generic [ref=e86]:
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - link "Команды" [ref=e89] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e90]
+              - text: Команды
+            - link "Как считаются метрики?" [ref=e92] [cursor=pointer]:
+              - /url: /methodology#metrics
+              - img [ref=e93]
+              - text: Как считаются метрики?
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - heading "Команда мечты" [level=1] [ref=e146]
+              - paragraph [ref=e99]:
+                - text: Сводные показатели и динамика участников команды
+                - generic [ref=e147]: "9 участников · Показатели за неделю: 23–29 мар 2026"
+            - generic [ref=e149]:
+              - button "На почту" [ref=e150] [cursor=pointer]:
+                - img [ref=e151]
+                - text: На почту
+              - button "Редактировать" [ref=e154] [cursor=pointer]:
+                - img [ref=e155]
+                - text: Редактировать
+        - generic [ref=e100]:
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - generic [ref=e158]: Средний Score
+              - button "Оценка продуктивности" [ref=e160]:
+                - img [ref=e161]
+            - generic [ref=e105]:
+              - generic [ref=e163]: "61.1"
+              - generic [ref=e164]:
+                - generic [ref=e165]: ↓
+                - generic [ref=e166]: "-6.3"
+          - generic [ref=e108]:
+            - generic [ref=e109]:
+              - generic [ref=e167]: Средняя загрузка
+              - button "Загрузка" [ref=e169]:
+                - img [ref=e170]
+            - generic [ref=e110]:
+              - generic [ref=e173]: 17.4%
+              - generic [ref=e174]:
+                - generic [ref=e175]: ↓
+                - generic [ref=e176]: "-10.3%"
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - generic [ref=e177]: Точность
+              - button "Точность оценок" [ref=e179]:
+                - img [ref=e180]
+            - generic [ref=e115]:
+              - generic [ref=e182]: Н/Д
+              - generic [ref=e183]: —
+          - generic [ref=e118]:
+            - generic [ref=e119]:
+              - generic [ref=e184]: Закрытие
+              - button "Скорость закрытия" [ref=e186]:
+                - img [ref=e187]
+            - generic [ref=e120]:
+              - generic [ref=e190]: 63.0%
+              - generic [ref=e191]:
+                - generic [ref=e192]: ↓
+                - generic [ref=e193]: "-37%"
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e194]: Списано часов
+              - button "Списано часов" [ref=e196]:
+                - img [ref=e197]
+            - generic [ref=e125]:
+              - generic [ref=e200]: 118.6ч
+              - generic [ref=e201]:
+                - generic [ref=e202]: ↑
+                - generic [ref=e203]: +57.4ч
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - heading "Динамика Score" [level=3] [ref=e204]
+            - button "Динамика Score команды" [ref=e206]:
+              - img [ref=e207]
+          - img [ref=e211]:
+            - generic [ref=e215]:
+              - generic [ref=e217]: 08.02.26
+              - generic [ref=e219]: "15.02"
+              - generic [ref=e221]: "22.02"
+              - generic [ref=e223]: "01.03"
+              - generic [ref=e225]: "08.03"
+              - generic [ref=e227]: "15.03"
+              - generic [ref=e229]: "22.03"
+              - generic [ref=e231]: "29.03"
+            - generic [ref=e233]:
+              - generic [ref=e235]: "0"
+              - generic [ref=e237]: "20"
+              - generic [ref=e239]: "40"
+              - generic [ref=e241]: "60"
+              - generic [ref=e243]: "80"
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - heading "Участники" [level=3] [ref=e134]
+            - button "Участники команды" [ref=e136]:
+              - img [ref=e137]
+          - table [ref=e248]:
+            - rowgroup [ref=e249]:
+              - row "Имя Score Загрузка Проекты Тренд" [ref=e250]:
+                - columnheader "Имя" [ref=e251]
+                - columnheader "Score" [ref=e252]
+                - columnheader "Загрузка" [ref=e253]
+                - columnheader "Проекты" [ref=e254]
+                - columnheader "Тренд" [ref=e255]
+            - rowgroup [ref=e256]:
+              - row "Федоров Никита 45 0.0% Платёжный шлюз —" [ref=e257] [cursor=pointer]:
+                - cell "Федоров Никита" [ref=e258]
+                - cell "45" [ref=e259]:
+                  - 'generic "Score: 45" [ref=e260]': "45"
+                - cell "0.0%" [ref=e261]
+                - cell "Платёжный шлюз" [ref=e262]
+                - cell "—" [ref=e263]
+              - row "Иванов Артём 85 77.8% Интернет-банк →" [ref=e264] [cursor=pointer]:
+                - cell "Иванов Артём" [ref=e265]
+                - cell "85" [ref=e266]:
+                  - 'generic "Score: 85" [ref=e267]': "85"
+                - cell "77.8%" [ref=e268]
+                - cell "Интернет-банк" [ref=e269]
+                - cell "→" [ref=e270]:
+                  - generic [ref=e272]: →
+              - row "Кузнецова Екатерина 65 7.6% Мобильное приложение, Интернет-банк ↓" [ref=e273] [cursor=pointer]:
+                - cell "Кузнецова Екатерина" [ref=e274]
+                - cell "65" [ref=e275]:
+                  - 'generic "Score: 65" [ref=e276]': "65"
+                - cell "7.6%" [ref=e277]
+                - cell "Мобильное приложение, Интернет-банк" [ref=e278]
+                - cell "↓" [ref=e279]:
+                  - generic [ref=e281]: ↓
+              - row "Лебедев Арсений 65 0.0% Платёжный шлюз —" [ref=e282] [cursor=pointer]:
+                - cell "Лебедев Арсений" [ref=e283]
+                - cell "65" [ref=e284]:
+                  - 'generic "Score: 65" [ref=e285]': "65"
+                - cell "0.0%" [ref=e286]
+                - cell "Платёжный шлюз" [ref=e287]
+                - cell "—" [ref=e288]
+              - row "Морозова Виктория 35 0.0% Платёжный шлюз —" [ref=e289] [cursor=pointer]:
+                - cell "Морозова Виктория" [ref=e290]
+                - cell "35" [ref=e291]:
+                  - 'generic "Score: 35" [ref=e292]': "35"
+                - cell "0.0%" [ref=e293]
+                - cell "Платёжный шлюз" [ref=e294]
+                - cell "—" [ref=e295]
+              - row "Петрова Анна 75 0.0% Мобильное приложение →" [ref=e296] [cursor=pointer]:
+                - cell "Петрова Анна" [ref=e297]
+                - cell "75" [ref=e298]:
+                  - 'generic "Score: 75" [ref=e299]': "75"
+                - cell "0.0%" [ref=e300]
+                - cell "Мобильное приложение" [ref=e301]
+                - cell "→" [ref=e302]:
+                  - generic [ref=e304]: →
+              - row "Сидоров Дмитрий 65 4.2% Мобильное приложение, Интернет-банк ↑" [ref=e305] [cursor=pointer]:
+                - cell "Сидоров Дмитрий" [ref=e306]
+                - cell "65" [ref=e307]:
+                  - 'generic "Score: 65" [ref=e308]': "65"
+                - cell "4.2%" [ref=e309]
+                - cell "Мобильное приложение, Интернет-банк" [ref=e310]
+                - cell "↑" [ref=e311]:
+                  - generic [ref=e313]: ↑
+              - row "Смирнова Ольга 65 16.8% Интернет-банк —" [ref=e314] [cursor=pointer]:
+                - cell "Смирнова Ольга" [ref=e315]
+                - cell "65" [ref=e316]:
+                  - 'generic "Score: 65" [ref=e317]': "65"
+                - cell "16.8%" [ref=e318]
+                - cell "Интернет-банк" [ref=e319]
+                - cell "—" [ref=e320]
+              - row "Волкова Мария 45 0.0% Интернет-банк —" [ref=e321] [cursor=pointer]:
+                - cell "Волкова Мария" [ref=e322]
+                - cell "45" [ref=e323]:
+                  - 'generic "Score: 45" [ref=e324]': "45"
+                - cell "0.0%" [ref=e325]
+                - cell "Интернет-банк" [ref=e326]
+                - cell "—" [ref=e327]
+  - generic [ref=e328]: "0"

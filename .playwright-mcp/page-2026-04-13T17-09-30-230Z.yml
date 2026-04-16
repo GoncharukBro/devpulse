@@ -1,0 +1,283 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - img [ref=e8]
+      - generic [ref=e10]: DevPulse
+    - navigation "Основная навигация" [ref=e11]:
+      - generic [ref=e12]:
+        - paragraph [ref=e13]: Аналитика
+        - list [ref=e14]:
+          - listitem [ref=e15]:
+            - link "Обзор" [ref=e16] [cursor=pointer]:
+              - /url: /overview
+              - img [ref=e17]
+              - generic [ref=e19]: Обзор
+          - listitem [ref=e20]:
+            - link "Проекты" [ref=e21] [cursor=pointer]:
+              - /url: /projects
+              - img [ref=e22]
+              - generic [ref=e24]: Проекты
+          - listitem [ref=e25]:
+            - link "Сотрудники" [ref=e26] [cursor=pointer]:
+              - /url: /employees
+              - img [ref=e27]
+              - generic [ref=e30]: Сотрудники
+          - listitem [ref=e31]:
+            - link "Команды" [ref=e32] [cursor=pointer]:
+              - /url: /teams
+              - img [ref=e33]
+              - generic [ref=e38]: Команды
+          - listitem [ref=e39]:
+            - link "Ачивки" [ref=e40] [cursor=pointer]:
+              - /url: /achievements
+              - img [ref=e41]
+              - generic [ref=e47]: Ачивки
+          - listitem [ref=e48]:
+            - link "Отчёты" [ref=e49] [cursor=pointer]:
+              - /url: /reports
+              - img [ref=e51]
+              - generic [ref=e54]: Отчёты
+      - generic [ref=e55]:
+        - paragraph [ref=e56]: Управление
+        - list [ref=e57]:
+          - listitem [ref=e58]:
+            - link "Сбор данных" [ref=e59] [cursor=pointer]:
+              - /url: /collection
+              - img [ref=e60]
+              - generic [ref=e64]: Сбор данных
+          - listitem [ref=e65]:
+            - link "Методология" [ref=e66] [cursor=pointer]:
+              - /url: /methodology
+              - img [ref=e67]
+              - generic [ref=e69]: Методология
+          - listitem [ref=e70]:
+            - link "Система" [ref=e71] [cursor=pointer]:
+              - /url: /system
+              - img [ref=e72]
+              - generic [ref=e74]: Система
+    - generic [ref=e76]:
+      - generic [ref=e77]: И
+      - paragraph [ref=e79]: Иван Руководителев
+      - button "Выйти из аккаунта" [ref=e80] [cursor=pointer]:
+        - img [ref=e81]
+  - main [ref=e85]:
+    - generic [ref=e87]:
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - heading "Отчёты" [level=1] [ref=e90]
+          - paragraph [ref=e91]: Формирование отчётов за произвольный период с AI-анализом
+        - button "Сформировать отчёт" [ref=e92] [cursor=pointer]
+      - combobox [ref=e94]:
+        - option "Все типы" [selected]
+        - option "Сотрудники"
+        - option "Проекты"
+        - option "Команды"
+      - table [ref=e99]:
+        - rowgroup [ref=e100]:
+          - row "Тип Цель Период Нед. Score Статус Создан" [ref=e101]:
+            - columnheader "Тип" [ref=e102]
+            - columnheader "Цель" [ref=e103]
+            - columnheader "Период" [ref=e104]
+            - columnheader "Нед." [ref=e105]
+            - columnheader "Score" [ref=e106]
+            - columnheader "Статус" [ref=e107]
+            - columnheader "Создан" [ref=e108]
+            - columnheader [ref=e109]
+        - rowgroup [ref=e110]:
+          - row "Сотрудник Смирнова Ольга 01.04.2026 — 09.04.2026 2 40 Готов 09.04.2026" [ref=e111] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e112]:
+              - generic [ref=e113]:
+                - img [ref=e114]
+                - img [ref=e116]
+                - generic [ref=e119]: Сотрудник
+            - cell "Смирнова Ольга" [ref=e120]
+            - cell "01.04.2026 — 09.04.2026" [ref=e121]
+            - cell "2" [ref=e122]
+            - cell "40" [ref=e123]:
+              - generic [ref=e124]: "40"
+            - cell "Готов" [ref=e125]:
+              - generic [ref=e126]: Готов
+            - cell "09.04.2026" [ref=e127]
+            - cell [ref=e128]:
+              - button "Удалить" [ref=e129]:
+                - img [ref=e130]
+          - row "Сотрудник Волкова Мария 16.03.2026 — 03.04.2026 3 25 Готов 03.04.2026" [ref=e133] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e134]:
+              - generic [ref=e135]:
+                - img [ref=e136]
+                - img [ref=e138]
+                - generic [ref=e141]: Сотрудник
+            - cell "Волкова Мария" [ref=e142]
+            - cell "16.03.2026 — 03.04.2026" [ref=e143]
+            - cell "3" [ref=e144]
+            - cell "25" [ref=e145]:
+              - generic [ref=e146]: "25"
+            - cell "Готов" [ref=e147]:
+              - generic [ref=e148]: Готов
+            - cell "03.04.2026" [ref=e149]
+            - cell [ref=e150]:
+              - button "Удалить" [ref=e151]:
+                - img [ref=e152]
+          - row "Проект Интернет-банк 01.04.2026 — 03.04.2026 1 72 Готов 03.04.2026" [ref=e155] [cursor=pointer]:
+            - cell "Проект" [ref=e156]:
+              - generic [ref=e157]:
+                - img [ref=e158]
+                - img [ref=e160]
+                - generic [ref=e162]: Проект
+            - cell "Интернет-банк" [ref=e163]
+            - cell "01.04.2026 — 03.04.2026" [ref=e164]
+            - cell "1" [ref=e165]
+            - cell "72" [ref=e166]:
+              - generic [ref=e167]: "72"
+            - cell "Готов" [ref=e168]:
+              - generic [ref=e169]: Готов
+            - cell "03.04.2026" [ref=e170]
+            - cell [ref=e171]:
+              - button "Удалить" [ref=e172]:
+                - img [ref=e173]
+          - row "Сотрудник Сидоров Дмитрий 01.04.2026 — 02.04.2026 1 — Готов 02.04.2026" [ref=e176] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e177]:
+              - generic [ref=e178]:
+                - img [ref=e179]
+                - img [ref=e181]
+                - generic [ref=e184]: Сотрудник
+            - cell "Сидоров Дмитрий" [ref=e185]
+            - cell "01.04.2026 — 02.04.2026" [ref=e186]
+            - cell "1" [ref=e187]
+            - cell "—" [ref=e188]:
+              - generic [ref=e189]: —
+            - cell "Готов" [ref=e190]:
+              - generic [ref=e191]: Готов
+            - cell "02.04.2026" [ref=e192]
+            - cell [ref=e193]:
+              - button "Удалить" [ref=e194]:
+                - img [ref=e195]
+          - row "Сотрудник Кузнецова Екатерина 13.04.2026 — 26.04.2026 2 — Готов 01.04.2026" [ref=e198] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e199]:
+              - generic [ref=e200]:
+                - img [ref=e201]
+                - img [ref=e203]
+                - generic [ref=e206]: Сотрудник
+            - cell "Кузнецова Екатерина" [ref=e207]
+            - cell "13.04.2026 — 26.04.2026" [ref=e208]
+            - cell "2" [ref=e209]
+            - cell "—" [ref=e210]:
+              - generic [ref=e211]: —
+            - cell "Готов" [ref=e212]:
+              - generic [ref=e213]: Готов
+            - cell "01.04.2026" [ref=e214]
+            - cell [ref=e215]:
+              - button "Удалить" [ref=e216]:
+                - img [ref=e217]
+          - row "Сотрудник Иванов Артём 01.12.2025 — 22.03.2026 16 78 ↓ Готов 22.03.2026" [ref=e220] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e221]:
+              - generic [ref=e222]:
+                - img [ref=e223]
+                - img [ref=e225]
+                - generic [ref=e228]: Сотрудник
+            - cell "Иванов Артём" [ref=e229]
+            - cell "01.12.2025 — 22.03.2026" [ref=e230]
+            - cell "16" [ref=e231]
+            - cell "78 ↓" [ref=e232]:
+              - generic [ref=e233]:
+                - text: "78"
+                - generic [ref=e234]: ↓
+            - cell "Готов" [ref=e235]:
+              - generic [ref=e236]: Готов
+            - cell "22.03.2026" [ref=e237]
+            - cell [ref=e238]:
+              - button "Удалить" [ref=e239]:
+                - img [ref=e240]
+          - row "Сотрудник Петрова Анна 01.12.2025 — 22.03.2026 16 76 ↓ Готов 22.03.2026" [ref=e243] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e244]:
+              - generic [ref=e245]:
+                - img [ref=e246]
+                - img [ref=e248]
+                - generic [ref=e251]: Сотрудник
+            - cell "Петрова Анна" [ref=e252]
+            - cell "01.12.2025 — 22.03.2026" [ref=e253]
+            - cell "16" [ref=e254]
+            - cell "76 ↓" [ref=e255]:
+              - generic [ref=e256]:
+                - text: "76"
+                - generic [ref=e257]: ↓
+            - cell "Готов" [ref=e258]:
+              - generic [ref=e259]: Готов
+            - cell "22.03.2026" [ref=e260]
+            - cell [ref=e261]:
+              - button "Удалить" [ref=e262]:
+                - img [ref=e263]
+          - row "Сотрудник Кузнецова Екатерина 30.11.2026 — 22.03.2026 -36 — Готов 22.03.2026" [ref=e266] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e267]:
+              - generic [ref=e268]:
+                - img [ref=e269]
+                - img [ref=e271]
+                - generic [ref=e274]: Сотрудник
+            - cell "Кузнецова Екатерина" [ref=e275]
+            - cell "30.11.2026 — 22.03.2026" [ref=e276]
+            - cell "-36" [ref=e277]
+            - cell "—" [ref=e278]:
+              - generic [ref=e279]: —
+            - cell "Готов" [ref=e280]:
+              - generic [ref=e281]: Готов
+            - cell "22.03.2026" [ref=e282]
+            - cell [ref=e283]:
+              - button "Удалить" [ref=e284]:
+                - img [ref=e285]
+          - row "Сотрудник Сидоров Дмитрий 01.12.2025 — 22.03.2026 16 71 → Готов 22.03.2026" [ref=e288] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e289]:
+              - generic [ref=e290]:
+                - img [ref=e291]
+                - img [ref=e293]
+                - generic [ref=e296]: Сотрудник
+            - cell "Сидоров Дмитрий" [ref=e297]
+            - cell "01.12.2025 — 22.03.2026" [ref=e298]
+            - cell "16" [ref=e299]
+            - cell "71 →" [ref=e300]:
+              - generic [ref=e301]:
+                - text: "71"
+                - generic [ref=e302]: →
+            - cell "Готов" [ref=e303]:
+              - generic [ref=e304]: Готов
+            - cell "22.03.2026" [ref=e305]
+            - cell [ref=e306]:
+              - button "Удалить" [ref=e307]:
+                - img [ref=e308]
+          - row "Сотрудник Морозова Виктория 01.12.2025 — 22.03.2026 16 71 → Готов 22.03.2026" [ref=e311] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e312]:
+              - generic [ref=e313]:
+                - img [ref=e314]
+                - img [ref=e316]
+                - generic [ref=e319]: Сотрудник
+            - cell "Морозова Виктория" [ref=e320]
+            - cell "01.12.2025 — 22.03.2026" [ref=e321]
+            - cell "16" [ref=e322]
+            - cell "71 →" [ref=e323]:
+              - generic [ref=e324]:
+                - text: "71"
+                - generic [ref=e325]: →
+            - cell "Готов" [ref=e326]:
+              - generic [ref=e327]: Готов
+            - cell "22.03.2026" [ref=e328]
+            - cell [ref=e329]:
+              - button "Удалить" [ref=e330]:
+                - img [ref=e331]
+          - row "Сотрудник Морозова Виктория 29.12.2025 — 22.03.2026 12 72 ↓ Готов 22.03.2026" [ref=e334] [cursor=pointer]:
+            - cell "Сотрудник" [ref=e335]:
+              - generic [ref=e336]:
+                - img [ref=e337]
+                - img [ref=e339]
+                - generic [ref=e342]: Сотрудник
+            - cell "Морозова Виктория" [ref=e343]
+            - cell "29.12.2025 — 22.03.2026" [ref=e344]
+            - cell "12" [ref=e345]
+            - cell "72 ↓" [ref=e346]:
+              - generic [ref=e347]:
+                - text: "72"
+                - generic [ref=e348]: ↓
+            - cell "Готов" [ref=e349]:
+              - generic [ref=e350]: Готов
+            - cell "22.03.2026" [ref=e351]
+            - cell [ref=e352]:
+              - button "Удалить" [ref=e353]:
+                - img [ref=e354]
