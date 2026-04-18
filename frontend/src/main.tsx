@@ -16,7 +16,7 @@ if (savedTheme === 'system') {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/devpulse">
       <App />
       <Toaster
         position="top-right"

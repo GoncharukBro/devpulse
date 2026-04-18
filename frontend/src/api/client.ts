@@ -62,7 +62,7 @@ apiClient.interceptors.response.use(
     const currentRefresh = useAuthStore.getState().refreshToken;
     if (!currentRefresh) {
       useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
+      window.location.href = '/devpulse/login';
       return Promise.reject(error);
     }
 
@@ -93,7 +93,7 @@ apiClient.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError as AxiosError);
       useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
+      window.location.href = '/devpulse/login';
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
